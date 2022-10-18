@@ -7,7 +7,9 @@
     "dev": "next dev",
     "postinstall": "prisma generate",
     "lint": "next lint",
-    "start": "next start"
+    "start": "next start",
+    "format": "prettier --write *.{cjs,md,json}",
+    "format:fix": "prettier --check *.{cjs,md,json}"
   },
   "dependencies": {
     "@next-auth/prisma-adapter": "^1.0.4",
