@@ -1,7 +1,10 @@
 {
   "name": "electron-academy",
   "version": "0.1.0",
-  "private": true,
+  "engines": {
+    "node": ">=14.16"
+  },
+  "packageManager": "pnpm@7.13.5",
   "scripts": {
     "build": "next build",
     "dev": "next dev",
