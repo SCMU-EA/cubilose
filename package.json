@@ -1,7 +1,10 @@
 {
   "name": "electron-academy",
   "version": "0.1.0",
-  "private": true,
+  "engines": {
+    "node": ">=14.16"
+  },
+  "packageManager": "pnpm@7.13.5",
   "scripts": {
     "build": "next build",
     "dev": "next dev",
@@ -9,7 +12,7 @@
     "lint": "next lint",
     "start": "next start",
     "format": "prettier --write *.{cjs,md,json}",
-    "format:fix": "prettier --check *.{cjs,md,json}"
+    "format:check": "prettier --check *.{cjs,md,json}"
   },
   "dependencies": {
     "@next-auth/prisma-adapter": "^1.0.4",
