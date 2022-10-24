@@ -1,6 +1,6 @@
 {
-  "name": "electron-academy",
-  "version": "0.1.0",
+  "name": "cubilose",
+  "version": "0.0.0",
   "engines": {
     "node": ">=14.16"
   },
