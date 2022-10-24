@@ -2,7 +2,6 @@ name: CI
 
 on:
   push:
-  pull_request:
 
 jobs:
   lint:
@@ -38,6 +37,40 @@ jobs:
         run: pnpm install
 
       - run: pnpm lint
+
+  build:
+    runs-on: ubuntu-latest
+    name: Run Build
+
+    steps:
+      - name: Check out
+        uses: actions/checkout@v3
+      - name: Setup env
+        run: cp .env-example .env
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2.2.4
+        id: pnpm-install
+        with:
+          run_install: false
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        run: |
+          echo "pnpm_cache_dir=$(pnpm store path)" >> $GITHUB_OUTPUT
+      - name: Setup pnpm cache
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.pnpm-cache.outputs.pnpm_cache_dir }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+      - name: Install dependencies
+        run: pnpm install
+
+      - run: pnpm build
 
   prettier:
     runs-on: ubuntu-latest
