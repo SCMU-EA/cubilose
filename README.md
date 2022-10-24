@@ -1,4 +1,6 @@
 # Create T3 App
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FSCMU-EA%2Fcubilose.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2FSCMU-EA%2Fcubilose?ref=badge_shield)
+
 
 This is an app bootstrapped according to the [init.tips](https://init.tips) stack, also known as the T3-Stack.
 
@@ -48,3 +50,7 @@ You can also dockerize this stack and deploy a container. See the [Docker deploy
 Here are some resources that we commonly refer to:
 
 - [Protecting routes with Next-Auth.js](https://next-auth.js.org/configuration/nextjs#unstable_getserversession)
+
+
+## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FSCMU-EA%2Fcubilose.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2FSCMU-EA%2Fcubilose?ref=badge_large)
