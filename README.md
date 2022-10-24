@@ -1,50 +1,74 @@
-# Create T3 App
+<p align="center">
+  <a href="https://ishkong.github.io/go-cqhttp-docs/">
+    <img width="160" src="./public/cubilose.png" alt="logo">
+  </a>
+</p>
 
-This is an app bootstrapped according to the [init.tips](https://init.tips) stack, also known as the T3-Stack.
+<div align="center">
 
-## Why are there `.js` files in here?
+# Cubilose
 
-As per [T3-Axiom #3](https://github.com/t3-oss/create-t3-app/tree/next#3-typesafety-isnt-optional), we take typesafety as a first class citizen. Unfortunately, not all frameworks and plugins support TypeScript which means some of the configuration files have to be `.js` files.
+Cubilose 是基于 [Create-T3-App](https://github.com/mamoe/mirai) 开发的论坛框架，旨在为开发者提供简单易用、高效稳定的论坛搭建体验
 
-We try to emphasize that these files are javascript for a reason, by explicitly declaring its type (`cjs` or `mjs`) depending on what's supported by the library it is used by. Also, all the `js` files in this project are still typechecked using a `@ts-check` comment at the top.
+</div>
 
-## What's next? How do I make an app with this?
+<p align="center">
+  <a href="https://raw.githubusercontent.com/SCMU-EA/cubilose/master/LICENSE">
+    <img src="https://img.shields.io/github/license/SCMU-EA/cubilose" alt="license">
+  </a>
+  <a href="https://github.com/SCMU-EA/cubilose/releases">
+    <img src="https://img.shields.io/github/v/release/SCMU-EA/cubilose?color=blueviolet&include_prereleases" alt="release">
+  </a>
+  <a href="https://app.fossa.com/projects/git%2Bgithub.com%2FSCMU-EA%2Fcubilose?ref=badge_shield" alt="FOSSA Status">
+    <img src="https://app.fossa.com/api/projects/git%2Bgithub.com%2FSCMU-EA%2Fcubilose.svg?type=shield" alt="license scan"/>
+  </a>
+  <a href="https://codecov.io/gh/SCMU-EA/cubilose">
+    <img src="https://img.shields.io/codecov/c/github/SCMU-EA/cubilose?style=flat-square" alt="coverage">
+  </a>
+  <a href="https://www.codefactor.io/repository/github/SCMU-EA/cubilose">
+    <img src="https://www.codefactor.io/repository/github/SCMU-EA/cubilose/badge" alt="CodeFactor" />
+  </a>
+  <a href="https://github.com/SCMU-EA/cubilose/actions">
+    <img src="https://github.com/SCMU-EA/cubilose/workflows/CI/badge.svg" alt="action">
+  </a>
+</p>
 
-We try to keep this project as simple as possible, so you can start with the most basic configuration and then move on to more advanced configuration.
+<p align="center">
+  <a href="#">文档</a>
+  ·
+  <a href="#">快速开始</a>
+  ·
+  <a href="#">参与贡献</a>
+</p>
 
-If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our [Discord](https://t3.gg/discord) and ask for help.
+# **⚠ 开发中**
 
-- [Next-Auth.js](https://next-auth.js.org)
-- [Prisma](https://prisma.io)
-- [TailwindCSS](https://tailwindcss.com)
-- [tRPC](https://trpc.io)
+项目处于开发设计阶段，目前还不可用
 
-Also checkout these awesome tutorials on `create-t3-app`.
+# 如何开发
 
-- [Build a Blog With the T3 Stack - tRPC, TypeScript, Next.js, Prisma & Zod](https://www.youtube.com/watch?v=syEWlxVFUrY)
-- [Build a Live Chat Application with the T3 Stack - TypeScript, Tailwind, tRPC](https://www.youtube.com/watch?v=dXRRY37MPuk)
-- [Build a full stack app with create-t3-app](https://www.nexxel.dev/blog/ct3a-guestbook)
-- [A first look at create-t3-app](https://dev.to/ajcwebdev/a-first-look-at-create-t3-app-1i8f)
+## 安装 pnpm
 
-## How do I deploy this?
+```bash
+npm i -g pnpm
+```
 
-### Vercel
+## 克隆仓库
 
-We recommend deploying to [Vercel](https://vercel.com/?utm_source=t3-oss&utm_campaign=oss). It makes it super easy to deploy NextJs apps.
+```bash
+git clone https://github.com/SCMU-EA/cubilose.git
+```
 
-- Push your code to a GitHub repository.
-- Go to [Vercel](https://vercel.com/?utm_source=t3-oss&utm_campaign=oss) and sign up with GitHub.
-- Create a Project and import the repository you pushed your code to.
-- Add your environment variables.
-- Click **Deploy**
-- Now whenever you push a change to your repository, Vercel will automatically redeploy your website!
+## 初始化
 
-### Docker
+```bash
+pnpm prisma migrate dev  # 生成 SQL 文件
+pnpm prisma generate     # 生成数据库和 Prisma Client
+cp .env.example .env     # 复制环境变量模板 (⚠ 需要自行配置)
+```
 
-You can also dockerize this stack and deploy a container. See the [Docker deployment page](https://create-t3-app-nu.vercel.app/en/deployment/docker) for details.
+## 启动开发服务器
 
-## Useful resources
-
-Here are some resources that we commonly refer to:
-
-- [Protecting routes with Next-Auth.js](https://next-auth.js.org/configuration/nextjs#unstable_getserversession)
+```bash
+pnpm dev
+```
