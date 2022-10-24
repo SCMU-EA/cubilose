@@ -11,8 +11,8 @@
     "postinstall": "prisma generate",
     "lint": "next lint",
     "start": "next start",
-    "format": "prettier --write *.{cjs,md,json}",
-    "format:check": "prettier --check *.{cjs,md,json}"
+    "format": "prettier --write ./**/**/*.{mjx,cjs,ts,tsx,md,json}",
+    "format:check": "prettier --check ./**/**/*.{mjx,cjs,ts,tsx,md,json}"
   },
   "dependencies": {
     "@next-auth/prisma-adapter": "^1.0.4",
