@@ -1,7 +1,6 @@
 import NextAuth, { type NextAuthOptions } from "next-auth";
 import EmailProvider from "next-auth/providers/email";
 import CredentialsProvider from "next-auth/providers/credentials";
-
 // Prisma adapter for NextAuth, optional and can be removed
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { prisma } from "../../../server/db/client";
@@ -10,13 +9,21 @@ import { env } from "../../../env/server.mjs";
 export const authOptions: NextAuthOptions = {
   // Include user.id on session
   callbacks: {
-    session({ session, user }) {
-      if (session.user) {
-        session.user.id = user.id;
+    session({ session, token, user }) {
+      if (session.user && token) {
+        session.user.id = token.id as string;
       }
       return session;
     },
+    async jwt({ token, user, account, profile, isNewUser }) {
+      if (user) {
+        token.id = user.id;
+      }
+      return token;
+    },
+    signOut({}) {},
   },
+
   // Configure one or more authentication providers
   adapter: PrismaAdapter(prisma),
   providers: [
@@ -33,32 +40,61 @@ export const authOptions: NextAuthOptions = {
       from: env.EMAIL_FROM,
     }),
     CredentialsProvider({
-      // The name to display on the sign in form (e.g. "Sign in with...")
-      name: "Credentials",
-      // `credentials` is used to generate a form on the sign in page.
-      // You can specify which fields should be submitted, by adding keys to the `credentials` object.
-      // e.g. domain, username, password, 2FA token, etc.
-      // You can pass any HTML attribute to the <input> tag through the object.
+      // 登录按钮显示 (e.g. "Sign in with Credentials")
+      name: "credentials",
+      // credentials 用于配置登录页面的表单
       credentials: {
-        username: { label: "username", type: "text", placeholder: "jsmith" },
-        password: { label: "password", type: "password" },
+        email: {
+          label: "邮箱",
+          type: "text",
+          placeholder: "请输入邮箱",
+        },
+        password: {
+          label: "密码",
+          type: "password",
+          placeholder: "请输入密码",
+        },
       },
       async authorize(credentials, req) {
-        // Add logic here to look up the user from the credentials supplied
-        const user = prisma.user.getUser(credentials);
+        console.log(credentials);
+
+        // 根据 credentials 我们查询数据库中的信息
+        const user = await prisma.user.findFirst({
+          where: {
+            email: credentials?.email,
+            password: credentials?.password,
+          },
+        });
+
         if (user) {
-          // Any object returned will be saved in `user` property of the JWT
+          // 返回的对象将保存才JWT 的用户属性中
           return user;
         } else {
-          // If you return null then an error will be displayed advising the user to check their details.
+          // 如果返回null，则会显示一个错误，建议用户检查其详细信息。
           return null;
-
-          // You can also Reject this callback with an Error thus the user will be sent to the error page with the error message as a query parameter
+          // 跳转到错误页面，并且携带错误信息 http://localhost:3000/api/auth/error?error=用户名或密码错误
+          //throw new Error("用户名或密码错误");
         }
       },
     }),
+
     // ...add more providers here
   ],
+  session: {
+    strategy: "jwt",
+  },
+  jwt: {
+    secret: "test",
+  },
+  pages: {
+    signIn: "/posts/login",
+  },
+  theme: {
+    colorScheme: "light", // "auto" | "dark" | "light"
+    brandColor: "grey", // Hex color code
+    logo: "https://raw.githubusercontent.com/SCMU-EA/cubilose/77907c28ea0e9f90dc684ff6cac9f66678e29ee9/public/logo.png", // Absolute URL to image
+    buttonText: "grey", // Hex color code
+  },
 };
 
 export default NextAuth(authOptions);

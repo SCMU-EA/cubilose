@@ -6,7 +6,8 @@ import { showNotification } from "@mantine/notifications";
 import type { User } from "../../types/utils";
 import { useRouter } from "next/router";
 import { Button } from "@mantine/core";
-export default function Register() {
+import { NextPage } from "next";
+export const Register: NextPage = () => {
   const [registerInfo, setRegisterInfo] = useState<User>({
     email: "",
     username: "",
@@ -24,16 +25,12 @@ export default function Register() {
       showNotification({
         id: "register-success",
         color: "teal",
-        title: "注册成功",
+        title: "注册成功，正在跳转登录界面",
         message: "您已成功注册，正在跳转至主页面",
         icon: <CheckIcon />,
         autoClose: 2000,
       });
-      const user = {
-        email: registerInfo.email,
-        username: registerInfo.username,
-      };
-      window.localStorage.setItem("user", JSON.stringify(user));
+
       router.push("/");
     },
     onError() {
@@ -62,18 +59,18 @@ export default function Register() {
               alt="Your Company"
             />
             <h2 className="mt-6 text-center text-3xl font-bold tracking-tight text-gray-900">
-              Register to your account
+              注册你的账户
             </h2>
             <p className="mt-2 text-center text-sm text-gray-600">
-              Or{" "}
-              <a
+              或者{" "}
+              <button
                 className="font-medium text-indigo-600 hover:text-indigo-500"
                 onClick={() => {
                   router.push("/");
                 }}
               >
-                Login
-              </a>
+                登录
+              </button>
             </p>
           </div>
           <form className="mt-8 space-y-6" onSubmit={(event) => submit(event)}>
@@ -81,7 +78,7 @@ export default function Register() {
             <div className="space-y-6 rounded-md shadow-sm">
               <div>
                 <label htmlFor="email-address" className="sr-only">
-                  Email address
+                  邮箱地址
                 </label>
                 <input
                   id="email-address"
@@ -90,7 +87,7 @@ export default function Register() {
                   autoComplete="email"
                   required
                   className="relative block w-full appearance-none rounded-none rounded-t-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
-                  placeholder="Email address"
+                  placeholder="请输入邮箱地址"
                   onChange={(e) => inputOberver(e)}
                 />
               </div>
@@ -104,7 +101,7 @@ export default function Register() {
                   type="text"
                   required
                   className="relative block w-full appearance-none rounded-none rounded-t-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
-                  placeholder="user name"
+                  placeholder="请输入用户名"
                   onChange={(e) => inputOberver(e)}
                 />
               </div>
@@ -119,7 +116,7 @@ export default function Register() {
                   autoComplete="current-password"
                   required
                   className="relative block w-full appearance-none rounded-none rounded-b-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
-                  placeholder="Password"
+                  placeholder="请输入密码"
                   onChange={(e) => inputOberver(e)}
                 />
               </div>
@@ -137,7 +134,7 @@ export default function Register() {
                     aria-hidden="true"
                   />
                 </span>
-                Register
+                注册
               </Button>
             </div>
           </form>
@@ -145,4 +142,4 @@ export default function Register() {
       </div>
     </>
   );
-}
+};

@@ -1,29 +1,25 @@
 import type { NextPage } from "next";
-import { signIn, signOut, useSession } from "next-auth/react";
-import { useEffect, useState } from "react";
-import { boolean } from "zod";
-import { trpc } from "../utils/trpc";
-import type { User } from "../types/utils";
-import Login from "./posts/login";
-import Navigation from "./posts/navigation";
+import { useSession } from "next-auth/react";
+import { Guide } from "./posts/guide";
+import { BlogList } from "./posts/blogList";
 const Home: NextPage = () => {
-  const [isAuth, setIsAuth] = useState<boolean>(false);
-  const [currentUser, setCurrentUser] = useState<User>();
-  const setUser = async () => {
-    const user = window.localStorage.getItem("user");
-    if (user) {
-      await setCurrentUser(JSON.parse(user));
-      setIsAuth(true);
-    }
-  };
-  useEffect(() => {
-    setUser();
-  }, []);
-  return <>{isAuth ? <Index /> : <Login setUser={() => setUser()} />}</>;
+  const { data: userData } = useSession();
+
+  // const [isAuth, setIsAuth] = useState<boolean>(false);
+  // const [currentUser, setCurrentUser] = useState<User>();
+  // const setUser = async () => {
+  //   const user = window.localStorage.getItem("user");
+  //   if (user) {
+  //     await setCurrentUser(JSON.parse(user));
+  //     setIsAuth(true);
+  //   }
+  // };
+
+  return <>{userData ? <Index /> : <Guide />}</>;
 };
 
 const Index: NextPage = () => {
-  return <Navigation></Navigation>;
+  return <BlogList></BlogList>;
 };
 
 export default Home;

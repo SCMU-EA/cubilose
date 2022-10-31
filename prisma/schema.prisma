@@ -49,13 +49,14 @@ model Session {
 
 model User {
   id            String    @id @default(cuid())
-  username          String?
+  username      String?
   email         String?   @unique
   password      String?
   emailVerified DateTime?
-  image         String?
+  avatar        String?
   accounts      Account[]
   sessions      Session[]
+  blogs         Blog[]
 }
 
 model VerificationToken {
@@ -64,4 +65,52 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+// blog 
+model Tag {
+  id    String @id @default(cuid())
+  name  String
+  blogs Blog[]
+}
+
+model Comment {
+  id         String    @unique @default(cuid())
+  blog       Blog?     @relation(fields: [blogId], references: [id])
+  blogId     String?
+  content    String?
+  username   String?
+  avatar     String?
+  type       Int? // 0为管理员评论 1为访客评论 未登录不允许评论
+  createTime DateTime? @default(now())
+  // replyComents
+}
+
+model Blog {
+  id             String    @id @default(cuid())
+  title          String?
+  content        String?
+  firstPicture   String?
+  flag           Boolean?
+  views          Int?
+  appreciation   Boolean?
+  shareStatement Boolean?
+  commentabled   Boolean?
+  published      Boolean?
+  recommend      Boolean?
+  createTime     DateTime?
+  updateTime     DateTime?
+  type           Type?     @relation(fields: [typeId], references: [id])
+  tags           Tag[]
+  comments       Comment[]
+  description    String?
+  typeId         String?
+  User           User?     @relation(fields: [userId], references: [id])
+  userId         String?
+}
+
+model Type {
+  id    String @id @default(cuid())
+  name  String
+  blogs Blog[]
 }
