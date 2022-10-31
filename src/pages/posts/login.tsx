@@ -1,59 +1,59 @@
 import { LockClosedIcon } from "@heroicons/react/20/solid";
-import { useState } from "react";
-import { trpc } from "../../utils/trpc";
-import { showNotification } from "@mantine/notifications";
-import { CheckIcon } from "@mantine/core";
+// import { useState } from "react";
+// import { trpc } from "../../utils/trpc";
+// import { showNotification } from "@mantine/notifications";
+// import { CheckIcon } from "@mantine/core";
 import { Button } from "@mantine/core";
 import { useRouter } from "next/router";
-import type { User } from "../../types/utils";
+// import type { User } from "../../types/utils";
 import { getCsrfToken } from "next-auth/react";
 import { Divider } from "@mantine/core";
 import { NextPage } from "next";
-const Login: NextPage = ({ setUser, csrfToken }: any) => {
-  const [loginInfo, setLoginInfo] = useState<User>({
-    email: "",
-    password: "",
-    username: "",
-  });
+const Login: NextPage = ({ csrfToken }: any) => {
+  // const [loginInfo, setLoginInfo] = useState<User>({
+  //   email: "",
+  //   password: "",
+  //   username: "",
+  // });
   const router = useRouter();
-  const inputOberver = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setLoginInfo({
-      ...loginInfo,
-      [event.target.name]: event.target.value,
-    });
-  };
+  // const inputOberver = (event: React.ChangeEvent<HTMLInputElement>) => {
+  //   setLoginInfo({
+  //     ...loginInfo,
+  //     [event.target.name]: event.target.value,
+  //   });
+  // };
 
-  const { isLoading, mutate } = trpc.auth.getUser.useMutation({
-    onSuccess() {
-      showNotification({
-        id: "login-success",
-        color: "teal",
-        title: "登录成功",
-        message: "您已成功登录，正在跳转至主页面",
-        icon: <CheckIcon />,
-        autoClose: 2000,
-      });
-      const user = {
-        email: loginInfo.email,
-      };
-      window.localStorage.setItem("user", JSON.stringify(user));
-      setUser();
-    },
-    onError() {
-      showNotification({
-        id: "login-error",
-        color: "red",
-        title: "登录失败",
-        message: "用户名或密码错误",
-        autoClose: 2000,
-      });
-    },
-  });
+  // const { isLoading, mutate } = trpc.auth.getUser.useMutation({
+  //   onSuccess() {
+  //     showNotification({
+  //       id: "login-success",
+  //       color: "teal",
+  //       title: "登录成功",
+  //       message: "您已成功登录，正在跳转至主页面",
+  //       icon: <CheckIcon />,
+  //       autoClose: 2000,
+  //     });
+  //     const user = {
+  //       email: loginInfo.email,
+  //     };
+  //     window.localStorage.setItem("user", JSON.stringify(user));
+  //     setUser();
+  //   },
+  //   onError() {
+  //     showNotification({
+  //       id: "login-error",
+  //       color: "red",
+  //       title: "登录失败",
+  //       message: "用户名或密码错误",
+  //       autoClose: 2000,
+  //     });
+  //   },
+  // });
 
-  const submit = (event: React.FormEvent) => {
-    // event.preventDefault();
-    // mutate(loginInfo);
-  };
+  // const submit = (event: React.FormEvent) => {
+  //   // event.preventDefault();
+  //   // mutate(loginInfo);
+  // };
   return (
     <>
       <div className="flex min-h-full items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
@@ -83,7 +83,7 @@ const Login: NextPage = ({ setUser, csrfToken }: any) => {
             className="mt-8 space-y-6"
             method="POST"
             action="/api/auth/callback/credentials"
-            onSubmit={(e) => submit(e)}
+            // onSubmit={(e) => submit(e)}
           >
             <input name="csrfToken" type="hidden" defaultValue={csrfToken} />
             <input type="hidden" name="remember" defaultValue="true" />
@@ -146,7 +146,6 @@ const Login: NextPage = ({ setUser, csrfToken }: any) => {
 
             <div>
               <Button
-                loading={isLoading}
                 type="submit"
                 className="group relative flex w-full justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
               >
@@ -190,7 +189,6 @@ const Login: NextPage = ({ setUser, csrfToken }: any) => {
 
             <div>
               <Button
-                loading={isLoading}
                 type="submit"
                 className="group relative flex w-full justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
               >

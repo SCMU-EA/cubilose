@@ -22,6 +22,7 @@
     "@mantine/core": "^5.6.3",
     "@mantine/hooks": "^5.6.3",
     "@mantine/notifications": "^5.6.3",
+    "@mantine/rte": "^5.6.3",
     "@next-auth/prisma-adapter": "^1.0.4",
     "@prisma/client": "^4.4.0",
     "@tabler/icons": "^1.108.0",

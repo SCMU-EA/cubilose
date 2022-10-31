@@ -36,7 +36,7 @@ export const authRouter = router({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const user = await ctx.prisma.user.findMany({
+      const user = await ctx.prisma.user.findFirst({
         where: { email: input.email },
         select: {
           email: true,
@@ -44,7 +44,7 @@ export const authRouter = router({
           username: true,
         },
       });
-      if (user.email && (user.password === null || user.username === null)) {
+      if (user?.email && (user?.password === null || user?.username === null)) {
         const result = await ctx.prisma.user.update({
           where: { email: user.email },
           data: {
@@ -54,6 +54,7 @@ export const authRouter = router({
         });
         return result;
       }
+
       try {
         const user = await ctx.prisma.user.create({
           data: input,

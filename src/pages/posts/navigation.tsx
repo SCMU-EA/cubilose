@@ -11,8 +11,8 @@ import {
   IconExternalLink,
   IconBrandTelegram,
 } from "@tabler/icons";
-import { useRouter } from "next/router";
 import { NextPage } from "next";
+import { trpc } from ".././../utils/trpc";
 
 const navigation = [
   { name: "首页", href: "/", current: true },
@@ -28,8 +28,9 @@ function classNames(...classes: any[]) {
 
 export const Navigation: NextPage = () => {
   const { data: userData } = useSession();
-  const router = useRouter();
-
+  const user = trpc.user.getUserMsg.useQuery({
+    email: userData?.user?.email || "",
+  });
   return (
     <Disclosure as="nav" className="bg-gray-800">
       {({ open }) => (
@@ -129,8 +130,8 @@ export const Navigation: NextPage = () => {
                   <Menu.Target>
                     <UserButton
                       image="https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=255&q=80"
-                      name={userData?.user?.name || ""}
-                      email={userData?.user?.email || ""}
+                      name={user.data?.username || ""}
+                      email={user.data?.email || ""}
                     />
                   </Menu.Target>
                   <Menu.Dropdown>

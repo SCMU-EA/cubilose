@@ -10,7 +10,7 @@ interface UserButtonProps extends React.ComponentPropsWithoutRef<"button"> {
 
 // eslint-disable-next-line react/display-name
 export const UserButton = forwardRef<HTMLButtonElement, UserButtonProps>(
-  ({ image, name, email, icon, ...others }: UserButtonProps, ref) => (
+  ({ image, name, email, ...others }: UserButtonProps, ref) => (
     <UnstyledButton
       ref={ref}
       sx={(theme) => ({

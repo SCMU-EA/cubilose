@@ -9,19 +9,18 @@ import { env } from "../../../env/server.mjs";
 export const authOptions: NextAuthOptions = {
   // Include user.id on session
   callbacks: {
-    session({ session, token, user }) {
+    session({ session, token }) {
       if (session.user && token) {
         session.user.id = token.id as string;
       }
       return session;
     },
-    async jwt({ token, user, account, profile, isNewUser }) {
+    async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
       }
       return token;
     },
-    signOut({}) {},
   },
 
   // Configure one or more authentication providers
@@ -55,7 +54,7 @@ export const authOptions: NextAuthOptions = {
           placeholder: "请输入密码",
         },
       },
-      async authorize(credentials, req) {
+      async authorize(credentials) {
         console.log(credentials);
 
         // 根据 credentials 我们查询数据库中的信息
