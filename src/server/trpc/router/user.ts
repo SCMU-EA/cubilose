@@ -1,15 +1,15 @@
-import { router, publicProcedure, protectedProcedure } from "../trpc";
+import { router, protectedProcedure } from "../trpc";
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
 
 export const userRouter = router({
   getUserMsg: protectedProcedure
-    .input(z.object({ email: z.string().email() }))
+    .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {
       try {
         const user = await ctx.prisma.user.findFirst({
           where: {
-            email: input.email,
+            id: input.id,
           },
           select: {
             email: true,

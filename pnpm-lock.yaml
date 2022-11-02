@@ -23,9 +23,11 @@ specifiers:
   '@typescript-eslint/eslint-plugin': ^5.33.0
   '@typescript-eslint/parser': ^5.33.0
   autoprefixer: ^10.4.7
+  cuid: ^2.1.8
   eslint: 8.22.0
   eslint-config-next: 12.3.1
   eslint-config-prettier: ^8.5.0
+  md-editor-rt: ^2.3.0
   next: 12.3.1
   next-auth: ^4.12.3
   nodemailer: ^6.8.0
@@ -35,6 +37,7 @@ specifiers:
   prisma: ^4.4.0
   react: 18.2.0
   react-dom: 18.2.0
+  react-file-reader: ^1.1.4
   react-toastify: ^9.0.8
   superjson: 1.9.1
   tailwindcss: ^3.1.6
@@ -58,11 +61,14 @@ dependencies:
   '@trpc/next': 10.0.0-proxy-beta.17_dzic5qqu4g5njip5df4nsnow4e
   '@trpc/react': 10.0.0-proxy-beta.17_toauwijr5xrg2tfgkv2b5sjcly
   '@trpc/server': 10.0.0-proxy-beta.17
+  cuid: registry.npmmirror.com/cuid/2.1.8
+  md-editor-rt: registry.npmmirror.com/md-editor-rt/2.3.0
   next: 12.3.1_qtpcxnaaarbm4ws7ughq6oxfve
   next-auth: 4.14.0_pvhs6umhoiyo7cgwjp6cvqsra4
   nodemailer: 6.8.0
   react: 18.2.0
   react-dom: 18.2.0_react@18.2.0
+  react-file-reader: registry.npmmirror.com/react-file-reader/1.1.4
   react-toastify: registry.npmmirror.com/react-toastify/9.0.8_biqbaboplfbrettd7655fr4n2y
   superjson: 1.9.1
   zod: 3.19.1
@@ -2818,19 +2824,19 @@ packages:
     version: 1.0.1
     dev: false
 
-  registry.npmmirror.com/@floating-ui/dom/1.0.3:
-    resolution: {integrity: sha512-6H1kwjkOZKabApNtXRiYHvMmYJToJ1DV7rQ3xc/WJpOABhQIOJJOdz2AOejj8X+gcybaFmBpisVTZxBZAM3V0w==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/@floating-ui/dom/-/dom-1.0.3.tgz}
+  registry.npmmirror.com/@floating-ui/dom/1.0.4:
+    resolution: {integrity: sha512-maYJRv+sAXTy4K9mzdv0JPyNW5YPVHrqtY90tEdI6XNpuLOP26Ci2pfwPsKBA/Wh4Z3FX5sUrtUFTdMYj9v+ug==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/@floating-ui/dom/-/dom-1.0.4.tgz}
     name: '@floating-ui/dom'
-    version: 1.0.3
+    version: 1.0.4
     dependencies:
       '@floating-ui/core': registry.npmmirror.com/@floating-ui/core/1.0.1
     dev: false
 
-  registry.npmmirror.com/@floating-ui/react-dom-interactions/0.10.2_twyhzqqpkwvvgrmyeapdo6i4my:
-    resolution: {integrity: sha512-KhF+UN+MVqUx1bG1fe0aAiBl1hbz07Uin6UW70mxwUDhaGpitM16CYvGri1EqGY4hnWK8TQknDSP8iQFOxjhsg==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/@floating-ui/react-dom-interactions/-/react-dom-interactions-0.10.2.tgz}
-    id: registry.npmmirror.com/@floating-ui/react-dom-interactions/0.10.2
+  registry.npmmirror.com/@floating-ui/react-dom-interactions/0.10.3_twyhzqqpkwvvgrmyeapdo6i4my:
+    resolution: {integrity: sha512-UEHqdnzyoiWNU5az/tAljr9iXFzN18DcvpMqW+/cXz4FEhDEB1ogLtWldOWCujLerPBnSRocADALafelOReMpw==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/@floating-ui/react-dom-interactions/-/react-dom-interactions-0.10.3.tgz}
+    id: registry.npmmirror.com/@floating-ui/react-dom-interactions/0.10.3
     name: '@floating-ui/react-dom-interactions'
-    version: 0.10.2
+    version: 0.10.3
     peerDependencies:
       react: '>=16.8.0'
       react-dom: '>=16.8.0'
@@ -2852,7 +2858,7 @@ packages:
       react: '>=16.8.0'
       react-dom: '>=16.8.0'
     dependencies:
-      '@floating-ui/dom': registry.npmmirror.com/@floating-ui/dom/1.0.3
+      '@floating-ui/dom': registry.npmmirror.com/@floating-ui/dom/1.0.4
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
     dev: false
@@ -2942,7 +2948,7 @@ packages:
       react: '>=16.8.0'
       react-dom: '>=16.8.0'
     dependencies:
-      '@floating-ui/react-dom-interactions': registry.npmmirror.com/@floating-ui/react-dom-interactions/0.10.2_twyhzqqpkwvvgrmyeapdo6i4my
+      '@floating-ui/react-dom-interactions': registry.npmmirror.com/@floating-ui/react-dom-interactions/0.10.3_twyhzqqpkwvvgrmyeapdo6i4my
       '@mantine/hooks': registry.npmmirror.com/@mantine/hooks/5.6.3_react@18.2.0
       '@mantine/styles': registry.npmmirror.com/@mantine/styles/5.6.3_sogmqz4enknxtkxk3k5s6bqwnq
       '@mantine/utils': registry.npmmirror.com/@mantine/utils/5.6.3_react@18.2.0
@@ -3341,6 +3347,12 @@ packages:
       react-dom: 18.2.0_react@18.2.0
     dev: false
 
+  registry.npmmirror.com/@types/marked/4.0.7:
+    resolution: {integrity: sha512-eEAhnz21CwvKVW+YvRvcTuFKNU9CV1qH+opcgVK3pIMI6YZzDm6gc8o2vHjldFk6MGKt5pueSB7IOpvpx5Qekw==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/@types/marked/-/marked-4.0.7.tgz}
+    name: '@types/marked'
+    version: 4.0.7
+    dev: false
+
   registry.npmmirror.com/@types/parse-json/4.0.0:
     resolution: {integrity: sha512-//oorEZjL6sbPcKUaCdIGlIUeH26mgzimjBB77G6XRgnDl/L5wOnpyBGRe/Mmf5CVW3PwEBE1NjiMZ/ssFh4wA==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/@types/parse-json/-/parse-json-4.0.0.tgz}
     name: '@types/parse-json'
@@ -3503,6 +3515,12 @@ packages:
     resolution: {integrity: sha512-DJR/VvkAvSZW9bTouZue2sSxDwdTN92uHjqeKVm+0dAqdfNykRzQ95tay8aXMBAAPpUiq4Qcug2L7neoRh2Egw==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/csstype/-/csstype-3.1.1.tgz}
     name: csstype
     version: 3.1.1
+    dev: false
+
+  registry.npmmirror.com/cuid/2.1.8:
+    resolution: {integrity: sha512-xiEMER6E7TlTPnDxrM4eRiC6TRgjNX9xzEZ5U/Se2YJKr7Mq4pJn/2XEHjl3STcSh96GmkHPcBXLES8M29wyyg==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/cuid/-/cuid-2.1.8.tgz}
+    name: cuid
+    version: 2.1.8
     dev: false
 
   registry.npmmirror.com/debug/2.6.9:
@@ -3838,6 +3856,15 @@ packages:
     dependencies:
       js-tokens: registry.npmmirror.com/js-tokens/4.0.0
 
+  registry.npmmirror.com/md-editor-rt/2.3.0:
+    resolution: {integrity: sha512-4iWKkmGaFnb2v6ORRNqxlPDysdaqliCoX4qoNKU3QmIqkqTXz3vGtELYejc5/d3VJyOVYDDDGcHgFGmscAKwMw==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/md-editor-rt/-/md-editor-rt-2.3.0.tgz}
+    name: md-editor-rt
+    version: 2.3.0
+    engines: {node: '>=12.0.0'}
+    dependencies:
+      '@types/marked': registry.npmmirror.com/@types/marked/4.0.7
+    dev: false
+
   registry.npmmirror.com/minimist/1.2.7:
     resolution: {integrity: sha512-bzfL1YUZsP41gmu/qjrEk0Q6i2ix/cVeAhbCbqH9u3zYutS1cLg00qhrD0M2MVdCcx4Sc0UpP2eBWo9rotpq6g==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/minimist/-/minimist-1.2.7.tgz}
     name: minimist
@@ -3969,6 +3996,15 @@ packages:
       extend: registry.npmmirror.com/extend/3.0.2
       parchment: registry.npmmirror.com/parchment/1.1.4
       quill-delta: registry.npmmirror.com/quill-delta/3.6.3
+    dev: false
+
+  registry.npmmirror.com/react-file-reader/1.1.4:
+    resolution: {integrity: sha512-xTeHFrDIopZpzk4aMZyILzIQbytQ6GCKR32/7kBDzO5lrAr1idbK5PkmpjP4wnT9s5F+TALviuhnWk8UeksddA==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/react-file-reader/-/react-file-reader-1.1.4.tgz}
+    name: react-file-reader
+    version: 1.1.4
+    dependencies:
+      prop-types: registry.npmmirror.com/prop-types/15.8.1
+      uuid4: registry.npmmirror.com/uuid4/1.1.4
     dev: false
 
   registry.npmmirror.com/react-is/16.13.1:
@@ -4188,6 +4224,12 @@ packages:
       '@types/react': 18.0.14
       react: 18.2.0
       use-isomorphic-layout-effect: registry.npmmirror.com/use-isomorphic-layout-effect/1.1.2_luyos4mouogwq6z3wafb3re4ce
+    dev: false
+
+  registry.npmmirror.com/uuid4/1.1.4:
+    resolution: {integrity: sha512-Gr1q2k40LpF8CokcnQFjPDsdslzJbTCTBG5xQIEflUov431gFkY5KduiGIeKYAamkQnNn4IfdHJbLnl9Bib8TQ==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/uuid4/-/uuid4-1.1.4.tgz}
+    name: uuid4
+    version: 1.1.4
     dev: false
 
   registry.npmmirror.com/yaml/1.10.2:

@@ -143,3 +143,4 @@ export const Register: NextPage = () => {
     </>
   );
 };
+export default Register;

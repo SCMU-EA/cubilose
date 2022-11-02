@@ -12,7 +12,7 @@ export const authRouter = router({
   getUser: publicProcedure
     .input(z.object({ email: z.string().email(), password: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      const user = await ctx.prisma.user.findUnique({
+      const user = await ctx.prisma.user.findFirst({
         where: { email: input.email },
         select: {
           email: true,

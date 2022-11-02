@@ -68,15 +68,10 @@ model VerificationToken {
 }
 
 // blog 
-model Tag {
-  id    String @id @default(cuid())
-  name  String
-  blogs Blog[]
-}
 
 model Comment {
   id         String    @unique @default(cuid())
-  blog       Blog?     @relation(fields: [blogId], references: [id])
+  blog       Blog?     @relation(fields: [blogId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   blogId     String?
   content    String?
   username   String?
@@ -87,30 +82,33 @@ model Comment {
 }
 
 model Blog {
-  id             String    @id @default(cuid())
-  title          String?
-  content        String?
-  firstPicture   String?
-  flag           Boolean?
-  views          Int?
-  appreciation   Boolean?
-  shareStatement Boolean?
-  commentabled   Boolean?
-  published      Boolean?
-  recommend      Boolean?
-  createTime     DateTime?
-  updateTime     DateTime?
-  type           Type?     @relation(fields: [typeId], references: [id])
-  tags           Tag[]
-  comments       Comment[]
-  description    String?
-  typeId         String?
-  User           User?     @relation(fields: [userId], references: [id])
-  userId         String?
+  id           String    @id @default(cuid())
+  title        String?
+  content      String?
+  firstPicture String?
+  views        Int?      @default(0)
+  commentabled Boolean?  @default(true)
+  published    Boolean?
+  createTime   DateTime? @default(now())
+  updateTime   DateTime?
+  type         Type?     @relation(fields: [typeId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  tags         Tag[]
+  comments     Comment[]
+  description  String?
+  typeId       String?
+  User         User?     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId       String?
 }
 
 model Type {
-  id    String @id @default(cuid())
-  name  String
-  blogs Blog[]
+  id   String @id @default(cuid())
+  name String
+  Blog Blog[]
+}
+
+model Tag {
+  id     String @id @default(cuid())
+  name   String
+  Blog   Blog   @relation(fields: [blogId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  blogId String
 }

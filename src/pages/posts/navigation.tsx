@@ -4,6 +4,7 @@ import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { Menu, Button } from "@mantine/core";
 import { UserButton } from "../components/userButton";
+import { useRouter } from "next/router";
 import {
   IconLogout,
   IconUser,
@@ -28,8 +29,10 @@ function classNames(...classes: any[]) {
 
 export const Navigation: NextPage = () => {
   const { data: userData } = useSession();
+  const router = useRouter();
+
   const user = trpc.user.getUserMsg.useQuery({
-    email: userData?.user?.email || "",
+    id: userData?.user?.id as string,
   });
   return (
     <Disclosure as="nav" className="bg-gray-800">
@@ -97,7 +100,9 @@ export const Navigation: NextPage = () => {
                   <Menu.Item
                     icon={<IconBrandTelegram size={14} />}
                     component="a"
-                    href="https://mantine.dev"
+                    onClick={() => {
+                      router.push("/posts/blogEditor");
+                    }}
                   >
                     发表博客
                   </Menu.Item>

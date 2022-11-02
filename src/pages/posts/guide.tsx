@@ -1,6 +1,7 @@
 import React from "react";
 import { signIn } from "next-auth/react";
 import { NextPage } from "next";
+import { Button } from "@mantine/core";
 export const Guide: NextPage = () => {
   return (
     <div className="bg-gray-50">
@@ -35,3 +36,5 @@ export const Guide: NextPage = () => {
     </div>
   );
 };
+
+export default Guide;
