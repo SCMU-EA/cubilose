@@ -6,15 +6,19 @@ import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
 export const blogRouter = router({
   getBlogs: protectedProcedure.query(async ({ ctx }) => {
     try {
-      const users = await ctx.prisma.blog.findMany({
+      const blogs = await ctx.prisma.blog.findMany({
         select: {
           id: true,
           title: true,
+          user: true,
+          views: true,
           description: true,
           firstPicture: true,
+          tags: true,
+          type: true,
         },
       });
-      return users;
+      return blogs;
     } catch (e) {
       throw new TRPCError({
         code: "INTERNAL_SERVER_ERROR",
@@ -29,7 +33,7 @@ export const blogRouter = router({
         content: z.string(),
         published: z.boolean(),
         type: z.string(),
-        tags: z.string().array().optional(),
+        tags: z.object({ id: z.string(), name: z.string() }).array(),
         firstPicture: z.string(),
         description: z.string(),
       }),
@@ -49,20 +53,13 @@ export const blogRouter = router({
             description: input.description,
             published: input.published,
             firstPicture: input.firstPicture,
+            tags: {
+              connect: input.tags.map((p) => ({ id: p.id })),
+            },
             typeId: input.type,
           },
         });
 
-        if (input.tags) {
-          for (const tag of input.tags) {
-            await ctx.prisma.tag.create({
-              data: {
-                name: tag,
-                blogId: blogId,
-              },
-            });
-          }
-        }
         return blog;
       } catch (e) {
         if (e instanceof PrismaClientKnownRequestError) {

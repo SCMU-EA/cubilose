@@ -3,19 +3,24 @@ export interface Blog {
   title?: string;
   content?: string;
   firstPicture?: string;
-  tags?: string[];
+  tags?: Tag[];
   type?: string;
   description?: string;
   published?: boolean;
   createTime?: Date;
-} | undefined
+}
 
 export interface BlogForm {
   title: string;
   content: string;
   firstPicture: string;
-  tags: string[];
+  tags: Tag[];
   type: string;
   description: string;
   published: boolean;
+}
+
+export interface Tag {
+  id: string;
+  name: string;
 }

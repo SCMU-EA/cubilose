@@ -2,12 +2,12 @@ import { router, protectedProcedure } from "../trpc";
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
 
-export const typeRouter = router({
-  addType: protectedProcedure
+export const tagRouter = router({
+  addTag: protectedProcedure
     .input(z.object({ name: z.string() }))
     .mutation(async ({ ctx, input }) => {
       try {
-        const type = await ctx.prisma.type.create({
+        const type = await ctx.prisma.tag.create({
           data: {
             name: input.name,
           },
@@ -20,27 +20,36 @@ export const typeRouter = router({
         });
       }
     }),
-  getAllTypes: protectedProcedure.query(async ({ ctx }) => {
+  getAllTags: protectedProcedure.query(async ({ ctx }) => {
     try {
-      const types = await ctx.prisma.type.findMany();
-      return types;
-    } catch (e) {
+      const tags = ctx.prisma.tag.findMany({
+        select: {
+          id: true,
+          name: true,
+        },
+      });
+      return tags;
+    } catch (error) {
       throw new TRPCError({
         code: "INTERNAL_SERVER_ERROR",
         message: "internal server error",
       });
     }
   }),
-  getTypeById: protectedProcedure
+  getTagsById: protectedProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {
       try {
-        const type = await ctx.prisma.type.findUnique({
+        const tags = await ctx.prisma.tag.findMany({
           where: {
-            id: input.id,
+            blogs: {
+              some: {
+                id: input.id,
+              },
+            },
           },
         });
-        return type;
+        return tags;
       } catch (e) {
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
@@ -48,11 +57,11 @@ export const typeRouter = router({
         });
       }
     }),
-  updateType: protectedProcedure
+  updateTag: protectedProcedure
     .input(z.object({ id: z.string(), name: z.string() }))
     .mutation(async ({ input, ctx }) => {
       try {
-        const type = await ctx.prisma.type.update({
+        const type = await ctx.prisma.tag.update({
           where: { id: input.id },
           data: { name: input.name },
         });

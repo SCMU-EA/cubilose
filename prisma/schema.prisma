@@ -96,19 +96,18 @@ model Blog {
   comments     Comment[]
   description  String?
   typeId       String?
-  User         User?     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  user         User?     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   userId       String?
 }
 
 model Type {
-  id   String @id @default(cuid())
-  name String
-  Blog Blog[]
+  id    String @id @default(cuid())
+  name  String
+  blogs Blog[]
 }
 
 model Tag {
-  id     String @id @default(cuid())
-  name   String
-  Blog   Blog   @relation(fields: [blogId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  blogId String
+  id    String @id @default(cuid())
+  name  String
+  blogs Blog[]
 }

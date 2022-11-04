@@ -9,25 +9,24 @@ import {
   Modal,
   Text,
   Image,
-  Switch,
+  MultiSelect,
+  Textarea,
   SegmentedControl,
   useMantineTheme,
-  FileButton,
 } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 import { IconCheck } from "@tabler/icons";
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { trpc } from "../../utils/trpc";
 import MdEditor from "md-editor-rt";
 import "md-editor-rt/lib/style.css";
 import { useRouter } from "next/router";
-import { BlogForm } from "../../types/blog";
+import { BlogForm, Tag } from "../../types/blog";
 interface TypeForm {
   id: string;
   label: string;
   value: string;
 }
-
 const BlogEditor: NextPage = () => {
   const router = useRouter();
   const [content, setContent] = useState<string>(
@@ -42,11 +41,18 @@ const BlogEditor: NextPage = () => {
   };
   const [type, setType] = useState<string>("");
   const [typeId, setTypeId] = useState<string>("");
-  const [tags, setTags] = useState<string[]>([]);
-  const [firstPicture, setFirstPicture] = useState<string>();
-  const [inputType, setInputType] = useState<string>();
+  const [tagsValue, setTagsValue] = useState<string[]>([]);
+  const [firstPicture, setFirstPicture] = useState<string>("");
+  const [inputType, setInputType] = useState<string>("");
+  const [description, setDescription] = useState<string>("");
   const typeForm: TypeForm[] = [];
   const types = trpc.type.getAllTypes.useQuery().data;
+  const queryTags = trpc.tag.getAllTags.useQuery().data || [];
+  let selectTags: TypeForm[] = [];
+  queryTags.map((item) => {
+    const t: TypeForm = { id: item.id, label: item.name, value: item.name };
+    selectTags = [...selectTags, t];
+  });
   if (types)
     for (const type of types) {
       typeForm.push({ id: type.id, label: type.name, value: type.name });
@@ -54,7 +60,6 @@ const BlogEditor: NextPage = () => {
   useEffect(() => {
     const temp = typeForm.filter((item) => item.value === type);
     if (temp[0]) setTypeId(temp[0]?.id);
-    console.log(typeId);
   }, [type]);
   const openModal = () => {
     setOpened(true);
@@ -109,12 +114,17 @@ const BlogEditor: NextPage = () => {
     }
   };
   const handleSubmit = () => {
-    const description: string = content.slice(0, 20);
+    let result: Tag[] = [];
+    tagsValue.map((tag) => {
+      const tagsTemp: Tag[] = queryTags.filter((item) => item.name === tag);
+      result = [...result, ...tagsTemp];
+    });
+    console.log(result);
     const formMsg: BlogForm = {
       title: title,
       content: content,
       firstPicture: firstPicture || "",
-      tags: tags,
+      tags: result,
       description: description,
       published: true,
       type: typeId,
@@ -198,27 +208,41 @@ const BlogEditor: NextPage = () => {
               <Text align="right">标签</Text>
             </Grid.Col>
             <Grid.Col span={11}>
-              <Switch.Group value={tags} onChange={setTags} withAsterisk>
-                <Switch value="react" label="React" />
-                <Switch value="svelte" label="Svelte" />
-                <Switch value="ng" label="Angular" />
-                <Switch value="vue" label="Vue" />
-              </Switch.Group>
+              <MultiSelect
+                value={tagsValue}
+                onChange={setTagsValue}
+                data={selectTags}
+                withAsterisk
+              ></MultiSelect>
             </Grid.Col>
             <Grid.Col span={2} offset={-1}>
               <Text align="right">上传封面</Text>
             </Grid.Col>
             <Grid.Col span={4}>
-              <Input
+              <input
                 type="file"
                 id="file"
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                   onUpload(e)
                 }
-              ></Input>
+              ></input>
             </Grid.Col>
-            <Grid.Col span={6}>
+            <Grid.Col span={7}>
               <Image id="firstPicure" src={firstPicture} alt="" />
+            </Grid.Col>
+            <Grid.Col span={2} offset={-1}>
+              <Text align="right">添加描述</Text>
+            </Grid.Col>
+            <Grid.Col span={10}>
+              <Textarea
+                placeholder="Your comment"
+                autosize
+                withAsterisk
+                value={description}
+                onChange={(event: React.ChangeEvent<HTMLTextAreaElement>) =>
+                  setDescription(event.target.value)
+                }
+              />
             </Grid.Col>
             <Grid.Col span={2} offset={10}>
               <Button
