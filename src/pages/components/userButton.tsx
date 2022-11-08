@@ -40,3 +40,5 @@ export const UserButton = forwardRef<HTMLButtonElement, UserButtonProps>(
     </UnstyledButton>
   ),
 );
+
+export default UserButton;

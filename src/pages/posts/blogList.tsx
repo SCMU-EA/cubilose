@@ -8,17 +8,38 @@ import {
   Button,
   Divider,
   Group,
+  Pagination,
   Stack,
 } from "@mantine/core";
+import { IconEye, IconThumbUp, IconThumbDown } from "@tabler/icons";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
 import { CheckIcon } from "@mantine/core";
 import { trpc } from "../../utils/trpc";
 import { showNotification } from "@mantine/notifications";
+import { useState, useEffect } from "react";
 export const BlogList: NextPage = () => {
-  const { data: blogs } = trpc.blog.getBlogs.useQuery();
   const router = useRouter();
-  const { isLoading, mutate } = trpc.blog.deleteBlog.useMutation({
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const blogss = trpc.blog.getBlogs.useQuery().data;
+  let blogs = blogss
+    ? blogss.filter(
+        (value, index) =>
+          index >= (currentPage - 1) * 4 && index < currentPage * 4,
+      )
+    : [];
+  const changePage = () => {
+    blogs = [
+      ...(blogss
+        ? blogss.filter(
+            (value, index) =>
+              index >= (currentPage - 1) * 4 && index < currentPage * 4,
+          )
+        : []),
+    ];
+  };
+
+  const { isLoading, mutate: deleteBlog } = trpc.blog.deleteBlog.useMutation({
     onSuccess() {
       showNotification({
         id: "delete-success",
@@ -30,13 +51,12 @@ export const BlogList: NextPage = () => {
       });
     },
   });
-
   const onDelete = (id: string) => {
-    mutate({ id: id });
+    deleteBlog({ id: id });
   };
+
   return (
     <>
-      <Navigation />
       <Space h="md"></Space>
       <Space h="md"></Space>
 
@@ -48,7 +68,6 @@ export const BlogList: NextPage = () => {
               theme.colorScheme === "dark"
                 ? theme.colors.dark[8]
                 : theme.colors.white,
-            height: 1800,
           })}
         >
           {blogs ? (
@@ -56,13 +75,19 @@ export const BlogList: NextPage = () => {
               return (
                 <>
                   <Grid>
-                    <Grid.Col span={11}>
+                    <Grid.Col span={8}>
                       <Stack spacing={0}>
                         <Group position="left">
-                          <Text>{item.user?.username}</Text>
-                          <Text>{item.type?.name}</Text>
-                          <Text>
-                            {item.tags.map((item) => item.name + "  ")}
+                          <Text size="sm" color="blue">
+                            {item.user?.username}
+                          </Text>
+                          <Text size="sm" color="teal">
+                            {item.type?.name}
+                          </Text>
+                          <Text size="sm" color="orange">
+                            {item.tags
+                              ? item.tags.map((item) => item.name + " · ")
+                              : ""}
                           </Text>
                         </Group>
                         <Card
@@ -80,20 +105,46 @@ export const BlogList: NextPage = () => {
                                 {item.description}
                               </Text>
                             </Grid.Col>
-                            <Grid.Col offset={2} span={2}>
-                              <Image
-                                src={item.firstPicture}
-                                height={100}
-                                alt="Norway"
-                              />
-                            </Grid.Col>
                           </Grid>
                         </Card>
-
-                        <Text>view</Text>
+                        <Group position="left" align="center" spacing={8}>
+                          <IconEye
+                            width={22}
+                            color="gray"
+                            height={22}
+                          ></IconEye>
+                          <Text color="dimmed" size="xs" inline={true}>
+                            {item.views}
+                          </Text>
+                          <Button
+                            size="xs"
+                            variant="subtle"
+                            color="gray"
+                            leftIcon={<IconThumbUp />}
+                          >
+                            {item.views}
+                          </Button>
+                          <Button
+                            size="xs"
+                            variant="subtle"
+                            color="gray"
+                            leftIcon={<IconThumbDown />}
+                          >
+                            {item.views}
+                          </Button>
+                        </Group>
                       </Stack>
                     </Grid.Col>
-
+                    <Grid.Col span={2}>
+                      <Stack justify="space-around">
+                        <Space></Space>
+                        <Image
+                          src={item.firstPicture}
+                          height={100}
+                          alt="Norway"
+                        />
+                      </Stack>
+                    </Grid.Col>
                     <Grid.Col span={1}>
                       <Button
                         variant="outline"
@@ -113,7 +164,15 @@ export const BlogList: NextPage = () => {
             <h3>无博客</h3>
           )}
         </Stack>
+        <Pagination
+          page={currentPage}
+          onChange={setCurrentPage}
+          total={10}
+          onClick={changePage}
+        ></Pagination>
       </Container>
     </>
   );
 };
+
+export default BlogList;

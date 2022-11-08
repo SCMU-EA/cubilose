@@ -2,7 +2,7 @@ import React, { Fragment } from "react";
 import { Disclosure } from "@headlessui/react";
 import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { signIn, signOut, useSession } from "next-auth/react";
-import { Menu, Button } from "@mantine/core";
+import { Menu, Button, Image } from "@mantine/core";
 import { UserButton } from "../components/userButton";
 import { useRouter } from "next/router";
 import {
@@ -53,16 +53,11 @@ export const Navigation: NextPage = () => {
               </div>
               <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
                 <div className="flex flex-shrink-0 items-center">
-                  <img
-                    className="block h-8 w-auto lg:hidden"
-                    src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500"
-                    alt="Your Company"
-                  />
-                  <img
-                    className="hidden h-8 w-auto lg:block"
-                    src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500"
-                    alt="Your Company"
-                  />
+                  <Image
+                    width={35}
+                    src="https://raw.githubusercontent.com/SCMU-EA/cubilose/main/public/cubilose.png"
+                    alt="导航图标"
+                  ></Image>
                 </div>
                 <div className="hidden sm:ml-6 sm:block">
                   <div className="flex space-x-4">
@@ -188,3 +183,4 @@ export const Navigation: NextPage = () => {
     </Disclosure>
   );
 };
+export default Navigation;

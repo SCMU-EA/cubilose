@@ -2,6 +2,7 @@ import type { NextPage } from "next";
 import { useSession } from "next-auth/react";
 import { Guide } from "./posts/guide";
 import { BlogList } from "./posts/blogList";
+import Navigation from "./posts/navigation";
 const Home: NextPage = () => {
   const { data: userData } = useSession();
 
@@ -19,7 +20,12 @@ const Home: NextPage = () => {
 };
 
 const Index: NextPage = () => {
-  return <BlogList></BlogList>;
+  return (
+    <>
+      <Navigation></Navigation>
+      <BlogList></BlogList>
+    </>
+  );
 };
 
 export default Home;

@@ -21,7 +21,7 @@ import { trpc } from "../../utils/trpc";
 import MdEditor from "md-editor-rt";
 import "md-editor-rt/lib/style.css";
 import { useRouter } from "next/router";
-import { BlogForm, Tag } from "../../types/blog";
+import { BlogForm, Tag, DraftBlog } from "../../types/blog";
 interface TypeForm {
   id: string;
   label: string;
@@ -100,7 +100,28 @@ const BlogEditor: NextPage = () => {
   const typeSubmit = () => {
     typeMutate({ name: inputType as string });
   };
-
+  const { isLoading: draftLoading, mutate: draftBlogMutate } =
+    trpc.blog.createDraftBlog.useMutation({
+      onSuccess() {
+        showNotification({
+          id: "publish-success",
+          color: "teal",
+          title: "草稿箱存放成功",
+          message: "正在跳转至主页面",
+          icon: <IconCheck />,
+          autoClose: 2000,
+        });
+      },
+    });
+  const draftBlogHandle = () => {
+    const formMsg: DraftBlog = {
+      title: title,
+      content: content,
+      published: false,
+    };
+    draftBlogMutate(formMsg);
+    router.push("/");
+  };
   const onUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       if (e.target?.files[0]) {
@@ -119,11 +140,10 @@ const BlogEditor: NextPage = () => {
       const tagsTemp: Tag[] = queryTags.filter((item) => item.name === tag);
       result = [...result, ...tagsTemp];
     });
-    console.log(result);
     const formMsg: BlogForm = {
       title: title,
       content: content,
-      firstPicture: firstPicture || "",
+      firstPicture: firstPicture,
       tags: result,
       description: description,
       published: true,
@@ -149,7 +169,13 @@ const BlogEditor: NextPage = () => {
           </Grid.Col>
           <Grid.Col span={3}>
             <Group position="right" spacing="lg" style={{ minHeight: 60 }}>
-              <Button color="orange">草稿箱</Button>
+              <Button
+                color="orange"
+                loading={draftLoading}
+                onClick={draftBlogHandle}
+              >
+                草稿箱
+              </Button>
               <Button onClick={openModal}>发布</Button>
               <Avatar color="cyan" radius="xl">
                 微风
@@ -237,6 +263,7 @@ const BlogEditor: NextPage = () => {
               <Textarea
                 placeholder="Your comment"
                 autosize
+                minRows={4}
                 withAsterisk
                 value={description}
                 onChange={(event: React.ChangeEvent<HTMLTextAreaElement>) =>
