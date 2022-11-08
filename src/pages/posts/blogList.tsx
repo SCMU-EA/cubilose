@@ -21,6 +21,7 @@ import { useState, useEffect } from "react";
 export const BlogList: NextPage = () => {
   const router = useRouter();
   const [currentPage, setCurrentPage] = useState<number>(1);
+
   const blogss = trpc.blog.getBlogs.useQuery().data;
   let blogs = blogss
     ? blogss.filter(
@@ -28,6 +29,8 @@ export const BlogList: NextPage = () => {
           index >= (currentPage - 1) * 4 && index < currentPage * 4,
       )
     : [];
+  const pageNum = Math.ceil(blogss ? blogss?.length / 4 : 1);
+
   const changePage = () => {
     blogs = [
       ...(blogss
@@ -38,7 +41,6 @@ export const BlogList: NextPage = () => {
         : []),
     ];
   };
-
   const { isLoading, mutate: deleteBlog } = trpc.blog.deleteBlog.useMutation({
     onSuccess() {
       showNotification({
@@ -58,9 +60,8 @@ export const BlogList: NextPage = () => {
   return (
     <>
       <Space h="md"></Space>
-      <Space h="md"></Space>
 
-      <Container size="md" px="lg">
+      <Container size="lg" px="lg">
         <Stack
           spacing={0}
           sx={(theme) => ({
@@ -167,7 +168,7 @@ export const BlogList: NextPage = () => {
         <Pagination
           page={currentPage}
           onChange={setCurrentPage}
-          total={10}
+          total={pageNum}
           onClick={changePage}
         ></Pagination>
       </Container>

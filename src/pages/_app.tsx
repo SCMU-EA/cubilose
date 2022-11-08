@@ -26,7 +26,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
                   sm: 720,
                   md: 960,
                   lg: 1140,
-                  xl: 1320,
+                  xl: 1980,
                 },
               },
             },

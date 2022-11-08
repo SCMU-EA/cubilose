@@ -19,7 +19,7 @@ export const UserButton = forwardRef<HTMLButtonElement, UserButtonProps>(
         padding: theme.spacing.md,
         color: theme.white,
         "&:hover": {
-          backgroundColor: theme.colors.gray[7],
+          backgroundColor: theme.colors.gray[3],
         },
       })}
       {...others}
@@ -28,7 +28,7 @@ export const UserButton = forwardRef<HTMLButtonElement, UserButtonProps>(
         <Avatar src={image} radius="xl" />
 
         <div style={{ flex: 1 }}>
-          <Text size="sm" weight={500}>
+          <Text size="sm" color="blue" weight={500}>
             {name}
           </Text>
 

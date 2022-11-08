@@ -155,7 +155,7 @@ const BlogEditor: NextPage = () => {
 
   return (
     <>
-      <Container size={3000}>
+      <Container size="xl">
         <Grid justify="space-between">
           <Grid.Col span={9} offset={-0.6}>
             <Container>
