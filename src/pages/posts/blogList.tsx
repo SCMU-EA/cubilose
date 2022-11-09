@@ -1,5 +1,4 @@
 import { Container, Grid } from "@mantine/core";
-import { Navigation } from "./navigation";
 import { Space } from "@mantine/core";
 import {
   Card,
@@ -13,20 +12,23 @@ import {
 } from "@mantine/core";
 import { IconEye, IconThumbUp, IconThumbDown } from "@tabler/icons";
 import { NextPage } from "next";
-import { useRouter } from "next/router";
 import { CheckIcon } from "@mantine/core";
 import { trpc } from "../../utils/trpc";
 import { showNotification } from "@mantine/notifications";
-import { useState, useEffect } from "react";
-export const BlogList: NextPage = () => {
+import { useState } from "react";
+import { Blog } from "../../types/blog";
+import { useRouter } from "next/router";
+
+export const BlogList = () => {
   const router = useRouter();
   const [currentPage, setCurrentPage] = useState<number>(1);
-
-  const blogss = trpc.blog.getBlogs.useQuery().data;
-  let blogs = blogss
+  const blogss: Blog[] = trpc.blog.getBlogs.useQuery().data as Blog[];
+  const pageSize = 4;
+  let blogs: Blog[] = blogss
     ? blogss.filter(
         (value, index) =>
-          index >= (currentPage - 1) * 4 && index < currentPage * 4,
+          index >= (currentPage - 1) * pageSize &&
+          index < currentPage * pageSize,
       )
     : [];
   const pageNum = Math.ceil(blogss ? blogss?.length / 4 : 1);
@@ -36,7 +38,8 @@ export const BlogList: NextPage = () => {
       ...(blogss
         ? blogss.filter(
             (value, index) =>
-              index >= (currentPage - 1) * 4 && index < currentPage * 4,
+              index >= (currentPage - 1) * pageSize &&
+              index < currentPage * pageSize,
           )
         : []),
     ];
@@ -53,6 +56,7 @@ export const BlogList: NextPage = () => {
       });
     },
   });
+  const { mutate: changeBlogState } = trpc.blog.updateBlogState.useMutation();
   const onDelete = (id: string) => {
     deleteBlog({ id: id });
   };
@@ -60,7 +64,6 @@ export const BlogList: NextPage = () => {
   return (
     <>
       <Space h="md"></Space>
-
       <Container size="lg" px="lg">
         <Stack
           spacing={0}
@@ -94,9 +97,15 @@ export const BlogList: NextPage = () => {
                         <Card
                           p="lg"
                           component="a"
-                          href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
-                          target="_blank"
+                          href={"/posts/" + item.id}
                           key={item.id}
+                          onClick={() => {
+                            changeBlogState({
+                              blogId: item.id,
+                              type: "views",
+                              num: item.views + 1,
+                            });
+                          }}
                         >
                           <Grid>
                             <Grid.Col span={8}>
@@ -122,16 +131,30 @@ export const BlogList: NextPage = () => {
                             variant="subtle"
                             color="gray"
                             leftIcon={<IconThumbUp />}
+                            onClick={() => {
+                              changeBlogState({
+                                blogId: item.id,
+                                type: "ups",
+                                num: item.ups + 1,
+                              });
+                            }}
                           >
-                            {item.views}
+                            {item.ups}
                           </Button>
                           <Button
                             size="xs"
                             variant="subtle"
                             color="gray"
                             leftIcon={<IconThumbDown />}
+                            onClick={() => {
+                              changeBlogState({
+                                blogId: item.id,
+                                type: "downs",
+                                num: item.downs + 1,
+                              });
+                            }}
                           >
-                            {item.views}
+                            {item.downs}
                           </Button>
                         </Group>
                       </Stack>

@@ -45,7 +45,7 @@ export const authOptions: NextAuthOptions = {
       credentials: {
         email: {
           label: "邮箱",
-          type: "text",
+          type: "email",
           placeholder: "请输入邮箱",
         },
         password: {

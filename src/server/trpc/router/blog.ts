@@ -1,9 +1,9 @@
-import { router, protectedProcedure } from "../trpc";
+import { router, publicProcedure, protectedProcedure } from "../trpc";
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
 export const blogRouter = router({
-  getBlogs: protectedProcedure.query(async ({ ctx }) => {
+  getBlogs: publicProcedure.query(async ({ ctx }) => {
     try {
       const blogs = await ctx.prisma.blog.findMany({
         where: {
@@ -14,14 +14,62 @@ export const blogRouter = router({
           title: true,
           user: true,
           views: true,
+          ups: true,
+          downs: true,
           description: true,
           firstPicture: true,
+          createTime: true,
           tags: true,
           type: true,
         },
       });
       return blogs;
     } catch (e) {
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "服务器逻辑错误",
+      });
+    }
+  }),
+  getBlogById: publicProcedure
+    .input(z.object({ id: z.string() }))
+    .query(async ({ ctx, input }) => {
+      try {
+        const blog = ctx.prisma.blog.findFirst({
+          where: {
+            id: input.id,
+          },
+          select: {
+            id: true,
+            title: true,
+            user: true,
+            views: true,
+            ups: true,
+            downs: true,
+            description: true,
+            firstPicture: true,
+            createTime: true,
+            tags: true,
+            type: true,
+          },
+        });
+        return blog;
+      } catch (e) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "服务器逻辑错误",
+        });
+      }
+    }),
+  getBlogIds: publicProcedure.query(async ({ ctx }) => {
+    try {
+      const ids = await ctx.prisma.blog.findMany({
+        select: {
+          id: true,
+        },
+      });
+      return ids;
+    } catch (error) {
       throw new TRPCError({
         code: "INTERNAL_SERVER_ERROR",
         message: "服务器逻辑错误",
@@ -138,6 +186,33 @@ export const blogRouter = router({
         });
         return blog;
       } catch (e) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "server error",
+        });
+      }
+    }),
+  updateBlogState: protectedProcedure
+    .input(
+      z.object({
+        blogId: z.string(),
+        type: z.string(),
+        num: z.number(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      try {
+        if (!["views", "ups", "downs"].includes(input.type)) return;
+        const blog = ctx.prisma.blog.update({
+          where: {
+            id: input.blogId,
+          },
+          data: {
+            [input.type]: input.num,
+          },
+        });
+        return blog;
+      } catch (error) {
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "server error",

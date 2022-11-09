@@ -1,4 +1,3 @@
-import { NextPage } from "next";
 import {
   Container,
   Group,
@@ -27,7 +26,7 @@ interface TypeForm {
   label: string;
   value: string;
 }
-const BlogEditor: NextPage = () => {
+const BlogEditor = () => {
   const router = useRouter();
   const [content, setContent] = useState<string>(
     "<p>Rich text editor content</p>",

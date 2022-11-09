@@ -1,14 +1,16 @@
 export interface Blog {
   id: string;
-  title?: string;
+  title: string;
   content?: string;
-  firstPicture?: string;
-  tags?: Tag[];
-  type?: Type;
-  description?: string;
+  firstPicture: string;
+  tags: Tag[];
+  type: Type;
+  description: string;
   published?: boolean;
-  createTime?: Date;
-  views?: number;
+  createTime: Date;
+  views: number;
+  ups: number;
+  downs: number;
   user: User;
 }
 

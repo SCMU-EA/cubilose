@@ -86,6 +86,8 @@ model Blog {
   title        String?
   content      String?
   firstPicture String?
+  ups          Int?      @default(0)
+  downs        Int?
   views        Int?      @default(0)
   commentabled Boolean?  @default(true)
   published    Boolean?
