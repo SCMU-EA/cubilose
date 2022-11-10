@@ -11,7 +11,7 @@ import {
   Divider,
 } from "@mantine/core";
 import Link from "next/link";
-import { getCsrfToken } from "next-auth/react";
+import { getCsrfToken, useSession } from "next-auth/react";
 import { NextPage } from "next";
 const Login: NextPage = ({ csrfToken }: any) => {
   return (

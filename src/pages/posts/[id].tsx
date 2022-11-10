@@ -1,30 +1,57 @@
-import { InferGetStaticPropsType } from "next";
-import { GetStaticProps, GetStaticPaths, GetServerSideProps } from "next";
-import { trpc } from "../../utils/trpc";
+import {
+  GetStaticProps,
+  GetStaticPaths,
+  GetStaticPropsContext,
+  InferGetStaticPropsType,
+} from "next";
 import { Blog } from "../../types/blog";
-type Id = {
-  id: string;
-};
+import { createProxySSGHelpers } from "@trpc/react-query/ssg";
+import superjson from "superjson";
+import { prisma } from "../../server/db/client";
+import { appRouter } from "../../server/trpc/router/_app";
+import { createContextInner } from "../../server/trpc/context";
 
 export const getStaticPaths: GetStaticPaths = async () => {
-  const ids: Id[] = trpc.blog.getBlogIds.useQuery().data || [];
-
-  const paths = ids.map((item: Id) => ({ params: { id: item.id } }));
-  return { paths, fallback: false };
+  const ids = await prisma.blog.findMany({
+    select: {
+      id: true,
+    },
+  });
+  const paths = ids.map((item) => ({ params: { id: item.id } }));
+  return { paths, fallback: true };
 };
-export const getStaticProps: GetStaticProps = async ({ params }: any) => {
-  const blog: Blog = trpc.blog.getBlogById.useQuery({ id: params.id })
-    .data as Blog;
+
+export const getStaticProps: GetStaticProps = async (
+  context: GetStaticPropsContext<{ id: string }>,
+) => {
+  const ssg = await createProxySSGHelpers({
+    router: appRouter,
+    ctx: await createContextInner({
+      session: null,
+    }),
+    transformer: superjson, // optional - adds superjson serialization
+  });
+  const id = context.params?.id as string;
+
+  await ssg.blog.getBlogById.prefetch({ id });
   return {
-    props: { blog },
+    props: { id, trpcState: ssg.dehydrate() },
+    revalidate: 1,
   };
 };
-const BlogDetail = ({
-  blog,
-}: InferGetStaticPropsType<typeof getStaticProps>) => {
+const BlogDetail = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
+  const { id } = props;
+  console.log(props.trpcState); // success log
+  // const blog = props.trpcState.json.queries[0].state.data; // error: cant read property 'json'a
+  // const blogQuery = trpc.blog.getBlogById.useQuery({ id: id });
+  // if (blogQuery.status !== "success") {
+  //   return <>{props.id}</>;
+  // }
+  // const { data: blog } = blogQuery;
   return (
     <>
-      <div>{blog.title}</div>
+      {/* <div>{data.title}</div>
+      <div>{data.content}</div> */}
     </>
   );
 };

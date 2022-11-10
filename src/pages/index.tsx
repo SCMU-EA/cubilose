@@ -1,11 +1,11 @@
 import type { NextPage } from "next";
-import { useSession } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import { Guide } from "./posts/guide";
 import { BlogList } from "./posts/blogList";
+
 import Navigation from "./posts/navigation";
 const Home: NextPage = () => {
   const { data: userData } = useSession();
-
   // const [isAuth, setIsAuth] = useState<boolean>(false);
   // const [currentUser, setCurrentUser] = useState<User>();
   // const setUser = async () => {
@@ -16,7 +16,7 @@ const Home: NextPage = () => {
   //   }
   // };
 
-  return <>{userData ? <Index /> : <Guide />}</>;
+  return <>{userData?.user ? <Index /> : <Guide />}</>;
 };
 
 const Index: NextPage = () => {

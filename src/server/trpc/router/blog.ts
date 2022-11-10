@@ -43,6 +43,7 @@ export const blogRouter = router({
             id: true,
             title: true,
             user: true,
+            content: true,
             views: true,
             ups: true,
             downs: true,

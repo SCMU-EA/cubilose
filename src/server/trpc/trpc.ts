@@ -15,7 +15,6 @@ export const router = t.router;
  * Unprotected procedure
  **/
 export const publicProcedure = t.procedure;
-
 /**
  * Reusable middleware to ensure
  * users are logged in
