@@ -121,6 +121,7 @@ const BlogEditor = () => {
     draftBlogMutate(formMsg);
     router.push("/");
   };
+
   const onUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       if (e.target?.files[0]) {

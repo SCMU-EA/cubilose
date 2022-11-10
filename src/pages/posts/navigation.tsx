@@ -1,5 +1,4 @@
 import React, { Fragment } from "react";
-import { Disclosure } from "@headlessui/react";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { Menu, Button, Image, Container, Group, Divider } from "@mantine/core";
 import { UserButton } from "../components/userButton";
@@ -21,13 +20,9 @@ const navigation = [
   { name: "学习看板", href: "#", current: false },
 ];
 
-export const Navigation: NextPage = () => {
-  const { data: userData } = useSession();
+export const Navigation = ({ user }: any) => {
   const router = useRouter();
 
-  const user = trpc.user.getUserMsg.useQuery({
-    id: userData?.user?.id as string,
-  });
   return (
     <>
       <Container size="xl">
@@ -94,8 +89,8 @@ export const Navigation: NextPage = () => {
                 <Menu.Target>
                   <UserButton
                     image="https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=255&q=80"
-                    name={user.data?.username || ""}
-                    email={user.data?.email || ""}
+                    name={user.username || ""}
+                    email={user.email || ""}
                   />
                 </Menu.Target>
                 <Menu.Dropdown>

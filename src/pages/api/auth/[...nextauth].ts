@@ -13,6 +13,7 @@ export const authOptions: NextAuthOptions = {
       if (session.user && token) {
         session.user.id = token.id as string;
       }
+
       return session;
     },
     async jwt({ token, user }) {
