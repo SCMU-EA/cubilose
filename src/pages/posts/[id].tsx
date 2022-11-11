@@ -11,15 +11,12 @@ import {
   Text,
   Menu,
   Divider,
+  Card,
+  Space,
+  Avatar,
+  Stack,
 } from "@mantine/core";
-import { signIn, signOut, useSession } from "next-auth/react";
-import {
-  IconLogout,
-  IconUser,
-  IconCirclePlus,
-  IconExternalLink,
-  IconBrandTelegram,
-} from "@tabler/icons";
+
 import { Blog } from "../../types/blog";
 import { createProxySSGHelpers } from "@trpc/react-query/ssg";
 import superjson from "superjson";
@@ -28,6 +25,9 @@ import { appRouter } from "../../server/trpc/router/_app";
 import { createContextInner } from "../../server/trpc/context";
 
 import Navigation from "./navigation";
+import { useTheme } from "@emotion/react";
+import MdEditor from "md-editor-rt";
+import "md-editor-rt/lib/style.css";
 
 const navigation = [
   { name: "首页", href: "/", current: true },
@@ -63,33 +63,53 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
   };
 };
 const BlogDetail = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
-  const { id } = props;
   const blog: Blog = props.trpcState?.json.queries[0].state.data as Blog;
   const { user } = blog;
-  // const { json } = props.trpcState; // error: cant read property 'json'a
-  // const { data } = json.queries[0].state;
-  // console.log(data);
-  // const blogQuery = trpc.blog.getBlogById.useQuery({ id: id });
-  // if (blogQuery.status !== "success") {
-  //   return <>{props.id}</>;
-  // }
-  // const { data: blog } = blogQuery;
+  const theme = useTheme();
+  const date = new Date(blog.createTime).toUTCString();
   return (
     <>
-      <Navigation user={user}></Navigation>
-      <Container>
-        <Flex
-          mih={300}
-          gap="md"
-          justify="center"
-          align="center"
-          direction="column"
-          wrap="wrap"
-        >
-          <Text>{blog?.title}</Text>
-          <Button>Button 2</Button>
-          <Button>Button 3</Button>
-        </Flex>
+      <Navigation userJson={user}></Navigation>
+      <Container size="xl" bg="#dbdada4c">
+        <Space h={1}></Space>
+        <Container bg="white">
+          <Flex
+            sx={{ margin: "10px" }}
+            mih={800}
+            gap="md"
+            justify="flex-start"
+            align="flex-start"
+            direction="column"
+            wrap="wrap"
+          >
+            <Space h={1}></Space>
+
+            <Text fz="xl" fw={700}>
+              {blog?.title}
+            </Text>
+            <Group position="left">
+              <Avatar color="cyan" radius="xl">
+                {user.username}
+              </Avatar>
+              <Stack spacing={0}>
+                <Text fz="md">{user.username}</Text>
+                <Group>
+                  <Text fz="xs" color="dimmed">
+                    {date}
+                  </Text>
+                  <Text fz="xs" color="dimmed">
+                    {"浏览量:" + blog.views}
+                  </Text>
+                </Group>
+              </Stack>
+            </Group>
+            <MdEditor
+              htmlPreview
+              previewOnly
+              modelValue={blog?.content ?? ""}
+            ></MdEditor>
+          </Flex>
+        </Container>
       </Container>
     </>
   );

@@ -5,19 +5,11 @@ import { trpc } from "../../utils/trpc";
 import { showNotification } from "@mantine/notifications";
 import type { User } from "../../types/utils";
 import { useRouter } from "next/router";
-import {
-  TextInput,
-  Button,
-  Group,
-  Box,
-  Flex,
-  Text,
-  Container,
-  Image,
-  Divider,
-} from "@mantine/core";
+import { TextInput, Button, Group, Box, Flex, Container } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { NextPage } from "next";
+import Image from "next/image";
+import Logo from "../../../public/cubilose.png";
 export const Register: NextPage = () => {
   const form = useForm({
     initialValues: {
@@ -100,11 +92,7 @@ export const Register: NextPage = () => {
         mih={600}
         wrap="wrap"
       >
-        <Image
-          src="https://raw.githubusercontent.com/weifengkkk/cubilose/dev-blog/public/cubilose.png"
-          width={120}
-          alt="logo"
-        ></Image>
+        <Image src={Logo} width={120} height={90} alt="logo"></Image>
         <Container>
           <Button
             variant="subtle"

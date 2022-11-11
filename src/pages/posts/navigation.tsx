@@ -1,6 +1,6 @@
 import React, { Fragment } from "react";
 import { signIn, signOut, useSession } from "next-auth/react";
-import { Menu, Button, Image, Container, Group, Divider } from "@mantine/core";
+import { Menu, Button, Container, Group, Divider } from "@mantine/core";
 import { UserButton } from "../components/userButton";
 import { useRouter } from "next/router";
 import {
@@ -10,9 +10,8 @@ import {
   IconExternalLink,
   IconBrandTelegram,
 } from "@tabler/icons";
-import { NextPage } from "next";
-import { trpc } from ".././../utils/trpc";
-
+import Image from "next/image";
+import Logo from "../../../public/cubilose.png";
 const navigation = [
   { name: "首页", href: "/", current: true },
   { name: "动态", href: "#", current: false },
@@ -20,19 +19,15 @@ const navigation = [
   { name: "学习看板", href: "#", current: false },
 ];
 
-export const Navigation = ({ user }: any) => {
+export const Navigation = ({ userJson }: any) => {
   const router = useRouter();
-
+  const user = userJson.json ? userJson.json : userJson;
   return (
     <>
       <Container size="xl">
         <Group position="apart">
           <Group position="left">
-            <Image
-              src="https://raw.githubusercontent.com/weifengkkk/cubilose/dev-blog/public/cubilose.png"
-              alt="团队logo"
-              width={60}
-            ></Image>
+            <Image src={Logo} alt="团队logo" height={50} width={70}></Image>
             {navigation.map((item) => (
               <Button
                 variant="subtle"
@@ -88,9 +83,9 @@ export const Navigation = ({ user }: any) => {
               >
                 <Menu.Target>
                   <UserButton
-                    image="https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=255&q=80"
-                    name={user.username || ""}
-                    email={user.email || ""}
+                    image={user?.avatar ?? ""}
+                    name={user.username ?? ""}
+                    email={user.email ?? ""}
                   />
                 </Menu.Target>
                 <Menu.Dropdown>
@@ -117,7 +112,6 @@ export const Navigation = ({ user }: any) => {
           </Group>
         </Group>
       </Container>
-      <Divider></Divider>
     </>
   );
 };

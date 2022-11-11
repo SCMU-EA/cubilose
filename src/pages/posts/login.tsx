@@ -6,13 +6,14 @@ import {
   Flex,
   Input,
   Container,
-  Image,
   Text,
   Divider,
 } from "@mantine/core";
 import Link from "next/link";
-import { getCsrfToken, useSession } from "next-auth/react";
+import { getCsrfToken } from "next-auth/react";
 import { NextPage } from "next";
+import Image from "next/image";
+import Logo from "../../../public/cubilose.png";
 const Login: NextPage = ({ csrfToken }: any) => {
   return (
     <>
@@ -24,11 +25,7 @@ const Login: NextPage = ({ csrfToken }: any) => {
         mih={600}
         wrap="wrap"
       >
-        <Image
-          src="https://raw.githubusercontent.com/weifengkkk/cubilose/dev-blog/public/cubilose.png"
-          width={120}
-          alt="logo"
-        ></Image>
+        <Image src={Logo} width={120} height={90} alt="logo"></Image>
         <Group spacing="xs">
           <Text size="sm" color="dimmed">
             没有账号？请

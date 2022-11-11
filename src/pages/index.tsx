@@ -1,26 +1,23 @@
 import type { NextPage } from "next";
-import { useSession } from "next-auth/react";
 import { Guide } from "./posts/guide";
 import { BlogList } from "./posts/blogList";
 import Navigation from "./posts/navigation";
-import { trpc } from "../utils/trpc";
 import { GetServerSideProps } from "next";
 import { authOptions } from "../pages/api/auth/[...nextauth]";
 import { unstable_getServerSession } from "next-auth/next";
-const Home: NextPage = ({ user }: any) => {
+import { serialize } from "superjson";
+const Home: NextPage = ({ userJson, blogJson }: any) => {
   // const { data: userData } = useSession();
   // const id = userData?.user?.id;
   // const user = trpc.user.getUserMsg.useQuery({ id: id as string }).data;
-  return <>{user ? <Index user={user} /> : <Guide />}</>;
-};
-
-const Index: NextPage = ({ user }: any) => {
-  return (
-    <>
-      <Navigation user={user}></Navigation>
-      <BlogList></BlogList>
-    </>
-  );
+  if (userJson.json === null) return <Guide />;
+  else
+    return (
+      <>
+        <Navigation userJson={userJson} />
+        <BlogList blogJson={blogJson} />
+      </>
+    );
 };
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
@@ -30,7 +27,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     authOptions,
   );
 
-  const user = session
+  const userModel = session
     ? await prisma?.user.findFirst({
         where: {
           id: session.user?.id,
@@ -42,8 +39,28 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         },
       })
     : undefined;
+  const userJson = await serialize(userModel);
+  const blogsModel = await prisma?.blog.findMany({
+    select: {
+      id: true,
+      title: true,
+      views: true,
+      ups: true,
+      user: true,
+      downs: true,
+      description: true,
+      firstPicture: true,
+      tags: true,
+      type: true,
+      createTime: true,
+    },
+    orderBy: {
+      createTime: "asc",
+    },
+  });
+  const blogJson = await serialize(blogsModel);
   return {
-    props: { user },
+    props: { userJson, blogJson },
   };
 };
 export default Home;
