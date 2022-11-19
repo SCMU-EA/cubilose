@@ -21,17 +21,27 @@ import MdEditor from "md-editor-rt";
 import "md-editor-rt/lib/style.css";
 import { useRouter } from "next/router";
 import { BlogForm, Tag, DraftBlog } from "../../types/blog";
+import { uploadFile } from "../minio";
+import { GetServerSideProps } from "next";
 interface TypeForm {
   id: string;
   label: string;
   value: string;
 }
+
+// export const getServerSideProps: GetServerSideProps = async () => {
+//   // eslint-disable-next-line @typescript-eslint/no-var-requires
+//   const fs = await require("fs");
+//   uploadFile("music", file);
+
+//   return {
+//     props: {},
+//   };
+// };
+
 const BlogEditor = () => {
   const router = useRouter();
-  const [content, setContent] = useState<string>(
-    "<p>Rich text editor content</p>",
-  );
-  const previewTheme = "github";
+  const [content, setContent] = useState<string>("<p>请输入内容</p>");
   const [opened, setOpened] = useState<boolean>(false);
   const theme = useMantineTheme();
   const [title, setTitle] = useState<string>("");
@@ -127,7 +137,7 @@ const BlogEditor = () => {
       if (e.target?.files[0]) {
         const reader = new FileReader();
         reader.readAsDataURL(e.target?.files[0]);
-
+        // uploadFile("picture", e.target?.files[0]);
         reader.onload = (e) => {
           setFirstPicture(e.target?.result as string);
         };
@@ -189,7 +199,6 @@ const BlogEditor = () => {
           style={{ minHeight: 750 }}
           modelValue={content}
           onChange={setContent}
-          previewTheme={previewTheme}
         ></MdEditor>
       </Container>
       <Modal

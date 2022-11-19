@@ -59,13 +59,11 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
   await ssg.blog.getBlogById.prefetch({ id });
   return {
     props: { id, trpcState: ssg.dehydrate() },
-    revalidate: 1,
   };
 };
 const BlogDetail = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
   const blog: Blog = props.trpcState?.json.queries[0].state.data as Blog;
   const { user } = blog;
-  const theme = useTheme();
   const date = new Date(blog.createTime).toUTCString();
   return (
     <>

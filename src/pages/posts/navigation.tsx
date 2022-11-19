@@ -1,6 +1,6 @@
-import React, { Fragment } from "react";
-import { signIn, signOut, useSession } from "next-auth/react";
-import { Menu, Button, Container, Group, Divider } from "@mantine/core";
+import React from "react";
+import { signIn, signOut } from "next-auth/react";
+import { Menu, Button, Container, Group } from "@mantine/core";
 import { UserButton } from "../components/userButton";
 import { useRouter } from "next/router";
 import {
@@ -19,9 +19,9 @@ const navigation = [
   { name: "学习看板", href: "#", current: false },
 ];
 
-export const Navigation = ({ userJson }: any) => {
+const Navigation = ({ userJson }: any) => {
   const router = useRouter();
-  const user = userJson.json ? userJson.json : userJson;
+  const user = userJson?.json ? userJson?.json : userJson;
   return (
     <>
       <Container size="xl">
@@ -66,7 +66,6 @@ export const Navigation = ({ userJson }: any) => {
                   <Menu.Item
                     icon={<IconExternalLink size={14} />}
                     component="a"
-                    href="https://mantine.dev"
                     target="_blank"
                   >
                     分享动态
@@ -84,8 +83,8 @@ export const Navigation = ({ userJson }: any) => {
                 <Menu.Target>
                   <UserButton
                     image={user?.avatar ?? ""}
-                    name={user.username ?? ""}
-                    email={user.email ?? ""}
+                    name={user?.username ?? ""}
+                    email={user?.email ?? ""}
                   />
                 </Menu.Target>
                 <Menu.Dropdown>
