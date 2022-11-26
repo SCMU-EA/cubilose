@@ -10,6 +10,7 @@ import {
   IconExternalLink,
   IconBrandTelegram,
 } from "@tabler/icons";
+
 import Image from "next/image";
 import Logo from "../../../public/cubilose.png";
 const navigation = [
@@ -19,9 +20,8 @@ const navigation = [
   { name: "学习看板", href: "#", current: false },
 ];
 
-const Navigation = ({ userJson }: any) => {
+const Navigation = ({ user }: any) => {
   const router = useRouter();
-  const user = userJson?.json ? userJson?.json : userJson;
   return (
     <>
       <Container size="xl">
@@ -56,9 +56,7 @@ const Navigation = ({ userJson }: any) => {
                   <Menu.Item
                     icon={<IconBrandTelegram size={14} />}
                     component="a"
-                    onClick={() => {
-                      router.push("/posts/blogEditor");
-                    }}
+                    href="/posts/blogEditor"
                   >
                     发表博客
                   </Menu.Item>
@@ -91,7 +89,7 @@ const Navigation = ({ userJson }: any) => {
                   <Menu.Item
                     icon={<IconUser size={14} />}
                     component="a"
-                    href="https://mantine.dev"
+                    href="/posts/personalSide"
                   >
                     个人中心
                   </Menu.Item>
@@ -114,4 +112,5 @@ const Navigation = ({ userJson }: any) => {
     </>
   );
 };
+
 export default Navigation;

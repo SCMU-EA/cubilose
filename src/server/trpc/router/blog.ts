@@ -2,6 +2,7 @@ import { router, publicProcedure, protectedProcedure } from "../trpc";
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
+import { now } from "moment";
 export const blogRouter = router({
   getBlogs: publicProcedure.query(async ({ ctx }) => {
     try {
@@ -110,9 +111,9 @@ export const blogRouter = router({
         title: z.string(),
         content: z.string(),
         published: z.boolean(),
-        type: z.string(),
+        typeId: z.string(),
         tags: z.object({ id: z.string(), name: z.string() }).array(),
-        firstPicture: z.string(),
+        firstPicture: z.string().optional(),
         description: z.string(),
       }),
     )
@@ -131,7 +132,7 @@ export const blogRouter = router({
             tags: {
               connect: input.tags.map((p) => ({ id: p.id })),
             },
-            typeId: input.type,
+            typeId: input.typeId,
           },
         });
 
@@ -214,6 +215,47 @@ export const blogRouter = router({
         });
         return blog;
       } catch (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "server error",
+        });
+      }
+    }),
+  updateBlog: protectedProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        title: z.string(),
+        content: z.string(),
+        typeId: z.string(),
+        published: z.boolean().optional(),
+        tags: z.object({ id: z.string(), name: z.string() }).array(),
+        firstPicture: z.string().optional(),
+        description: z.string(),
+        oldTags: z.object({ id: z.string(), name: z.string() }).array(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      try {
+        const blog = await ctx.prisma.blog.update({
+          where: {
+            id: input.id,
+          },
+          data: {
+            title: input.title,
+            content: input.content,
+            typeId: input.typeId,
+            firstPicture: input.firstPicture,
+            updateTime: new Date(),
+            description: input.description,
+            tags: {
+              disconnect: input.oldTags.map((p) => ({ id: p.id })),
+              connect: input.tags.map((p) => ({ id: p.id })),
+            },
+          },
+        });
+        return blog;
+      } catch (e) {
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "server error",

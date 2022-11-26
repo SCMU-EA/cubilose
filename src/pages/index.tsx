@@ -5,17 +5,23 @@ import Navigation from "./posts/navigation";
 import { GetServerSideProps } from "next";
 import { authOptions } from "../pages/api/auth/[...nextauth]";
 import { unstable_getServerSession } from "next-auth/next";
+import { Container, Space } from "@mantine/core";
 import { serialize } from "superjson";
-const Home: NextPage = ({ userJson, blogJson }: any) => {
+const Home: NextPage = ({ user, blog, type }: any) => {
   // const { data: userData } = useSession();
   // const id = userData?.user?.id;
   // const user = trpc.user.getUserMsg.useQuery({ id: id as string }).data;
-  if (userJson.json === null) return <Guide />;
+  if (user === null) return <Guide />;
   else
     return (
       <>
-        <Navigation userJson={userJson} />
-        <BlogList blogJson={blogJson} />
+        <Navigation user={user} />
+
+        <Container size="xl" bg="#dbdada4c" mih={750}>
+          <Space h={10}></Space>
+
+          <BlogList blog={blog} type={type} />
+        </Container>
       </>
     );
 };
@@ -27,19 +33,18 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     authOptions,
   );
 
-  const userModel = session
-    ? await prisma?.user.findFirst({
-        where: {
-          id: session.user?.id,
-        },
-        select: {
-          username: true,
-          email: true,
-          id: true,
-        },
-      })
-    : undefined;
-  const userJson = await serialize(userModel);
+  const userModel = await prisma?.user.findFirst({
+    where: {
+      id: session?.user?.id,
+    },
+    select: {
+      username: true,
+      email: true,
+      id: true,
+      avatar: true,
+    },
+  });
+  const user = await serialize(userModel).json;
   const blogsModel = await prisma?.blog.findMany({
     select: {
       id: true,
@@ -58,9 +63,10 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       createTime: "asc",
     },
   });
-  const blogJson = await serialize(blogsModel);
+  const blog = await serialize(blogsModel).json;
+  const type = "preview";
   return {
-    props: { userJson, blogJson },
+    props: { user, blog, type },
   };
 };
 export default Home;

@@ -9,14 +9,16 @@ const minioClient = new Minio.Client({
   endPoint,
   port: 9000,
   useSSL: false,
-  accessKey: "admin",
+  accessKey: "root",
   secretKey: "wf20010417",
 });
 
-export function uploadFile(bucketsName: string, file: File) {
-  const path = file.webkitRelativePath;
-  const fileName = file.name;
-  const type = file.type;
+export async function uploadFile(
+  bucketsName: string,
+  fileName: string,
+  path: string,
+  type: string,
+) {
   const nowDate = new Date().getMilliseconds();
   const random = Math.round((Math.random() * 9 + 1) * 1000);
   const fileNameRandom = nowDate + random;
@@ -28,8 +30,8 @@ export function uploadFile(bucketsName: string, file: File) {
     filePrefix.length > 20
       ? filePrefix.substring(0, 20) + fileNameRandom + fileSuffix
       : filePrefix + fileNameRandom + fileSuffix;
-  const fileStream = createReadStream(path);
-  stat(path, function (err: any, stats: any) {
+  const fileStream = fs.createReadStream(path);
+  fs.stat(path, function (err: any, stats: any) {
     if (err) {
       console.log(err);
     }
@@ -48,7 +50,6 @@ export function uploadFile(bucketsName: string, file: File) {
         console.log({
           fileName,
           bucketsName,
-          fileContentType: type,
           size: stats.size,
           fileNameRandom,
           url: objectName,
@@ -56,6 +57,8 @@ export function uploadFile(bucketsName: string, file: File) {
       },
     );
   });
+  const url = `http://124.223.220.83:9000/${bucketsName}/${objectName}`;
+  return url;
 }
 
 export function download(buckctsName: string, file: File) {
@@ -67,9 +70,5 @@ export function download(buckctsName: string, file: File) {
     console.log("下载成功");
   });
 }
-
-minioClient.listBuckets().then((res: any) => {
-  console.log(res);
-});
 
 export default minioClient;

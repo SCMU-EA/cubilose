@@ -6,7 +6,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "mysql"
   // NOTE: When using postgresql, mysql or sqlserver, uncomment the @db.Text annotations in model Account below
   // Further reading:
   // https://next-auth.js.org/adapters/prisma#create-the-prisma-schema
@@ -54,9 +54,11 @@ model User {
   password      String
   emailVerified DateTime?
   avatar        String?
+  description   String?   @default("这个人很懒什么都没留下")
   accounts      Account[]
   sessions      Session[]
   blogs         Blog[]
+  Comment       Comment[]
 }
 
 model VerificationToken {
@@ -74,11 +76,11 @@ model Comment {
   blog       Blog?     @relation(fields: [blogId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   blogId     String?
   content    String?
-  username   String?
-  avatar     String?
+  User       User      @relation(fields: [userId], references: [id])
   type       Int? // 0为管理员评论 1为访客评论 未登录不允许评论
   createTime DateTime? @default(now())
   // replyComents
+  userId     String
 }
 
 model Blog {

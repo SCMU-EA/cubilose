@@ -33,6 +33,7 @@ export const authRouter = router({
         email: z.string().email(),
         username: z.string(),
         password: z.string(),
+        avatar: z.string(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -50,6 +51,7 @@ export const authRouter = router({
           data: {
             username: input.username,
             password: input.password,
+            avatar: input.avatar,
           },
         });
         return result;

@@ -14,6 +14,8 @@ export const userRouter = router({
           select: {
             email: true,
             username: true,
+            avatar: true,
+            description: true,
           },
         });
         return user;
@@ -25,4 +27,35 @@ export const userRouter = router({
       }
     }),
   // createUser: publicProcedure.mutation()
+  updateUserMsg: protectedProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        username: z.string(),
+        password: z.string(),
+        avatar: z.string(),
+        description: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      try {
+        const user = ctx.prisma.user.update({
+          where: {
+            id: input.id,
+          },
+          data: {
+            username: input.username,
+            password: input.password,
+            description: input.description,
+            avatar: input.avatar,
+          },
+        });
+        return user;
+      } catch (e) {
+        throw new TRPCError({
+          code: "CONFLICT",
+          message: "user not found",
+        });
+      }
+    }),
 });

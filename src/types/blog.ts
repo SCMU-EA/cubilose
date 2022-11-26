@@ -2,7 +2,7 @@ export interface Blog {
   id: string;
   title: string;
   content?: string;
-  firstPicture: string;
+  firstPicture?: string;
   tags: Tag[];
   type: Type;
   description: string;
@@ -15,16 +15,18 @@ export interface Blog {
 }
 
 export interface User {
+  avatar: string;
   id: string;
   email: string;
+  description?: string;
   username: string;
 }
 export interface BlogForm {
   title: string;
   content: string;
-  firstPicture: string;
+  firstPicture?: string;
   tags: Tag[];
-  type: string;
+  typeId: string;
   description: string;
   published: boolean;
 }

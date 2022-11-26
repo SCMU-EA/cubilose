@@ -1,12 +1,12 @@
 import { CheckIcon } from "@mantine/core";
 import { signIn } from "next-auth/react";
-import { useState } from "react";
 import { trpc } from "../../utils/trpc";
 import { showNotification } from "@mantine/notifications";
 import type { User } from "../../types/utils";
 import { useRouter } from "next/router";
 import { TextInput, Button, Group, Box, Flex, Container } from "@mantine/core";
 import { useForm } from "@mantine/form";
+
 import { NextPage } from "next";
 import Image from "next/image";
 import Logo from "../../../public/cubilose.png";
@@ -25,14 +25,9 @@ export const Register: NextPage = () => {
       username: (value) =>
         value.length < 3 || value.length > 8 ? "用户名长度只能在3-8位" : null,
       password: (value) => (value.length < 3 ? "密码输入不规范" : null),
-      rePassword: (value) => "两次不一致",
     },
   });
-  const [registerInfo, setRegisterInfo] = useState<User>({
-    email: "",
-    username: "",
-    password: "",
-  });
+
   const router = useRouter();
 
   const { isLoading, mutate } = trpc.auth.registerUser.useMutation({
@@ -58,7 +53,7 @@ export const Register: NextPage = () => {
       });
     },
   });
-  const submit = (event: React.FormEvent) => {
+  const submit = async (event: React.FormEvent) => {
     event.preventDefault();
     form.validate();
     if (
@@ -74,11 +69,15 @@ export const Register: NextPage = () => {
       });
       return;
     }
-    setRegisterInfo({
+    const initAvatarUrl =
+      "http://124.223.220.83:9000/image/7-221124105Z23051.jpg";
+
+    const registerInfo: User = {
       email: form.getInputProps("email").value,
       username: form.getInputProps("username").value,
       password: form.getInputProps("password").value,
-    });
+      avatar: initAvatarUrl,
+    };
     if (form.isValid()) mutate(registerInfo);
   };
 
@@ -138,7 +137,9 @@ export const Register: NextPage = () => {
             />
 
             <Group position="center" mt="md">
-              <Button type="submit">注册</Button>
+              <Button loading={isLoading} type="submit">
+                注册
+              </Button>
             </Group>
           </form>
         </Box>

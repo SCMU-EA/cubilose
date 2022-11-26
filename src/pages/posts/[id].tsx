@@ -1,22 +1,14 @@
 import { GetStaticProps, GetStaticPaths, InferGetStaticPropsType } from "next";
 import {
-  TextInput,
-  Button,
   Group,
-  Box,
   Flex,
-  Input,
   Container,
-  Image,
   Text,
-  Menu,
-  Divider,
-  Card,
   Space,
   Avatar,
   Stack,
 } from "@mantine/core";
-
+import { unstable_getServerSession } from "next-auth/next";
 import { Blog } from "../../types/blog";
 import { createProxySSGHelpers } from "@trpc/react-query/ssg";
 import superjson from "superjson";
@@ -25,10 +17,12 @@ import { appRouter } from "../../server/trpc/router/_app";
 import { createContextInner } from "../../server/trpc/context";
 
 import Navigation from "./navigation";
-import { useTheme } from "@emotion/react";
 import MdEditor from "md-editor-rt";
 import "md-editor-rt/lib/style.css";
-
+import { useSession } from "next-auth/react";
+import BlogEditor from "./blogEditor";
+import { useState } from "react";
+import { trpc } from "../../utils/trpc";
 const navigation = [
   { name: "首页", href: "/", current: true },
   { name: "动态", href: "#", current: false },
@@ -42,6 +36,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
       id: true,
     },
   });
+
   const paths = ids.map((item) => ({ params: { id: item.id } }));
   return { paths, fallback: "blocking" };
 };
@@ -61,54 +56,83 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
     props: { id, trpcState: ssg.dehydrate() },
   };
 };
+
 const BlogDetail = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
   const blog: Blog = props.trpcState?.json.queries[0].state.data as Blog;
-  const { user } = blog;
+  const { user: author } = blog;
+  const session = useSession().data;
+  const user = trpc.user.getUserMsg.useQuery({
+    id: session?.user?.id ?? "",
+  }).data;
+  const isRuler = blog.user.id === session?.user?.id;
   const date = new Date(blog.createTime).toUTCString();
+  const [editMode, setEditMode] = useState<boolean>(false);
   return (
     <>
-      <Navigation userJson={user}></Navigation>
-      <Container size="xl" bg="#dbdada4c">
-        <Space h={1}></Space>
-        <Container bg="white">
-          <Flex
-            sx={{ margin: "10px" }}
-            mih={800}
-            gap="md"
-            justify="flex-start"
-            align="flex-start"
-            direction="column"
-            wrap="wrap"
-          >
+      {editMode ? (
+        <BlogEditor blog={blog} />
+      ) : (
+        <>
+          <Navigation user={user}></Navigation>
+          <Container size="xl" bg="#dbdada4c">
             <Space h={1}></Space>
+            <Container bg="white">
+              <Flex
+                sx={{ margin: "10px" }}
+                mih={800}
+                gap="md"
+                justify="flex-start"
+                align="flex-start"
+                direction="column"
+                wrap="wrap"
+              >
+                <Space h={1}></Space>
 
-            <Text fz="xl" fw={700}>
-              {blog?.title}
-            </Text>
-            <Group position="left">
-              <Avatar color="cyan" radius="xl">
-                {user.username}
-              </Avatar>
-              <Stack spacing={0}>
-                <Text fz="md">{user.username}</Text>
-                <Group>
-                  <Text fz="xs" color="dimmed">
-                    {date}
-                  </Text>
-                  <Text fz="xs" color="dimmed">
-                    {"浏览量:" + blog.views}
-                  </Text>
+                <Text fz="xl" fw={700}>
+                  {blog?.title}
+                </Text>
+                <Group position="left">
+                  <Avatar
+                    color="cyan"
+                    radius="xl"
+                    src={author?.avatar ?? ""}
+                  ></Avatar>
+                  <Stack spacing={0}>
+                    <Text fz="md">{author.username}</Text>
+                    <Group>
+                      <Text fz="xs" color="dimmed">
+                        {date}
+                      </Text>
+                      <Text fz="xs" color="dimmed">
+                        {"浏览量:" + blog.views}
+                      </Text>
+                      {isRuler ? (
+                        <>
+                          <Text
+                            c="blue"
+                            fz="xs"
+                            onClick={() => setEditMode(true)}
+                          >
+                            编辑
+                          </Text>
+                          <Text c="red" fz="xs">
+                            删除
+                          </Text>
+                        </>
+                      ) : undefined}
+                    </Group>
+                  </Stack>
                 </Group>
-              </Stack>
-            </Group>
-            <MdEditor
-              htmlPreview
-              previewOnly
-              modelValue={blog?.content ?? ""}
-            ></MdEditor>
-          </Flex>
-        </Container>
-      </Container>
+                <MdEditor
+                  htmlPreview
+                  previewOnly
+                  modelValue={blog?.content ?? ""}
+                ></MdEditor>
+              </Flex>
+            </Container>
+          </Container>
+        </>
+      )}
     </>
   );
 };

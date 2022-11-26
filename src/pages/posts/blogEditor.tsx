@@ -16,47 +16,47 @@ import {
 import { showNotification } from "@mantine/notifications";
 import { IconCheck } from "@tabler/icons";
 import React, { useEffect, useState } from "react";
+import { GetServerSideProps } from "next";
+import { authOptions } from "../../pages/api/auth/[...nextauth]";
+import { unstable_getServerSession } from "next-auth/next";
+import { serialize } from "superjson";
 import { trpc } from "../../utils/trpc";
 import MdEditor from "md-editor-rt";
 import "md-editor-rt/lib/style.css";
 import { useRouter } from "next/router";
 import { BlogForm, Tag, DraftBlog } from "../../types/blog";
-import { uploadFile } from "../minio";
-import { GetServerSideProps } from "next";
 interface TypeForm {
   id: string;
   label: string;
   value: string;
 }
 
-// export const getServerSideProps: GetServerSideProps = async () => {
-//   // eslint-disable-next-line @typescript-eslint/no-var-requires
-//   const fs = await require("fs");
-//   uploadFile("music", file);
-
-//   return {
-//     props: {},
-//   };
-// };
-
-const BlogEditor = () => {
+const BlogEditor = ({ blog, user }: any) => {
   const router = useRouter();
-  const [content, setContent] = useState<string>("<p>请输入内容</p>");
+  const [content, setContent] = useState<string>(
+    blog?.content ?? "<p>请输入内容</p>",
+  );
   const [opened, setOpened] = useState<boolean>(false);
   const theme = useMantineTheme();
-  const [title, setTitle] = useState<string>("");
+  const [title, setTitle] = useState<string>(blog?.title ?? "");
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setTitle(event.target.value);
   };
-  const [type, setType] = useState<string>("");
-  const [typeId, setTypeId] = useState<string>("");
-  const [tagsValue, setTagsValue] = useState<string[]>([]);
-  const [firstPicture, setFirstPicture] = useState<string>("");
+  const [type, setType] = useState<string>(blog?.type.name ?? "");
+  const [typeId, setTypeId] = useState<string>(blog?.type.id ?? "");
+  const [tagsValue, setTagsValue] = useState<string[]>(
+    blog?.tags.map((item: any) => item.name) ?? [],
+  );
   const [inputType, setInputType] = useState<string>("");
-  const [description, setDescription] = useState<string>("");
+  const [description, setDescription] = useState<string>(
+    blog?.description ?? "",
+  );
+
+  const [uploadFile, setUploadFile] = useState<File>();
   const typeForm: TypeForm[] = [];
   const types = trpc.type.getAllTypes.useQuery().data;
   const queryTags = trpc.tag.getAllTags.useQuery().data || [];
+  let firstPicture = blog?.firstPicture;
   let selectTags: TypeForm[] = [];
   queryTags.map((item) => {
     const t: TypeForm = { id: item.id, label: item.name, value: item.name };
@@ -83,6 +83,7 @@ const BlogEditor = () => {
         icon: <IconCheck />,
         autoClose: 2000,
       });
+      router.push("/");
     },
     onError() {
       showNotification({
@@ -102,6 +103,28 @@ const BlogEditor = () => {
         title: "发布成功",
         message: "正在跳转至主页面",
         icon: <IconCheck />,
+        autoClose: 2000,
+      });
+    },
+  });
+  const { mutate: editMutate } = trpc.blog.updateBlog.useMutation({
+    onSuccess() {
+      showNotification({
+        id: "publish-success",
+        color: "teal",
+        title: "发布成功",
+        message: "正在跳转至主页面",
+        icon: <IconCheck />,
+        autoClose: 2000,
+      });
+      router.push("/");
+    },
+    onError() {
+      showNotification({
+        id: "publish-error",
+        color: "red",
+        title: "发布失败",
+        message: "请检查输入规范",
         autoClose: 2000,
       });
     },
@@ -135,32 +158,54 @@ const BlogEditor = () => {
   const onUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       if (e.target?.files[0]) {
-        const reader = new FileReader();
-        reader.readAsDataURL(e.target?.files[0]);
-        // uploadFile("picture", e.target?.files[0]);
-        reader.onload = (e) => {
-          setFirstPicture(e.target?.result as string);
-        };
+        setUploadFile(e.target.files[0]);
       }
     }
   };
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
+    if (uploadFile) {
+      const formData = new FormData();
+      formData.append("picture", uploadFile);
+      const res = await fetch("http://localhost:3000/api/uploadImage", {
+        method: "POST",
+        body: formData,
+      });
+      await res.json().then((r) => {
+        firstPicture = r?.imageUrl;
+      });
+    }
     let result: Tag[] = [];
     tagsValue.map((tag) => {
       const tagsTemp: Tag[] = queryTags.filter((item) => item.name === tag);
       result = [...result, ...tagsTemp];
     });
-    const formMsg: BlogForm = {
-      title: title,
-      content: content,
-      firstPicture: firstPicture,
-      tags: result,
-      description: description,
-      published: true,
-      type: typeId,
-    };
-    mutate(formMsg);
-    router.push("/");
+
+    if (!blog) {
+      const formMsg: BlogForm = {
+        title: title,
+        content: content,
+        firstPicture: firstPicture,
+        tags: result,
+        description: description,
+        published: true,
+        typeId: typeId,
+      };
+      await mutate(formMsg);
+    } else {
+      const formMsg: BlogForm & { id: string; oldTags: Tag[] } = {
+        id: blog?.id,
+        title: title,
+        content: content,
+        firstPicture: firstPicture,
+        tags: result,
+        published: true,
+        description: description,
+        typeId: typeId,
+        oldTags: blog?.tags,
+      };
+      await editMutate(formMsg);
+      console.log(formMsg);
+    }
   };
 
   return (
@@ -174,6 +219,7 @@ const BlogEditor = () => {
                 size="xl"
                 variant="unstyled"
                 placeholder="请输入文章标题"
+                value={title}
               ></Input>
             </Container>
           </Grid.Col>
@@ -187,9 +233,11 @@ const BlogEditor = () => {
                 草稿箱
               </Button>
               <Button onClick={openModal}>发布</Button>
-              <Avatar color="cyan" radius="xl">
-                微风
-              </Avatar>
+              <Avatar
+                color="cyan"
+                radius="xl"
+                src={user ? user?.avatar : blog?.user?.avatar}
+              ></Avatar>
             </Group>
           </Grid.Col>
         </Grid>
@@ -296,4 +344,28 @@ const BlogEditor = () => {
   );
 };
 
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const session = await unstable_getServerSession(
+    context.req,
+    context.res,
+    authOptions,
+  );
+
+  const userModel = await prisma?.user.findFirst({
+    where: {
+      id: session?.user?.id,
+    },
+    select: {
+      username: true,
+      email: true,
+      id: true,
+      avatar: true,
+    },
+  });
+  const user = await serialize(userModel).json;
+
+  return {
+    props: { user },
+  };
+};
 export default BlogEditor;
