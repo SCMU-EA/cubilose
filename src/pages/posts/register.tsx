@@ -1,6 +1,6 @@
-import { CheckIcon } from "@mantine/core";
 import { signIn } from "next-auth/react";
 import { trpc } from "../../utils/trpc";
+import { CheckIcon } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 import type { User } from "../../types/utils";
 import { useRouter } from "next/router";
@@ -70,7 +70,7 @@ export const Register: NextPage = () => {
       return;
     }
     const initAvatarUrl =
-      "http://124.223.220.83:9000/image/7-221124105Z23051.jpg";
+      "http://124.223.220.83:9000/image/a9511243-cafd-48dc-99b3-1d40f0432272.jpg";
 
     const registerInfo: User = {
       email: form.getInputProps("email").value,
@@ -139,7 +139,7 @@ export const Register: NextPage = () => {
             <Group position="center" mt="md">
               <Button loading={isLoading} type="submit">
                 注册
-              </Button>
+              </Button> 
             </Group>
           </form>
         </Box>

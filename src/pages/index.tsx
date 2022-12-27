@@ -1,16 +1,18 @@
 import type { NextPage } from "next";
 import { Guide } from "./posts/guide";
-import { BlogList } from "./posts/blogList";
-import Navigation from "./posts/navigation";
+import { BlogList } from "./components/blog/blogList";
+import Navigation from "./components/navigation";
 import { GetServerSideProps } from "next";
 import { authOptions } from "../pages/api/auth/[...nextauth]";
 import { unstable_getServerSession } from "next-auth/next";
 import { Container, Space } from "@mantine/core";
 import { serialize } from "superjson";
-const Home: NextPage = ({ user, blog, type }: any) => {
+
+const Home: NextPage = ({ user, blog }: any) => {
   // const { data: userData } = useSession();
   // const id = userData?.user?.id;
   // const user = trpc.user.getUserMsg.useQuery({ id: id as string }).data;
+
   if (user === null) return <Guide />;
   else
     return (
@@ -20,7 +22,7 @@ const Home: NextPage = ({ user, blog, type }: any) => {
         <Container size="xl" bg="#dbdada4c" mih={750}>
           <Space h={10}></Space>
 
-          <BlogList blog={blog} type={type} />
+          <BlogList blog={blog} />
         </Container>
       </>
     );
@@ -64,9 +66,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     },
   });
   const blog = await serialize(blogsModel).json;
-  const type = "preview";
   return {
-    props: { user, blog, type },
+    props: { user, blog },
   };
 };
 export default Home;

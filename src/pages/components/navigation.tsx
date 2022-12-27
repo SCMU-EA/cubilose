@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { signIn, signOut } from "next-auth/react";
 import { Menu, Button, Container, Group } from "@mantine/core";
-import { UserButton } from "../components/userButton";
+import { UserButton } from "./userButton";
 import { useRouter } from "next/router";
+import { User } from "../../types/user";
 import {
   IconLogout,
   IconUser,
@@ -15,22 +16,35 @@ import Image from "next/image";
 import Logo from "../../../public/cubilose.png";
 const navigation = [
   { name: "首页", href: "/", current: true },
-  { name: "动态", href: "#", current: false },
-  { name: "直播", href: "#", current: false },
-  { name: "学习看板", href: "#", current: false },
+  { name: "动态", href: "/posts/dynamic", current: false },
+  { name: "直播", href: "/posts/blogEditor", current: false },
+  { name: "学习看板", href: "/posts/login", current: false },
 ];
 
-const Navigation = ({ user }: any) => {
+const Navigation = ({ user }: { user: User }) => {
+  const [rout, setRout] = useState<boolean>();
   const router = useRouter();
+  useEffect(() => {
+    navigation.forEach((item) => {
+      item.current = item.href === router.asPath ? true : false;
+      setRout(true);
+    });
+  }, [router.asPath]);
   return (
     <>
       <Container size="xl">
         <Group position="apart">
           <Group position="left">
-            <Image src={Logo} alt="团队logo" height={50} width={70}></Image>
+            <Image
+              src={Logo}
+              quality="4"
+              alt="团队logo"
+              height={50}
+              width={70}
+            ></Image>
             {navigation.map((item) => (
               <Button
-                variant="subtle"
+                variant={item.current ? "light" : "subtle"}
                 key={item.name}
                 onClick={() => {
                   router.push(item.href);
@@ -89,7 +103,7 @@ const Navigation = ({ user }: any) => {
                   <Menu.Item
                     icon={<IconUser size={14} />}
                     component="a"
-                    href="/posts/personalSide"
+                    href="/posts/personal"
                   >
                     个人中心
                   </Menu.Item>

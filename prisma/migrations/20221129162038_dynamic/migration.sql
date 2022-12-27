@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE `Dynamic` MODIFY `ups` INTEGER NOT NULL DEFAULT 0;

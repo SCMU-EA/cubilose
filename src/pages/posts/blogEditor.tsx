@@ -4,15 +4,15 @@ import {
   Button,
   Grid,
   Input,
-  Avatar,
   Modal,
   Text,
-  Image,
   MultiSelect,
   Textarea,
   SegmentedControl,
   useMantineTheme,
+  Avatar,
 } from "@mantine/core";
+import Image from "next/image";
 import { showNotification } from "@mantine/notifications";
 import { IconCheck } from "@tabler/icons";
 import React, { useEffect, useState } from "react";
@@ -21,6 +21,7 @@ import { authOptions } from "../../pages/api/auth/[...nextauth]";
 import { unstable_getServerSession } from "next-auth/next";
 import { serialize } from "superjson";
 import { trpc } from "../../utils/trpc";
+import { baseApiUrl } from "../utils";
 import MdEditor from "md-editor-rt";
 import "md-editor-rt/lib/style.css";
 import { useRouter } from "next/router";
@@ -166,7 +167,7 @@ const BlogEditor = ({ blog, user }: any) => {
     if (uploadFile) {
       const formData = new FormData();
       formData.append("picture", uploadFile);
-      const res = await fetch("http://localhost:3000/api/uploadImage", {
+      const res = await fetch(`${baseApiUrl}uploadImage`, {
         method: "POST",
         body: formData,
       });
@@ -233,11 +234,7 @@ const BlogEditor = ({ blog, user }: any) => {
                 草稿箱
               </Button>
               <Button onClick={openModal}>发布</Button>
-              <Avatar
-                color="cyan"
-                radius="xl"
-                src={user ? user?.avatar : blog?.user?.avatar}
-              ></Avatar>
+              <Avatar src={user.avatar} radius="xl"></Avatar>
             </Group>
           </Grid.Col>
         </Grid>
@@ -311,7 +308,13 @@ const BlogEditor = ({ blog, user }: any) => {
               ></input>
             </Grid.Col>
             <Grid.Col span={7}>
-              <Image id="firstPicure" src={firstPicture} alt="" />
+              <Image
+                id="firstPicure"
+                height={100}
+                width={100}
+                src={firstPicture}
+                alt=""
+              />
             </Grid.Col>
             <Grid.Col span={2} offset={-1}>
               <Text align="right">添加描述</Text>

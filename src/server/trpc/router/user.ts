@@ -12,6 +12,7 @@ export const userRouter = router({
             id: input.id,
           },
           select: {
+            id: true,
             email: true,
             username: true,
             avatar: true,

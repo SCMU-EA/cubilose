@@ -1,6 +1,6 @@
 // src/pages/api/examples.ts
 import type { NextApiRequest, NextApiResponse } from "next";
-import { uploadFile } from "../minio";
+import { uploadFile } from "../../server/minio";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const formidable = require("formidable");
 // eslint-disable-next-line @typescript-eslint/no-var-requires

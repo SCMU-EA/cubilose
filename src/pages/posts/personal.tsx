@@ -17,13 +17,13 @@ import { CheckIcon } from "@mantine/core";
 
 import { authOptions } from "../api/auth/[...nextauth]";
 import { unstable_getServerSession } from "next-auth/next";
-import Navigation from "./navigation";
+import Navigation from "../components/navigation";
 import Image from "next/image";
 import { GetServerSideProps } from "next";
 import { useState } from "react";
 import { useForm } from "@mantine/form";
 import { trpc } from "../../utils/trpc";
-import BlogList from "./blogList";
+import BlogList from "../components/blog/blogList";
 export const PersonalSide = ({ user, blog }: any) => {
   const theme = useMantineTheme();
   const [opened, setOpened] = useState<boolean>(false);

@@ -1,6 +1,6 @@
 import { forwardRef } from "react";
-import { Group, Avatar, Text, UnstyledButton } from "@mantine/core";
-
+import { Group, Text, UnstyledButton } from "@mantine/core";
+import Image from "next/image";
 interface UserButtonProps extends React.ComponentPropsWithoutRef<"button"> {
   image: string;
   name: string;
@@ -25,8 +25,13 @@ export const UserButton = forwardRef<HTMLButtonElement, UserButtonProps>(
       {...others}
     >
       <Group>
-        <Avatar src={image} radius="xl" />
-
+        <Image
+          src={image}
+          alt="avatar"
+          width={40}
+          height={40}
+          style={{ borderRadius: 25 }}
+        ></Image>
         <div style={{ flex: 1 }}>
           <Text size="sm" color="blue" weight={500}>
             {name}

@@ -12,6 +12,8 @@ export interface Blog {
   ups: number;
   downs: number;
   user: User;
+  isDown?: boolean;
+  isUp?: boolean;
 }
 
 export interface User {

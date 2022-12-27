@@ -1,9 +1,11 @@
-import * as moment from "moment";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const Minio = require("minio");
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const fs = require("fs");
-const endPoint = "124.223.220.83";
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const { uuid } = require("uuidv4");
+
+export const endPoint = "124.223.220.83";
 
 const minioClient = new Minio.Client({
   endPoint,
@@ -19,17 +21,9 @@ export async function uploadFile(
   path: string,
   type: string,
 ) {
-  const nowDate = new Date().getMilliseconds();
-  const random = Math.round((Math.random() * 9 + 1) * 1000);
-  const fileNameRandom = nowDate + random;
-
   const fileSuffix = fileName.substring(fileName.lastIndexOf(".")); // 文件后缀名字
-  const filePrefix = fileName.substring(0, fileName.lastIndexOf(".")); // 文件名字前面那段
 
-  const objectName =
-    filePrefix.length > 20
-      ? filePrefix.substring(0, 20) + fileNameRandom + fileSuffix
-      : filePrefix + fileNameRandom + fileSuffix;
+  const objectName = uuid() + fileSuffix;
   const fileStream = fs.createReadStream(path);
   fs.stat(path, function (err: any, stats: any) {
     if (err) {
@@ -51,7 +45,6 @@ export async function uploadFile(
           fileName,
           bucketsName,
           size: stats.size,
-          fileNameRandom,
           url: objectName,
         });
       },
@@ -68,6 +61,14 @@ export function download(buckctsName: string, file: File) {
     }
 
     console.log("下载成功");
+  });
+}
+export function removeObject(buckctName: string, objectName: string) {
+  minioClient.removeObject(buckctName, objectName, function (err: any) {
+    if (err) {
+      console.log("Unable to remove object", err);
+    }
+    console.log("Removed the object");
   });
 }
 

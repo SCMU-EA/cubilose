@@ -5,6 +5,7 @@ import { NotificationsProvider } from "@mantine/notifications";
 import { MantineProvider } from "@mantine/core";
 import type { Session } from "next-auth";
 import type { AppType } from "next/app";
+import Head from "next/head";
 import { trpc } from "../utils/trpc";
 
 const MyApp: AppType<{ session: Session | null }> = ({
@@ -13,6 +14,13 @@ const MyApp: AppType<{ session: Session | null }> = ({
 }) => {
   return (
     <SessionProvider session={session}>
+      <Head>
+        <title>首页</title>
+        <meta
+          name="viewport"
+          content="minimum-scale=1, initial-scale=1, width=device-width"
+        />
+      </Head>
       <MantineProvider
         withGlobalStyles
         withNormalizeCSS

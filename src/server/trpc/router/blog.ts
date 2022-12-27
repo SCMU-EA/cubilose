@@ -2,7 +2,6 @@ import { router, publicProcedure, protectedProcedure } from "../trpc";
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
-import { now } from "moment";
 export const blogRouter = router({
   getBlogs: publicProcedure.query(async ({ ctx }) => {
     try {
@@ -120,7 +119,6 @@ export const blogRouter = router({
     .mutation(async ({ ctx, input }) => {
       try {
         const { user } = ctx.session;
-
         const blog = await ctx.prisma.blog.create({
           data: {
             userId: user.id,
@@ -129,6 +127,7 @@ export const blogRouter = router({
             description: input.description,
             published: input.published,
             firstPicture: input.firstPicture,
+            createTime: new Date(),
             tags: {
               connect: input.tags.map((p) => ({ id: p.id })),
             },
