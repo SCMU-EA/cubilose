@@ -17,8 +17,8 @@ import Logo from "../../../public/cubilose.png";
 const navigation = [
   { name: "首页", href: "/", current: true },
   { name: "动态", href: "/posts/dynamic", current: false },
-  { name: "直播", href: "/posts/blogEditor", current: false },
-  { name: "学习看板", href: "/posts/login", current: false },
+  { name: "直播", href: "/posts/live", current: false },
+  { name: "工具箱", href: "/posts/tools", current: false },
 ];
 
 const Navigation = ({ user }: { user: User }) => {

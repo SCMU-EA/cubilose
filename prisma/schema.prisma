@@ -132,3 +132,18 @@ model Tag {
   name  String
   blogs Blog[]
 }
+
+model Tool {
+  id          String     @id @default(cuid())
+  name        String
+  href        String
+  logoUrl     String
+  ToolClass   ToolClass? @relation(fields: [toolClassId], references: [id])
+  toolClassId String?
+}
+
+model ToolClass {
+  id   String @id @default(cuid())
+  name String
+  Tool Tool[]
+}

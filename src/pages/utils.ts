@@ -60,9 +60,11 @@ export function formatPassedTime(dateTime: Date) {
   const minutes = now.getMinutes() - date.getMinutes();
   const hours = now.getHours() - date.getHours();
   const day = now.getDay() - date.getDay();
-  if (day >= 30) return day / 30 + "月前";
-  else if (day >= 7 && day < 30) return day / 7 + "周前";
-  else if (day >= 1 && day < 7) return day + "天前";
-  else if (day < 1 && hours >= 1) return hours + "小时前";
+  const month = now.getMonth() - date.getMonth();
+  const year = now.getFullYear() - date.getFullYear();
+  if (year > 0) return year + "年前";
+  else if (month > 0 && month < 12) return month + "个月前";
+  else if (day > 0 && day < 30) return day + "天前";
+  else if (day < 1 && hours > 0) return hours + "小时前";
   else return minutes + "分钟前";
 }

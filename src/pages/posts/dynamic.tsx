@@ -1,22 +1,11 @@
 import { GetServerSideProps } from "next";
-import {
-  Box,
-  Button,
-  Group,
-  Space,
-  Textarea,
-  Container,
-  Divider,
-  Stack,
-} from "@mantine/core";
-import { useRouter } from "next/router";
+import { Button, Group, Space, Textarea, Container } from "@mantine/core";
 import Picker from "emoji-picker-react";
 import { useState } from "react";
 import { trpc } from "../../utils/trpc";
 import { showNotification } from "@mantine/notifications";
 import { CheckIcon } from "@mantine/core";
 import { IconMoodHappy } from "@tabler/icons";
-import { useForm } from "@mantine/form";
 import { authOptions } from "../../pages/api/auth/[...nextauth]";
 import { unstable_getServerSession } from "next-auth/next";
 import { serialize } from "superjson";
@@ -25,9 +14,7 @@ import DynamicList from "../components/dynamic/dynamicList";
 import { Dynamic } from "../../types/dynamic";
 
 const Dynamic = ({ user, dynamic }: any) => {
-  const router = useRouter();
   const [showEmojiPicker, setShowEmojiPicker] = useState<boolean>(false);
-  const [focus, setFocus] = useState<boolean>(false);
   const dynamics: Dynamic[] = dynamic;
   let content = "";
   const handleEmojiPickerHideShow = () => {
@@ -85,9 +72,7 @@ const Dynamic = ({ user, dynamic }: any) => {
           <Space h={10}></Space>
           <Textarea
             minRows={3}
-            variant={focus ? "default" : "filled"}
             onClick={() => {
-              setFocus(true);
               setShowEmojiPicker(false);
             }}
             onChange={(e) => {
