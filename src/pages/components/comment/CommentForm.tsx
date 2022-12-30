@@ -1,5 +1,4 @@
 import { Box, Button, Group, Space, Textarea } from "@mantine/core";
-import { useRouter } from "next/router";
 import Picker from "emoji-picker-react";
 import { useState } from "react";
 import { trpc } from "../../../utils/trpc";
@@ -7,6 +6,7 @@ import { showNotification } from "@mantine/notifications";
 import { CheckIcon } from "@mantine/core";
 import { IconMoodHappy } from "@tabler/icons";
 import { useForm } from "@mantine/form";
+import Editor from "../editor";
 export default function CommentForm({
   parentId,
   hostId,
@@ -16,7 +16,6 @@ export default function CommentForm({
   hostId: string;
   type: string;
 }) {
-  const router = useRouter();
   const [showEmojiPicker, setShowEmojiPicker] = useState<boolean>(false);
   const form = useForm({
     initialValues: {
@@ -58,36 +57,15 @@ export default function CommentForm({
       hostId,
       type,
     };
-    console.log(payload);
     if (form.isValid()) mutate(payload);
   }
 
   return (
-    <Box mt="md" mb="md">
-      <Textarea
-        label="发表评论"
-        onClick={() => {
-          setShowEmojiPicker(false);
-        }}
-        {...form.getInputProps("content")}
-      ></Textarea>
-      <Space h={10}></Space>
-      <Group position="apart">
-        <Button c="dimmed" variant="white" compact>
-          <IconMoodHappy onClick={handleEmojiPickerHideShow}></IconMoodHappy>
-        </Button>
-        <Button
-          loading={isLoading}
-          variant="white"
-          onClick={() => handleSubmit(form.getInputProps("content").value)}
-        >
-          {parentId ? "回复" : "发表评论"}
-        </Button>
-      </Group>
-
-      {showEmojiPicker ? (
-        <Picker onEmojiClick={handleEmojiClick}></Picker>
-      ) : undefined}
-    </Box>
+    <Editor
+      mutate={mutate}
+      isLoading={isLoading}
+      formMsg={{ parentId, hostId, type }}
+      parentId={parentId}
+    ></Editor>
   );
 }

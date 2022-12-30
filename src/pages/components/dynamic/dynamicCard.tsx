@@ -25,7 +25,7 @@ const DynamicCard = ({ dynamic }: { dynamic: Dynamic }) => {
   return (
     <>
       <Space h={10}></Space>
-      <Container sx={{ borderRadius: 5 }} size="sm" px="lg" bg="white">
+      <Container sx={{ borderRadius: 5 }} size="md" px="lg" bg="white">
         <Space h={10}></Space>
         <Stack>
           <Grid>

@@ -31,7 +31,8 @@ function CommentActions({
     <>
       <Group position="left" mt="md">
         <Button
-          variant={isUp ? "light" : "white"}
+          variant="white"
+          c={isUp ? "blue" : "gray"}
           onClick={async () => {
             setIsUp(!isUp);
 
@@ -47,8 +48,8 @@ function CommentActions({
           }}
           compact
         >
-          <IconThumbUp size={18} color="gray"></IconThumbUp>
-          <Text c="dimmed">{upNum}</Text>
+          <IconThumbUp size={18}></IconThumbUp>
+          <Text>{upNum}</Text>
         </Button>
         <Button variant="white" onClick={() => setReplying(!replying)} compact>
           <IconMessageDots size={18} color="gray"></IconMessageDots>

@@ -7,12 +7,9 @@ import { authOptions } from "../pages/api/auth/[...nextauth]";
 import { unstable_getServerSession } from "next-auth/next";
 import { Container, Space } from "@mantine/core";
 import { serialize } from "superjson";
+import { useSession } from "next-auth/react";
 
 const Home: NextPage = ({ user, blog }: any) => {
-  // const { data: userData } = useSession();
-  // const id = userData?.user?.id;
-  // const user = trpc.user.getUserMsg.useQuery({ id: id as string }).data;
-
   if (user === null) return <Guide />;
   else
     return (
@@ -34,8 +31,10 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     context.res,
     authOptions,
   );
-
-  const userModel = await prisma?.user.findFirst({
+  if (!session) {
+    return { props: { user: null, blog: null } };
+  }
+  const userModel = await prisma?.user.findUnique({
     where: {
       id: session?.user?.id,
     },
@@ -62,7 +61,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       createTime: true,
     },
     orderBy: {
-      createTime: "asc",
+      views: "desc",
     },
   });
   const blog = await serialize(blogsModel).json;

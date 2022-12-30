@@ -21,6 +21,9 @@ export const commentRouter = router({
             include: {
               user: true,
             },
+            orderBy: {
+              ups: "desc",
+            },
           });
           return comments;
         } else if (type === "dynamic") {
@@ -30,6 +33,9 @@ export const commentRouter = router({
             },
             include: {
               user: true,
+            },
+            orderBy: {
+              ups: "desc",
             },
           });
           return comments;

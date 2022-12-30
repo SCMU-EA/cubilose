@@ -77,18 +77,6 @@ const useStyles = createStyles((theme) => ({
   },
 }));
 
-const collections = [
-  { emoji: "👍", label: "Sales" },
-  { emoji: "🚚", label: "Deliveries" },
-  { emoji: "💸", label: "Discounts" },
-  { emoji: "💰", label: "Profits" },
-  { emoji: "✨", label: "Reports" },
-  { emoji: "🛒", label: "Orders" },
-  { emoji: "📅", label: "Events" },
-  { emoji: "🙈", label: "Debts" },
-  { emoji: "💁‍♀️", label: "Customers" },
-];
-
 function Tools({ user, tools, toolClasses }: any) {
   const toolClassModalForm = useForm({
     initialValues: {
@@ -127,7 +115,6 @@ function Tools({ user, tools, toolClasses }: any) {
       return { value: item.id, label: item.name };
     },
   );
-  console.log(tools, toolClasses);
   const { mutate: addToolClass, isLoading: classLoading } =
     trpc.toolClass.addtoolClass.useMutation({
       onSuccess() {
@@ -238,12 +225,13 @@ function Tools({ user, tools, toolClasses }: any) {
             <Divider></Divider>
             <Grid>
               {toolsShow.map((item: Tool, index: number) => (
-                <Grid.Col span={2} key={index}>
+                <Grid.Col span="content" key={index}>
                   <Card>
                     <Card.Section
                       className={classes.gridItem}
                       component="a"
                       href={item.href}
+                      target="_blank"
                     >
                       <Group>
                         <Avatar src={item.logoUrl}></Avatar>

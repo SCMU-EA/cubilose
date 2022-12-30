@@ -2,13 +2,20 @@ import { Pagination, Stack, Space, Container } from "@mantine/core";
 import { useState } from "react";
 import { Blog } from "../../../types/blog";
 import BlogCard from "./blogCard";
-export const BlogList = ({ blog }: { blog: Blog[] }) => {
+import { trpc } from "../../../utils/trpc";
+export const BlogList = ({
+  blog,
+  userId,
+}: {
+  blog?: Blog[];
+  userId?: string;
+}) => {
   const [currentPage, setCurrentPage] = useState<number>(1);
-  // const blogss: Blog[] = trpc.blog.getBlogs.useQuery().data as Blog[];
-  const blogsPorps: Blog[] = blog;
-  const blogss: Blog[] = blogsPorps.map((item) => {
-    return { ...item, isUp: false, isDown: false };
-  });
+  const blogss: Blog[] = blog
+    ? blog.map((item) => {
+        return { ...item, isUp: false, isDown: false };
+      })
+    : (trpc.blog.getBlogs.useQuery({ userId: userId }).data as Blog[]);
 
   const pageSize = 4;
   let blogs: Blog[] = blogss

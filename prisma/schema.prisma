@@ -54,7 +54,7 @@ model User {
   password      String
   emailVerified DateTime?
   avatar        String?
-  description   String?   @default("这个人很懒什么都没留下")
+  description   String?
   accounts      Account[]
   sessions      Session[]
   blogs         Blog[]

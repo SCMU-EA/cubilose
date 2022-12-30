@@ -3,34 +3,37 @@ import { z } from "zod";
 import { TRPCError } from "@trpc/server";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
 export const blogRouter = router({
-  getBlogs: publicProcedure.query(async ({ ctx }) => {
-    try {
-      const blogs = await ctx.prisma.blog.findMany({
-        where: {
-          published: true,
-        },
-        select: {
-          id: true,
-          title: true,
-          user: true,
-          views: true,
-          ups: true,
-          downs: true,
-          description: true,
-          firstPicture: true,
-          createTime: true,
-          tags: true,
-          type: true,
-        },
-      });
-      return blogs;
-    } catch (e) {
-      throw new TRPCError({
-        code: "INTERNAL_SERVER_ERROR",
-        message: "服务器逻辑错误",
-      });
-    }
-  }),
+  getBlogs: publicProcedure
+    .input(z.object({ userId: z.string().optional() }))
+    .query(async ({ ctx, input }) => {
+      try {
+        const blogs = await ctx.prisma.blog.findMany({
+          where: {
+            published: true,
+            userId: input.userId,
+          },
+          select: {
+            id: true,
+            title: true,
+            user: true,
+            views: true,
+            ups: true,
+            downs: true,
+            description: true,
+            firstPicture: true,
+            createTime: true,
+            tags: true,
+            type: true,
+          },
+        });
+        return blogs;
+      } catch (e) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "服务器逻辑错误",
+        });
+      }
+    }),
   getBlogById: publicProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {

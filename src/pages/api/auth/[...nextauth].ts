@@ -56,8 +56,6 @@ export const authOptions: NextAuthOptions = {
         },
       },
       async authorize(credentials) {
-        console.log(credentials);
-
         // 根据 credentials 我们查询数据库中的信息
         const user = await prisma.user.findFirst({
           where: {

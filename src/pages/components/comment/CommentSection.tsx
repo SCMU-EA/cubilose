@@ -1,6 +1,5 @@
 import { Box } from "@mantine/core";
 import formatComments from "./formatComments";
-import { trpc } from "../../../utils/trpc";
 import CommentForm from "./CommentForm";
 import ListComments from "./ListComments";
 

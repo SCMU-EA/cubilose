@@ -38,7 +38,7 @@ const BlogCard = ({ blog }: { blog: Blog }) => {
             <Card
               p="lg"
               component="a"
-              href={"/posts/" + item.id}
+              href={"/posts/blog/" + item.id}
               key={item.id}
               onClick={() => {
                 changeBlogState({

@@ -9,6 +9,7 @@ import {
   Input,
   Flex,
   useMantineTheme,
+  Tabs,
   Button,
 } from "@mantine/core";
 import { serialize } from "superjson";
@@ -24,11 +25,13 @@ import { useState } from "react";
 import { useForm } from "@mantine/form";
 import { trpc } from "../../utils/trpc";
 import BlogList from "../components/blog/blogList";
-export const PersonalSide = ({ user, blog }: any) => {
+import DynamicList from "../components/dynamic/dynamicList";
+export const PersonalSide = ({ user }: any) => {
   const theme = useMantineTheme();
   const [opened, setOpened] = useState<boolean>(false);
   const [avatar, setAvatar] = useState<string>(user.avatar);
   const [file, setFile] = useState<File>();
+
   const modalForm = useForm({
     initialValues: {
       username: user.username,
@@ -121,13 +124,15 @@ export const PersonalSide = ({ user, blog }: any) => {
         >
           <Space></Space>
 
-          <Container bg="white">
+          <Container bg="white" w={750}>
+            <Space h={10}></Space>
             <Grid>
               <Grid.Col span={3}>
                 <Image
                   src={user.avatar}
                   width={400}
                   height={400}
+                  style={{ borderRadius: 20 }}
                   alt="avatar"
                 ></Image>
               </Grid.Col>
@@ -141,12 +146,8 @@ export const PersonalSide = ({ user, blog }: any) => {
               </Grid.Col>
               <Grid.Col span={4}>
                 <Stack justify="center">
-                  <Space></Space>
-                  <Space></Space>
-                  <Space></Space>
-                  <Space></Space>
-                  <Space></Space>
-                  <Space></Space>
+                  <Space h={100}></Space>
+
                   <Button
                     variant="outline"
                     onClick={() => {
@@ -159,8 +160,26 @@ export const PersonalSide = ({ user, blog }: any) => {
               </Grid.Col>
             </Grid>
           </Container>
-          <Container w={750}>
-            <BlogList blog={blog}></BlogList>
+          <Container w={750} bg="white">
+            <Tabs defaultValue="blog">
+              <Tabs.List>
+                <Tabs.Tab value="blog">文章</Tabs.Tab>
+                <Tabs.Tab value="dynamic">动态</Tabs.Tab>
+                <Tabs.Tab value="follow">关注</Tabs.Tab>
+              </Tabs.List>
+
+              <Tabs.Panel value="blog" pt="xs">
+                <BlogList userId={user.id}></BlogList>
+              </Tabs.Panel>
+
+              <Tabs.Panel value="dynamic" pt="xs">
+                <DynamicList userId={user.id}></DynamicList>
+              </Tabs.Panel>
+
+              <Tabs.Panel value="settings" pt="xs">
+                Settings tab content
+              </Tabs.Panel>
+            </Tabs>
           </Container>
         </Flex>
         <Modal
@@ -272,8 +291,10 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     context.res,
     authOptions,
   );
-
-  const userModel = await prisma?.user.findFirst({
+  if (!session) {
+    return { props: { user: null, blog: null } };
+  }
+  const userModel = await prisma?.user.findUnique({
     where: {
       id: session?.user?.id,
     },
@@ -288,30 +309,9 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   });
 
   const user = await serialize(userModel).json;
-  const blogsModel = await prisma?.blog.findMany({
-    where: {
-      userId: session?.user?.id,
-    },
-    select: {
-      id: true,
-      title: true,
-      views: true,
-      ups: true,
-      user: true,
-      downs: true,
-      description: true,
-      firstPicture: true,
-      tags: true,
-      type: true,
-      createTime: true,
-    },
-    orderBy: {
-      createTime: "asc",
-    },
-  });
-  const blog = await serialize(blogsModel).json;
+
   return {
-    props: { user, blog },
+    props: { user },
   };
 };
 

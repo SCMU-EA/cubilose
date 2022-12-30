@@ -75,6 +75,7 @@ export const Register: NextPage = () => {
       email: form.getInputProps("email").value,
       username: form.getInputProps("username").value,
       password: form.getInputProps("password").value,
+      description: "这个人很懒什么都没有留下",
       avatar: initAvatarUrl,
     };
     if (form.isValid()) mutate(registerInfo);

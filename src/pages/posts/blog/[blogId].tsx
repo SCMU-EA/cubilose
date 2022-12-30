@@ -9,27 +9,27 @@ import {
   Button,
   Stack,
 } from "@mantine/core";
-import { Blog } from "../../types/blog";
-import { baseApiUrl } from "../utils";
+import { Blog } from "../../../types/blog";
+import { baseApiUrl } from "../../utils";
 import { createProxySSGHelpers } from "@trpc/react-query/ssg";
 import superjson from "superjson";
-import { prisma } from "../../server/db/client";
-import { appRouter } from "../../server/trpc/router/_app";
-import { createContextInner } from "../../server/trpc/context";
+import { prisma } from "../../../server/db/client";
+import { appRouter } from "../../../server/trpc/router/_app";
+import { createContextInner } from "../../../server/trpc/context";
 import { CheckIcon } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
-import Navigation from "../components/navigation";
+import Navigation from "../../components/navigation";
 import MdEditor from "md-editor-rt";
 import "md-editor-rt/lib/style.css";
 import { useSession } from "next-auth/react";
-import BlogEditor from "./blogEditor";
+import BlogEditor from "../blogEditor";
 import { useState } from "react";
-import { trpc } from "../../utils/trpc";
+import { trpc } from "../../../utils/trpc";
 import { useRouter } from "next/router";
-import CommentSection from "../components/comment/CommentSection";
+import CommentSection from "../../components/comment/CommentSection";
 import Image from "next/image";
-import { User } from "../../types/user";
-import { CommentWithChildren } from "../../types/comment";
+import { User } from "../../../types/user";
+import { CommentWithChildren } from "../../../types/comment";
 export const getStaticPaths: GetStaticPaths = async () => {
   const ids = await prisma.blog.findMany({
     select: {

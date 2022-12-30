@@ -3,21 +3,30 @@ import { TRPCError } from "@trpc/server";
 import { router, publicProcedure, protectedProcedure } from "../trpc";
 
 export const dynamicRouter = router({
-  getAllDynamics: publicProcedure.query(async ({ ctx }) => {
-    try {
-      const dynamics = ctx.prisma.dynamic.findMany({
-        include: {
-          user: true,
-        },
-      });
-      return dynamics;
-    } catch (error) {
-      throw new TRPCError({
-        code: "INTERNAL_SERVER_ERROR",
-        message: "服务器错误",
-      });
-    }
-  }),
+  getAllDynamics: publicProcedure
+    .input(z.object({ userId: z.string().optional() }))
+    .query(async ({ ctx, input }) => {
+      try {
+        const dynamics = ctx.prisma.dynamic.findMany({
+          where: {
+            userId: input.userId,
+          },
+          include: {
+            user: true,
+            comments: true,
+          },
+          orderBy: {
+            ups: "desc",
+          },
+        });
+        return dynamics;
+      } catch (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "服务器错误",
+        });
+      }
+    }),
   addDynamic: protectedProcedure
     .input(z.object({ content: z.string(), userId: z.string() }))
     .mutation(async ({ input, ctx }) => {

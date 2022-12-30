@@ -33,6 +33,7 @@ export const authRouter = router({
         email: z.string().email(),
         username: z.string(),
         password: z.string(),
+        description: z.string(),
         avatar: z.string(),
       }),
     )
@@ -48,11 +49,7 @@ export const authRouter = router({
       if (user?.email && (user?.password === null || user?.username === null)) {
         const result = await ctx.prisma.user.update({
           where: { email: user.email },
-          data: {
-            username: input.username,
-            password: input.password,
-            avatar: input.avatar,
-          },
+          data: input,
         });
         return result;
       }
