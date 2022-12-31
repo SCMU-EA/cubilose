@@ -4,6 +4,7 @@ import { useState } from "react";
 import { IconMoodHappy } from "@tabler/icons";
 import { useForm } from "@mantine/form";
 import { EmojiClickData } from "emoji-picker-react";
+import { signIn, useSession } from "next-auth/react";
 const Editor = ({ mutate, isLoading, formMsg, parentId }: any) => {
   const form = useForm({
     initialValues: { ...formMsg, content: "" },
@@ -12,9 +13,12 @@ const Editor = ({ mutate, isLoading, formMsg, parentId }: any) => {
     },
   });
   const [showEmojiPicker, setShowEmojiPicker] = useState<boolean>(false);
-
+  const session = useSession();
   function handleSubmit() {
-    console.log(form.values, mutate);
+    if (!session.data) {
+      alert("请登录");
+      return;
+    }
     form.validate();
     const payload = form.values;
     if (form.isValid()) mutate(payload);

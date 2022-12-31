@@ -115,6 +115,7 @@ function Tools({ user, tools, toolClasses }: any) {
       return { value: item.id, label: item.name };
     },
   );
+  console.log(currentClass);
   const { mutate: addToolClass, isLoading: classLoading } =
     trpc.toolClass.addtoolClass.useMutation({
       onSuccess() {
@@ -193,15 +194,17 @@ function Tools({ user, tools, toolClasses }: any) {
               <Text size="xs" weight={500} color="dimmed">
                 Collections
               </Text>
-              <Tooltip label="Create collection" withArrow position="right">
-                <ActionIcon
-                  variant="default"
-                  size={18}
-                  onClick={() => setToolClassOpened(true)}
-                >
-                  <IconPlus size={12} stroke={1.5} />
-                </ActionIcon>
-              </Tooltip>
+              {user ? (
+                <Tooltip label="Create collection" withArrow position="right">
+                  <ActionIcon
+                    variant="default"
+                    size={18}
+                    onClick={() => setToolClassOpened(true)}
+                  >
+                    <IconPlus size={12} stroke={1.5} />
+                  </ActionIcon>
+                </Tooltip>
+              ) : undefined}
             </Group>
             <div className={classes.collectionLink}>{collectionLinks}</div>
           </Navbar.Section>
@@ -213,13 +216,15 @@ function Tools({ user, tools, toolClasses }: any) {
               <Text fw="bold" c="gray.7">
                 实用工具
               </Text>
-              <ActionIcon
-                variant="default"
-                size={18}
-                onClick={() => setToolOpened(true)}
-              >
-                <IconPlus size={12} stroke={1.5} />
-              </ActionIcon>
+              {user ? (
+                <ActionIcon
+                  variant="default"
+                  size={18}
+                  onClick={() => setToolOpened(true)}
+                >
+                  <IconPlus size={12} stroke={1.5} />
+                </ActionIcon>
+              ) : undefined}
             </Group>
 
             <Divider></Divider>
@@ -340,7 +345,6 @@ function Tools({ user, tools, toolClasses }: any) {
               data={toolClassesSelect}
               value={toolClassSelectValue}
               onChange={(event) => {
-                console.log(toolClassSelectValue);
                 setToolClassSelectValue(event.currentTarget.value);
               }}
               withAsterisk
@@ -378,17 +382,19 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     authOptions,
   );
 
-  const userModel = await prisma?.user.findFirst({
-    where: {
-      id: session?.user?.id,
-    },
-    select: {
-      username: true,
-      email: true,
-      id: true,
-      avatar: true,
-    },
-  });
+  const userModel = session
+    ? await prisma?.user.findFirst({
+        where: {
+          id: session?.user?.id,
+        },
+        select: {
+          username: true,
+          email: true,
+          id: true,
+          avatar: true,
+        },
+      })
+    : null;
   const user = await serialize(userModel).json;
   const toolClassModel = await prisma?.toolClass.findMany();
   const toolClasses = await serialize(toolClassModel).json;

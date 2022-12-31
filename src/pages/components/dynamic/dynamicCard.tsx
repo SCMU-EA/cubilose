@@ -48,7 +48,7 @@ const DynamicCard = ({ dynamic }: { dynamic: Dynamic }) => {
           <Divider sx={{ margin: 0 }}></Divider>
           <Group position="apart" sx={{ marginTop: -10, marginBottom: 8 }}>
             <Text></Text>
-            <Button c="gray" compact variant="subtle">
+            <Button c="gray" compact variant="white">
               <IconMessageShare size={18} />
               <Text size="xs">分享</Text>
             </Button>

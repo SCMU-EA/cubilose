@@ -5,24 +5,20 @@ import Navigation from "./components/navigation";
 import { GetServerSideProps } from "next";
 import { authOptions } from "../pages/api/auth/[...nextauth]";
 import { unstable_getServerSession } from "next-auth/next";
-import { Container, Space } from "@mantine/core";
+import { Button, Container, Space } from "@mantine/core";
 import { serialize } from "superjson";
-import { useSession } from "next-auth/react";
 
 const Home: NextPage = ({ user, blog }: any) => {
-  if (user === null) return <Guide />;
-  else
-    return (
-      <>
-        <Navigation user={user} />
+  return (
+    <>
+      <Navigation user={user} />
 
-        <Container size="xl" bg="#dbdada4c" mih={750}>
-          <Space h={10}></Space>
-
-          <BlogList blog={blog} />
-        </Container>
-      </>
-    );
+      <Container size="xl" bg="#dbdada4c" mih={750}>
+        <Space h={10}></Space>
+        <BlogList blog={blog} />
+      </Container>
+    </>
+  );
 };
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
@@ -31,20 +27,20 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     context.res,
     authOptions,
   );
-  if (!session) {
-    return { props: { user: null, blog: null } };
-  }
-  const userModel = await prisma?.user.findUnique({
-    where: {
-      id: session?.user?.id,
-    },
-    select: {
-      username: true,
-      email: true,
-      id: true,
-      avatar: true,
-    },
-  });
+
+  const userModel = session
+    ? await prisma?.user.findUnique({
+        where: {
+          id: session?.user?.id,
+        },
+        select: {
+          username: true,
+          email: true,
+          id: true,
+          avatar: true,
+        },
+      })
+    : null;
   const user = await serialize(userModel).json;
   const blogsModel = await prisma?.blog.findMany({
     select: {

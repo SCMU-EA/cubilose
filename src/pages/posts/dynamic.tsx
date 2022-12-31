@@ -1,5 +1,12 @@
 import { GetServerSideProps } from "next";
-import { Button, Group, Space, Textarea, Container } from "@mantine/core";
+import {
+  Button,
+  Group,
+  Space,
+  Textarea,
+  Container,
+  Divider,
+} from "@mantine/core";
 import { trpc } from "../../utils/trpc";
 import { showNotification } from "@mantine/notifications";
 import { CheckIcon } from "@mantine/core";
@@ -57,10 +64,10 @@ const Dynamic = ({ user, dynamic }: any) => {
           <Editor
             mutate={mutate}
             isLoading={isLoading}
-            formMsg={{ userId: user.id }}
+            formMsg={{ userId: user?.id }}
           ></Editor>
+          <DynamicList dynamic={dynamics} />
         </Container>
-        <DynamicList dynamic={dynamics} />
       </Container>
     </>
   );
@@ -72,20 +79,20 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     context.res,
     authOptions,
   );
-  if (!session) {
-    return { props: { user: null, blog: null } };
-  }
-  const userModel = await prisma?.user.findUnique({
-    where: {
-      id: session?.user?.id,
-    },
-    select: {
-      username: true,
-      email: true,
-      id: true,
-      avatar: true,
-    },
-  });
+
+  const userModel = session
+    ? await prisma?.user.findUnique({
+        where: {
+          id: session?.user?.id,
+        },
+        select: {
+          username: true,
+          email: true,
+          id: true,
+          avatar: true,
+        },
+      })
+    : null;
   const user = await serialize(userModel).json;
   const dynamicModel = await prisma?.dynamic.findMany({
     include: {
@@ -94,7 +101,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     },
 
     orderBy: {
-      ups: "desc",
+      createTime: "desc",
     },
   });
   const dynamic = await serialize(dynamicModel).json;

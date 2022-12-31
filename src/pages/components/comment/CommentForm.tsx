@@ -16,7 +16,6 @@ export default function CommentForm({
   hostId: string;
   type: string;
 }) {
-  const [showEmojiPicker, setShowEmojiPicker] = useState<boolean>(false);
   const form = useForm({
     initialValues: {
       content: "",
@@ -25,15 +24,6 @@ export default function CommentForm({
       content: (value) => (value.length === 0 ? "输入不能为空" : null),
     },
   });
-
-  const handleEmojiPickerHideShow = () => {
-    setShowEmojiPicker(!showEmojiPicker);
-  };
-  const handleEmojiClick = (emoji: any, event: MouseEvent) => {
-    form.setValues({
-      content: form.getInputProps("content").value + emoji.emoji,
-    });
-  };
 
   const { mutate, isLoading } = trpc.comment.addComment.useMutation({
     onSuccess: () => {
@@ -48,17 +38,6 @@ export default function CommentForm({
       });
     },
   });
-
-  function handleSubmit(content: string) {
-    form.validate();
-    const payload = {
-      content,
-      parentId,
-      hostId,
-      type,
-    };
-    if (form.isValid()) mutate(payload);
-  }
 
   return (
     <Editor

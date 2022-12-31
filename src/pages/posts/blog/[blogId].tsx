@@ -61,7 +61,6 @@ const BlogDetail = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
   const blog: Blog = props.trpcState?.json.queries[0].state.data as Blog;
   const comments: CommentWithChildren[] =
     props.trpcState?.json.queries[1].state.data;
-  console.log(props.trpcState?.json);
   const { user: author } = blog;
   const session = useSession().data;
   const user: User = trpc.user.getUserMsg.useQuery({

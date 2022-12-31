@@ -15,7 +15,7 @@ export const Guide: NextPage = () => {
           <div className="inline-flex rounded-md shadow">
             <button
               onClick={() => {
-                signIn();
+                signIn("", { callbackUrl: "/" });
               }}
               className="inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-5 py-3 text-base font-medium text-white hover:bg-indigo-700"
             >

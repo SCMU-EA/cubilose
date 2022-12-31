@@ -7,7 +7,7 @@ export const userRouter = router({
     .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {
       try {
-        const user = await ctx.prisma.user.findFirst({
+        const user = await ctx.prisma.user.findUnique({
           where: {
             id: input.id,
           },
@@ -16,6 +16,7 @@ export const userRouter = router({
             email: true,
             username: true,
             avatar: true,
+            password: true,
             description: true,
           },
         });

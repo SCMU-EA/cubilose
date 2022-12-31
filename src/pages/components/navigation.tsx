@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { signIn, signOut } from "next-auth/react";
-import { Menu, Button, Container, Group } from "@mantine/core";
+import { Menu, Button, Container, Group, Alert } from "@mantine/core";
 import { UserButton } from "./userButton";
 import { useRouter } from "next/router";
 import { User } from "../../types/user";
+import { IconAlertCircle } from "@tabler/icons";
 import {
   IconLogout,
   IconUser,
@@ -27,9 +28,10 @@ const Navigation = ({ user }: { user: User }) => {
   useEffect(() => {
     navigation.forEach((item) => {
       item.current = item.href === router.asPath ? true : false;
-      setRout(true);
     });
+    setRout(true);
   }, [router.asPath]);
+
   return (
     <>
       <Container size="xl">
@@ -55,71 +57,94 @@ const Navigation = ({ user }: { user: User }) => {
             ))}
           </Group>
           <Group position="right" spacing="xs">
-            <Container sx={{ margin: 0 }}>
-              <Menu
-                width={200}
-                shadow="md"
-                transition="rotate-right"
-                transitionDuration={150}
+            {user ? (
+              <>
+                <Container sx={{ margin: 0 }}>
+                  <Menu
+                    width={200}
+                    shadow="md"
+                    transition="rotate-right"
+                    transitionDuration={150}
+                  >
+                    <Menu.Target>
+                      <Button
+                        leftIcon={<IconCirclePlus />}
+                        onClick={() => {
+                          alert("请登录");
+                          return;
+                        }}
+                      >
+                        创作者空间
+                      </Button>
+                    </Menu.Target>
+
+                    <Menu.Dropdown>
+                      <Menu.Item
+                        icon={<IconBrandTelegram size={14} />}
+                        component="a"
+                        href="/posts/blogEditor"
+                      >
+                        发表博客
+                      </Menu.Item>
+
+                      <Menu.Item
+                        icon={<IconExternalLink size={14} />}
+                        component="a"
+                        target="_blank"
+                      >
+                        分享动态
+                      </Menu.Item>
+                    </Menu.Dropdown>
+                  </Menu>
+                </Container>
+                <Container px={0} sx={{ margin: 0 }}>
+                  <Menu
+                    withArrow
+                    transition="rotate-right"
+                    transitionDuration={150}
+                  >
+                    <Menu.Target>
+                      <UserButton
+                        image={user?.avatar ?? ""}
+                        name={user?.username ?? ""}
+                        email={user?.email ?? ""}
+                      />
+                    </Menu.Target>
+                    <Menu.Dropdown>
+                      <Menu.Item
+                        icon={<IconUser size={14} />}
+                        component="a"
+                        onClick={() => {
+                          router.push({
+                            pathname: "/posts/personal/[userId]",
+                            query: { userId: user.id },
+                          });
+                        }}
+                      >
+                        个人中心
+                      </Menu.Item>
+
+                      <Menu.Item
+                        icon={<IconLogout size={14} />}
+                        onClick={async () => {
+                          await signOut();
+                          signIn("", { callbackUrl: "/" });
+                        }}
+                      >
+                        账号登出
+                      </Menu.Item>
+                    </Menu.Dropdown>
+                  </Menu>
+                </Container>
+              </>
+            ) : (
+              <Button
+                variant="subtle"
+                onClick={() => signIn("", { callbackUrl: "/" })}
               >
-                <Menu.Target>
-                  <Button leftIcon={<IconCirclePlus />}>创作者空间</Button>
-                </Menu.Target>
-
-                <Menu.Dropdown>
-                  <Menu.Item
-                    icon={<IconBrandTelegram size={14} />}
-                    component="a"
-                    href="/posts/blogEditor"
-                  >
-                    发表博客
-                  </Menu.Item>
-
-                  <Menu.Item
-                    icon={<IconExternalLink size={14} />}
-                    component="a"
-                    target="_blank"
-                  >
-                    分享动态
-                  </Menu.Item>
-                </Menu.Dropdown>
-              </Menu>
-            </Container>
-
-            <Container px={0} sx={{ margin: 0 }}>
-              <Menu
-                withArrow
-                transition="rotate-right"
-                transitionDuration={150}
-              >
-                <Menu.Target>
-                  <UserButton
-                    image={user?.avatar ?? ""}
-                    name={user?.username ?? ""}
-                    email={user?.email ?? ""}
-                  />
-                </Menu.Target>
-                <Menu.Dropdown>
-                  <Menu.Item
-                    icon={<IconUser size={14} />}
-                    component="a"
-                    href="/posts/personal"
-                  >
-                    个人中心
-                  </Menu.Item>
-
-                  <Menu.Item
-                    icon={<IconLogout size={14} />}
-                    onClick={async () => {
-                      await signOut();
-                      signIn();
-                    }}
-                  >
-                    账号登出
-                  </Menu.Item>
-                </Menu.Dropdown>
-              </Menu>
-            </Container>
+                登录
+              </Button>
+            )}
           </Group>
         </Group>
       </Container>

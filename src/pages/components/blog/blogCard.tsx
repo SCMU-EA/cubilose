@@ -1,10 +1,11 @@
-import { Space } from "@mantine/core";
+import { Avatar, Space } from "@mantine/core";
 import { Card, Text, Button, Divider, Group, Stack, Grid } from "@mantine/core";
 import { Blog } from "../../../types/blog";
 import { trpc } from "../../../utils/trpc";
 import { IconEye, IconThumbUp, IconThumbDown } from "@tabler/icons";
 import Image from "next/image";
 import { formatPassedTime } from "../../utils";
+import Link from "next/link";
 const BlogCard = ({ blog }: { blog: Blog }) => {
   const item: Blog = blog;
   const { mutate: changeBlogState } = trpc.blog.updateBlogState.useMutation();
@@ -15,7 +16,24 @@ const BlogCard = ({ blog }: { blog: Blog }) => {
         <Grid.Col span={8}>
           <Stack spacing={0}>
             <Group position="left" spacing={8}>
-              <Text size="sm">{item.user?.username}</Text>
+              <Card>
+                <Card.Section
+                  component="a"
+                  href={"/posts/personal/" + blog.user?.id}
+                  target="_blank"
+                  style={{ color: "black", textDecoration: "none" }}
+                >
+                  <Group>
+                    <Avatar
+                      size={30}
+                      radius={25}
+                      src={item.user?.avatar}
+                    ></Avatar>
+                    <Text size="sm">{item.user?.username}</Text>
+                  </Group>
+                </Card.Section>
+              </Card>
+
               <Text size={6} c="gray.4">
                 |
               </Text>
@@ -58,6 +76,7 @@ const BlogCard = ({ blog }: { blog: Blog }) => {
                 </Grid.Col>
               </Grid>
             </Card>
+
             <Group position="left" align="center" spacing={8}>
               <IconEye size={18} color="gray"></IconEye>
               <Text color="dimmed" size="xs" inline={true}>
