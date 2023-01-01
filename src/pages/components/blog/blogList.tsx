@@ -8,8 +8,9 @@ import {
   Text,
   createStyles,
   Divider,
+  LoadingOverlay,
 } from "@mantine/core";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Blog } from "../../../types/blog";
 import BlogCard from "./blogCard";
 import { trpc } from "../../../utils/trpc";
@@ -23,71 +24,37 @@ const useStyles = createStyles((theme) => ({
     },
   },
 }));
-export const BlogList = ({
-  blog,
-  userId,
-}: {
-  blog?: Blog[];
-  userId?: string;
-}) => {
+export const BlogList = ({ userId }: { blog?: Blog[]; userId?: string }) => {
   const { classes } = useStyles();
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const blogss: Blog[] = blog
-    ? blog.map((item) => {
-        return { ...item, isUp: false, isDown: false };
-      })
-    : (trpc.blog.getBlogs.useQuery({ userId }).data as Blog[]);
-
+  const [orderBy, setOrderBy] = useState<string>("ups");
   const pageSize = 4;
-  const [blogs, setBlogs] = useState<Blog[]>(
-    blogss
-      ? blogss.filter(
-          (value, index) =>
-            index >= (currentPage - 1) * pageSize &&
-            index < currentPage * pageSize,
-        )
-      : [],
-  );
 
-  const pageNum = Math.ceil(blogss ? blogss?.length / pageSize : 1);
-  const changePage = () => {
-    if (blogss)
-      setBlogs([
-        ...blogss.filter(
-          (value, index) =>
-            index >= (currentPage - 1) * pageSize &&
-            index < currentPage * pageSize,
-        ),
-      ]);
-  };
+  const blogs: Blog[] = trpc.blog.getBlogs.useQuery({
+    userId,
+    size: pageSize,
+    index: currentPage,
+    orderBy,
+  }).data as Blog[];
+  const count: number = trpc.blog.getAllBlogsNum.useQuery({ userId })
+    .data as number;
+  const pageNum = Math.ceil(count / pageSize);
+
   const sortBlog = (stragy: string) => {
-    if (stragy === "recommend") {
-      setBlogs([...blogs.sort((a, b) => b.ups - a.ups)]);
-    } else if (stragy === "time") {
-      setBlogs([
-        ...blogs.sort(
-          (a, b) =>
-            new Date(b.createTime).getTime() - new Date(a.createTime).getTime(),
-        ),
-      ]);
-    } else if (stragy === "hot") {
-      setBlogs([...blogs.sort((a, b) => b.views - a.views)]);
-    }
+    setOrderBy(stragy);
   };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(changePage, blog ? [currentPage] : [blogss, currentPage]);
   return (
     <>
       <Container size="md" px="lg" bg="white">
         <Space h={10}></Space>
-        {blog ? (
+        {userId ? undefined : (
           <>
             {" "}
             <Group spacing={0}>
               <Button
                 variant="white"
                 onClick={() => {
-                  sortBlog("recommend");
+                  sortBlog("ups");
                 }}
                 className={classes.header}
                 compact
@@ -100,7 +67,7 @@ export const BlogList = ({
               <Button
                 variant="white"
                 className={classes.header}
-                onClick={() => sortBlog("time")}
+                onClick={() => sortBlog("createTime")}
                 compact
               >
                 最新
@@ -111,7 +78,7 @@ export const BlogList = ({
               <Button
                 variant="white"
                 className={classes.header}
-                onClick={() => sortBlog("hot")}
+                onClick={() => sortBlog("views")}
                 compact
               >
                 热榜
@@ -120,7 +87,7 @@ export const BlogList = ({
             <Space h={5}></Space>
             <Divider p={5}></Divider>
           </>
-        ) : undefined}
+        )}
 
         <Stack
           spacing={0}
@@ -136,14 +103,13 @@ export const BlogList = ({
               return <BlogCard key={item.id} blog={item} />;
             })
           ) : (
-            <h3>无博客</h3>
+            <LoadingOverlay visible={true} overlayBlur={2}></LoadingOverlay>
           )}
         </Stack>
         <Pagination
           page={currentPage}
           onChange={setCurrentPage}
           total={pageNum}
-          onClick={changePage}
         ></Pagination>
         <Space h="md"></Space>
         <Space h="md"></Space>

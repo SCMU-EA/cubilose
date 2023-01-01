@@ -13,7 +13,7 @@ import { Dynamic } from "../../../types/dynamic";
 import { IconThumbUp, IconMessageDots, IconMessageShare } from "@tabler/icons";
 import { formatPassedTime } from "../../utils";
 import CommentSection from "../comment/CommentSection";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { trpc } from "../../../utils/trpc";
 
 const DynamicCard = ({ dynamic }: { dynamic: Dynamic }) => {

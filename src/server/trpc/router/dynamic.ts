@@ -1,22 +1,32 @@
-import { z } from "zod";
+import { number, string, z } from "zod";
 import { TRPCError } from "@trpc/server";
 import { router, publicProcedure, protectedProcedure } from "../trpc";
 
 export const dynamicRouter = router({
-  getAllDynamics: publicProcedure
-    .input(z.object({ userId: z.string().optional() }))
+  getDynamics: publicProcedure
+    .input(
+      z.object({
+        userId: z.string().optional(),
+        index: number(),
+        size: number(),
+        orderBy: string(),
+      }),
+    )
     .query(async ({ ctx, input }) => {
+      const { userId, index, size, orderBy } = input;
       try {
         const dynamics = ctx.prisma.dynamic.findMany({
+          skip: (index - 1) * size,
+          take: size,
           where: {
-            userId: input.userId,
+            userId: userId,
           },
           include: {
             user: true,
             comments: true,
           },
           orderBy: {
-            ups: "desc",
+            [orderBy]: "desc",
           },
         });
         return dynamics;

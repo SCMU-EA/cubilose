@@ -25,7 +25,7 @@ const Editor = ({
   const userId = user?.id;
   const form = useForm({
     initialValues: addNewDynamic
-      ? { userId, content: "" }
+      ? { content: "" }
       : { ...formMsg, content: "" },
     validate: {
       content: (value) => (value.length === 0 ? "输入不能为空" : null),
@@ -63,10 +63,11 @@ const Editor = ({
       addNewComment(comment);
     }
     form.validate();
-    const payload = { ...form.values, id };
+    const payload = { ...form.values, userId, id };
     if (form.isValid()) mutate(payload);
   };
   const handleEmojiClick = (emoji: EmojiClickData, event: MouseEvent) => {
+    event.preventDefault();
     form.setValues({
       content: form.getInputProps("content").value + emoji.emoji,
     });

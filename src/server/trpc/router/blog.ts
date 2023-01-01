@@ -4,13 +4,23 @@ import { TRPCError } from "@trpc/server";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
 export const blogRouter = router({
   getBlogs: publicProcedure
-    .input(z.object({ userId: z.string().optional() }))
+    .input(
+      z.object({
+        userId: z.string().optional(),
+        index: z.number(),
+        size: z.number(),
+        orderBy: z.string(),
+      }),
+    )
     .query(async ({ ctx, input }) => {
+      const { userId, index, size, orderBy } = input;
       try {
         const blogs = await ctx.prisma.blog.findMany({
+          skip: (index - 1) * size,
+          take: size,
           where: {
             published: true,
-            userId: input.userId,
+            userId: userId,
           },
           select: {
             id: true,
@@ -25,6 +35,9 @@ export const blogRouter = router({
             tags: true,
             type: true,
           },
+          orderBy: {
+            [orderBy]: "desc",
+          },
         });
         return blogs;
       } catch (e) {
@@ -33,6 +46,17 @@ export const blogRouter = router({
           message: "服务器逻辑错误",
         });
       }
+    }),
+  getAllBlogsNum: publicProcedure
+    .input(z.object({ userId: z.string().optional() }))
+    .query(async ({ ctx, input }) => {
+      const { userId } = input;
+      const count = ctx.prisma.blog.count({
+        where: {
+          userId,
+        },
+      });
+      return count;
     }),
   getBlogById: publicProcedure
     .input(z.object({ id: z.string() }))

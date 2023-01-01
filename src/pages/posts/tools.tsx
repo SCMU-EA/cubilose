@@ -115,7 +115,6 @@ function Tools({ user, tools, toolClasses }: any) {
       return { value: item.id, label: item.name };
     },
   );
-  console.log(currentClass);
   const { mutate: addToolClass, isLoading: classLoading } =
     trpc.toolClass.addtoolClass.useMutation({
       onSuccess() {

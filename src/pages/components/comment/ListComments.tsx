@@ -1,5 +1,5 @@
 import { Avatar, Box, Button, Group, Paper, Text } from "@mantine/core";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Comment, CommentWithChildren } from "../../../types/comment";
 import { formatPassedTime } from "../../utils";
 import CommentForm from "./CommentForm";

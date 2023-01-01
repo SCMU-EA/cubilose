@@ -8,11 +8,9 @@ import { unstable_getServerSession } from "next-auth/next";
 import { serialize } from "superjson";
 import Navigation from "../components/navigation";
 import DynamicList from "../components/dynamic/dynamicList";
-import { Dynamic } from "../../types/dynamic";
+// import { Dynamic } from "../../types/dynamic";
 import Editor from "../components/editor";
-const Dynamic = ({ user, dynamic }: any) => {
-  const dynamics: Dynamic[] = dynamic;
-  // const router = useRouter();
+const Dynamic = ({ user }: any) => {
   const { mutate, isLoading } = trpc.dynamic.addDynamic.useMutation({
     onSuccess: () => {
       showNotification({
@@ -23,16 +21,6 @@ const Dynamic = ({ user, dynamic }: any) => {
         icon: <CheckIcon />,
         autoClose: 2000,
       });
-      // router.reload();
-      // const dynamic: Dynamic = {
-      //   id: user.id,
-      //   content: "刷新后查看",
-      //   user: user,
-      //   ups: 0,
-      //   comments: [],
-      //   createTime: new Date(),
-      // };
-      // dynamics.unshift(dynamic);
     },
     onError: () => {
       showNotification({
@@ -44,9 +32,7 @@ const Dynamic = ({ user, dynamic }: any) => {
       });
     },
   });
-  const addNewDynamic = (dynamic: Dynamic) => {
-    dynamics.unshift(dynamic);
-  };
+
   return (
     <>
       <Navigation user={user} />
@@ -57,13 +43,7 @@ const Dynamic = ({ user, dynamic }: any) => {
         <Container sx={{ borderRadius: 5 }} size="md" bg="white">
           <Space h={1}></Space>
 
-          <Editor
-            mutate={mutate}
-            isLoading={isLoading}
-            addNewDynamic={addNewDynamic}
-            formMsg={{ user: user }}
-          ></Editor>
-          <DynamicList dynamic={dynamics} />
+          <DynamicList mutate={mutate} isLoading={isLoading} />
         </Container>
       </Container>
     </>
@@ -91,19 +71,9 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       })
     : null;
   const user = await serialize(userModel).json;
-  const dynamicModel = await prisma?.dynamic.findMany({
-    include: {
-      user: true,
-      comments: true,
-    },
 
-    orderBy: {
-      createTime: "desc",
-    },
-  });
-  const dynamic = await serialize(dynamicModel).json;
   return {
-    props: { user, dynamic },
+    props: { user },
   };
 };
 export default Dynamic;
