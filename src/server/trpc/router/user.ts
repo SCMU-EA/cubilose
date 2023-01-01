@@ -1,9 +1,9 @@
-import { router, protectedProcedure } from "../trpc";
+import { router, protectedProcedure, publicProcedure } from "../trpc";
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
 
 export const userRouter = router({
-  getUserMsg: protectedProcedure
+  getUserMsg: publicProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {
       try {
@@ -16,7 +16,6 @@ export const userRouter = router({
             email: true,
             username: true,
             avatar: true,
-            password: true,
             description: true,
           },
         });

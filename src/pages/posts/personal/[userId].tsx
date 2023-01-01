@@ -18,19 +18,16 @@ import { createContextInner } from "../../../server/trpc/context";
 import superjson from "superjson";
 import { prisma } from "../../../server/db/client";
 
-import { serialize } from "superjson";
 import { showNotification } from "@mantine/notifications";
 import { CheckIcon } from "@mantine/core";
 import { createProxySSGHelpers } from "@trpc/react-query/ssg";
 import Navigation from "../../components/navigation";
 import Image from "next/image";
-import { GetServerSideProps } from "next";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useForm } from "@mantine/form";
 import { trpc } from "../../../utils/trpc";
 import BlogList from "../../components/blog/blogList";
 import DynamicList from "../../components/dynamic/dynamicList";
-import { useRouter } from "next/router";
 import type { User } from "../../../types/user";
 import { useSession } from "next-auth/react";
 export const PersonalSide = (
@@ -39,7 +36,6 @@ export const PersonalSide = (
   const theme = useMantineTheme();
   const [opened, setOpened] = useState<boolean>(false);
   const [file, setFile] = useState<File>();
-  const router = useRouter();
   const session = useSession().data;
   const userId: string = props.id;
   const userData: User = trpc.user.getUserMsg.useQuery({ id: userId })
@@ -49,8 +45,8 @@ export const PersonalSide = (
   const form = useForm({
     initialValues: {
       username: userData?.username ?? "",
-      password: userData?.password ?? "",
-      rePassword: userData?.password ?? "",
+      password: "",
+      rePassword: "",
       description: userData?.description ?? "",
     },
 

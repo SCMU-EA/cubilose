@@ -22,6 +22,7 @@ specifiers:
   '@typescript-eslint/eslint-plugin': ^5.33.0
   '@typescript-eslint/parser': ^5.33.0
   autoprefixer: ^10.4.7
+  cuid: ^2.1.8
   emoji-picker-react: ^4.4.6
   eslint: 8.22.0
   eslint-config-next: 12.3.1
@@ -40,7 +41,6 @@ specifiers:
   prisma: ^4.4.0
   react: 18.2.0
   react-dom: 18.2.0
-  react-emoji-react: ^0.3.0
   superjson: 1.9.1
   tailwindcss: ^3.1.6
   typescript: ^4.8.4
@@ -63,6 +63,7 @@ dependencies:
   '@trpc/react': registry.npmmirror.com/@trpc/react/10.0.0-proxy-beta.20_y5nawt6bmo34qjjkmiqhtcthm4
   '@trpc/react-query': registry.npmmirror.com/@trpc/react-query/10.0.0-rc.7_y5nawt6bmo34qjjkmiqhtcthm4
   '@trpc/server': registry.npmmirror.com/@trpc/server/10.0.0-proxy-beta.20
+  cuid: registry.npmmirror.com/cuid/2.1.8
   emoji-picker-react: registry.npmmirror.com/emoji-picker-react/4.4.6_react@18.2.0
   flv.js: registry.npmmirror.com/flv.js/1.6.2
   formidable: registry.npmmirror.com/formidable/2.0.1
@@ -73,7 +74,6 @@ dependencies:
   nodemailer: registry.npmmirror.com/nodemailer/6.8.0
   react: 18.2.0
   react-dom: 18.2.0_react@18.2.0
-  react-emoji-react: registry.npmmirror.com/react-emoji-react/0.3.0_biqbaboplfbrettd7655fr4n2y
   superjson: 1.9.1
   uuidv4: registry.npmmirror.com/uuidv4/6.2.13
   zod: 3.19.1
@@ -4167,6 +4167,12 @@ packages:
     version: 3.1.1
     dev: false
 
+  registry.npmmirror.com/cuid/2.1.8:
+    resolution: {integrity: sha512-xiEMER6E7TlTPnDxrM4eRiC6TRgjNX9xzEZ5U/Se2YJKr7Mq4pJn/2XEHjl3STcSh96GmkHPcBXLES8M29wyyg==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/cuid/-/cuid-2.1.8.tgz}
+    name: cuid
+    version: 2.1.8
+    dev: false
+
   registry.npmmirror.com/currently-unhandled/0.4.1:
     resolution: {integrity: sha512-/fITjgjGU50vjQ4FH6eUoYu+iUoUKIXws2hL15JJpIR+BbTxaXQsMuuyjtNh2WqsSBS5nsaZHFsFecyw5CCAng==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/currently-unhandled/-/currently-unhandled-0.4.1.tgz}
     name: currently-unhandled
@@ -5097,12 +5103,6 @@ packages:
     name: gensync
     version: 1.0.0-beta.2
     engines: {node: '>=6.9.0'}
-    dev: false
-
-  registry.npmmirror.com/get-emoji/2.0.0:
-    resolution: {integrity: sha512-SvaF1b+1YmtkP/AV2OjeAh1n0pTQ5ymaV5qYoeP6I7y3mJn4xCLR4lEYzKkua+NcQ7h2nHWStQEQ8jw0qEVECA==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/get-emoji/-/get-emoji-2.0.0.tgz}
-    name: get-emoji
-    version: 2.0.0
     dev: false
 
   registry.npmmirror.com/get-intrinsic/1.1.3:
@@ -7240,20 +7240,6 @@ packages:
       randombytes: registry.npmmirror.com/randombytes/2.1.0
       safe-buffer: registry.npmmirror.com/safe-buffer/5.2.1
     dev: true
-
-  registry.npmmirror.com/react-emoji-react/0.3.0_biqbaboplfbrettd7655fr4n2y:
-    resolution: {integrity: sha512-wXBPsetg5+PMRUfi2bLQd3Y/fXfJoI9quZYPMrVWGQhT/sNDGFFlY6sGyUbIhLPQMYyH9eKhWqLlqjL24FlAZg==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/react-emoji-react/-/react-emoji-react-0.3.0.tgz}
-    id: registry.npmmirror.com/react-emoji-react/0.3.0
-    name: react-emoji-react
-    version: 0.3.0
-    peerDependencies:
-      react: '>= 0.14.0'
-      react-dom: '>= 0.14.0'
-    dependencies:
-      get-emoji: registry.npmmirror.com/get-emoji/2.0.0
-      react: 18.2.0
-      react-dom: 18.2.0_react@18.2.0
-    dev: false
 
   registry.npmmirror.com/react-is/16.13.1:
     resolution: {integrity: sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/react-is/-/react-is-16.13.1.tgz}

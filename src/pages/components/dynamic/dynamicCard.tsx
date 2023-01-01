@@ -13,15 +13,20 @@ import { Dynamic } from "../../../types/dynamic";
 import { IconThumbUp, IconMessageDots, IconMessageShare } from "@tabler/icons";
 import { formatPassedTime } from "../../utils";
 import CommentSection from "../comment/CommentSection";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { trpc } from "../../../utils/trpc";
 
 const DynamicCard = ({ dynamic }: { dynamic: Dynamic }) => {
   const [isShowComments, setIsShowComments] = useState<boolean>(false);
   const { id, ups, comments } = dynamic;
-  const commentsNum = comments.length;
+  const [commentsNum, setCommentsNum] = useState<number>(comments.length);
   const [isUp, setIsUp] = useState<boolean>(false);
   const { mutate: changeStatus } = trpc.dynamic.changeStatus.useMutation();
+  const addNewComment = (comment: Comment) => {
+    comments.unshift(comment);
+    setCommentsNum(comments.length);
+  };
+
   return (
     <>
       <Space h={10}></Space>
@@ -30,11 +35,11 @@ const DynamicCard = ({ dynamic }: { dynamic: Dynamic }) => {
         <Stack>
           <Grid>
             <Grid.Col span={1}>
-              <Avatar radius={25} src={dynamic.user.avatar}></Avatar>
+              <Avatar radius={25} src={dynamic?.user?.avatar ?? ""}></Avatar>
             </Grid.Col>
             <Grid.Col span={11}>
               <Stack spacing={0}>
-                <Text>{dynamic.user.username}</Text>
+                <Text>{dynamic?.user?.username ?? ""}</Text>
 
                 <Text c="dimmed" fz={9}>
                   {formatPassedTime(dynamic.createTime)}
@@ -93,6 +98,7 @@ const DynamicCard = ({ dynamic }: { dynamic: Dynamic }) => {
               data={comments}
               hostId={dynamic.id}
               type="dynamic"
+              addNewComment={addNewComment}
             ></CommentSection>
           ) : undefined}
         </Stack>

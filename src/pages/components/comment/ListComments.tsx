@@ -1,6 +1,6 @@
 import { Avatar, Box, Button, Group, Paper, Text } from "@mantine/core";
-import { useState } from "react";
-import { CommentWithChildren } from "../../../types/comment";
+import { useEffect, useState } from "react";
+import { Comment, CommentWithChildren } from "../../../types/comment";
 import { formatPassedTime } from "../../utils";
 import CommentForm from "./CommentForm";
 import { IconThumbUp, IconMessageDots } from "@tabler/icons";
@@ -16,12 +16,14 @@ function CommentActions({
   ups,
   hostId,
   type,
+  addNewComment,
 }: {
   commentId: string;
   replyCount: number;
   ups: number;
   hostId: string;
   type: string;
+  addNewComment: (comment: Comment) => void;
 }) {
   const [replying, setReplying] = useState(false);
   const [isUp, setIsUp] = useState<boolean>(false);
@@ -58,18 +60,30 @@ function CommentActions({
       </Group>
 
       {replying && (
-        <CommentForm parentId={commentId} hostId={hostId} type={type} />
+        <CommentForm
+          parentId={commentId}
+          hostId={hostId}
+          addNewComment={addNewComment}
+          type={type}
+        />
       )}
     </>
   );
 }
 
-function Comment({ comment }: { comment: CommentWithChildren }) {
+function Comment({
+  comment,
+  addNewComment,
+}: {
+  comment: CommentWithChildren;
+  addNewComment: (comment: Comment) => void;
+}) {
   const { blogId, dynamicId } = comment;
   const hostId = blogId ? blogId : dynamicId;
   const type = blogId ? "blog" : "dynamic";
-  const user: User = trpc.user.getUserMsg.useQuery({ id: comment.userId })
-    .data as User;
+  const user: User = comment?.user
+    ? comment?.user
+    : (trpc.user.getUserMsg.useQuery({ id: comment.userId }).data as User);
   return (
     <Paper withBorder radius="md" mb="md" p="md">
       <Box
@@ -103,20 +117,36 @@ function Comment({ comment }: { comment: CommentWithChildren }) {
         ups={comment.ups}
         hostId={hostId}
         type={type}
+        addNewComment={addNewComment}
       />
 
       {comment.children && comment.children.length > 0 && (
-        <ListComments comments={comment.children} />
+        <ListComments
+          addNewComment={addNewComment}
+          comments={comment.children}
+        />
       )}
     </Paper>
   );
 }
 
-function ListComments({ comments }: { comments: Array<CommentWithChildren> }) {
+function ListComments({
+  comments,
+  addNewComment,
+}: {
+  comments: Array<CommentWithChildren>;
+  addNewComment: (comment: Comment) => void;
+}) {
   return (
     <Box>
       {comments.map((comment) => {
-        return <Comment key={comment.id} comment={comment} />;
+        return (
+          <Comment
+            key={comment.id}
+            addNewComment={addNewComment}
+            comment={comment}
+          />
+        );
       })}
     </Box>
   );

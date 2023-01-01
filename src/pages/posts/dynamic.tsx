@@ -1,12 +1,5 @@
 import { GetServerSideProps } from "next";
-import {
-  Button,
-  Group,
-  Space,
-  Textarea,
-  Container,
-  Divider,
-} from "@mantine/core";
+import { Button, Group, Space, Textarea, Container } from "@mantine/core";
 import { trpc } from "../../utils/trpc";
 import { showNotification } from "@mantine/notifications";
 import { CheckIcon } from "@mantine/core";
@@ -19,7 +12,7 @@ import { Dynamic } from "../../types/dynamic";
 import Editor from "../components/editor";
 const Dynamic = ({ user, dynamic }: any) => {
   const dynamics: Dynamic[] = dynamic;
-
+  // const router = useRouter();
   const { mutate, isLoading } = trpc.dynamic.addDynamic.useMutation({
     onSuccess: () => {
       showNotification({
@@ -30,15 +23,16 @@ const Dynamic = ({ user, dynamic }: any) => {
         icon: <CheckIcon />,
         autoClose: 2000,
       });
-      const dynamic: Dynamic = {
-        id: user.id,
-        content: "刷新后查看",
-        user: user,
-        ups: 0,
-        comments: [],
-        createTime: new Date(),
-      };
-      dynamics.unshift(dynamic);
+      // router.reload();
+      // const dynamic: Dynamic = {
+      //   id: user.id,
+      //   content: "刷新后查看",
+      //   user: user,
+      //   ups: 0,
+      //   comments: [],
+      //   createTime: new Date(),
+      // };
+      // dynamics.unshift(dynamic);
     },
     onError: () => {
       showNotification({
@@ -50,7 +44,9 @@ const Dynamic = ({ user, dynamic }: any) => {
       });
     },
   });
-
+  const addNewDynamic = (dynamic: Dynamic) => {
+    dynamics.unshift(dynamic);
+  };
   return (
     <>
       <Navigation user={user} />
@@ -64,7 +60,8 @@ const Dynamic = ({ user, dynamic }: any) => {
           <Editor
             mutate={mutate}
             isLoading={isLoading}
-            formMsg={{ userId: user?.id }}
+            addNewDynamic={addNewDynamic}
+            formMsg={{ user: user }}
           ></Editor>
           <DynamicList dynamic={dynamics} />
         </Container>

@@ -3,11 +3,16 @@ import formatComments from "./formatComments";
 import CommentForm from "./CommentForm";
 import ListComments from "./ListComments";
 
-function CommentSection({ hostId, type, data }: any) {
+function CommentSection({ hostId, type, data, addNewComment }: any) {
   return (
     <Box>
-      <CommentForm hostId={hostId} type={type} />
-      {data && <ListComments comments={formatComments(data ?? [])} />}
+      <CommentForm hostId={hostId} type={type} addNewComment={addNewComment} />
+      {data && (
+        <ListComments
+          comments={formatComments(data ?? [])}
+          addNewComment={addNewComment}
+        />
+      )}
     </Box>
   );
 }

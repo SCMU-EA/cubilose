@@ -1,20 +1,19 @@
-import { Box, Button, Group, Space, Textarea } from "@mantine/core";
-import Picker from "emoji-picker-react";
-import { useState } from "react";
 import { trpc } from "../../../utils/trpc";
 import { showNotification } from "@mantine/notifications";
 import { CheckIcon } from "@mantine/core";
-import { IconMoodHappy } from "@tabler/icons";
 import { useForm } from "@mantine/form";
 import Editor from "../editor";
+import { Comment } from "../../../types/comment";
 export default function CommentForm({
   parentId,
   hostId,
   type,
+  addNewComment,
 }: {
   parentId?: string;
   hostId: string;
   type: string;
+  addNewComment: (comment: Comment) => void;
 }) {
   const form = useForm({
     initialValues: {
@@ -24,7 +23,7 @@ export default function CommentForm({
       content: (value) => (value.length === 0 ? "输入不能为空" : null),
     },
   });
-
+  // const router = useRouter();
   const { mutate, isLoading } = trpc.comment.addComment.useMutation({
     onSuccess: () => {
       form.reset();
@@ -36,6 +35,7 @@ export default function CommentForm({
         icon: <CheckIcon />,
         autoClose: 2000,
       });
+      // router.reload();
     },
   });
 
@@ -45,6 +45,7 @@ export default function CommentForm({
       isLoading={isLoading}
       formMsg={{ parentId, hostId, type }}
       parentId={parentId}
+      addNewComment={addNewComment}
     ></Editor>
   );
 }
