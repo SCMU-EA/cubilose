@@ -1,10 +1,10 @@
-import { CommentWithChildren } from "./comment";
+import { Comment } from "./comment";
 import { User } from "./user";
-export interface Dynamic {
+export type Dynamic = {
   id: string;
   content: string;
-  user: User;
-  comments: CommentWithChildren[];
+  comments?: Comment[];
   ups: number;
+  user: User;
   createTime: Date;
-}
+};

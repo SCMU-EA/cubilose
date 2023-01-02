@@ -192,6 +192,7 @@ const BlogEditor = ({ blog, user }: any) => {
         typeId: typeId,
       };
       await mutate(formMsg);
+      console.log(formMsg);
     } else {
       const formMsg: BlogForm & { id: string; oldTags: Tag[] } = {
         id: blog?.id,

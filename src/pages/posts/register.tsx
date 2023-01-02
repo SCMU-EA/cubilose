@@ -27,8 +27,6 @@ export const Register: NextPage = () => {
     },
   });
 
-  const router = useRouter();
-
   const { isLoading, mutate } = trpc.auth.registerUser.useMutation({
     onSuccess() {
       showNotification({
@@ -39,8 +37,7 @@ export const Register: NextPage = () => {
         icon: <CheckIcon />,
         autoClose: 2000,
       });
-
-      router.push("/");
+      signIn("", { callbackUrl: "/" });
     },
     onError() {
       showNotification({
@@ -69,7 +66,7 @@ export const Register: NextPage = () => {
       return;
     }
     const initAvatarUrl =
-      "http://124.223.220.83:9000/image/a9511243-cafd-48dc-99b3-1d40f0432272.jpg";
+      "http://124.223.220.83:9000/image/4ec0dc93-2fed-4bba-a3b7-a023a8e139d5.jpg";
 
     const registerInfo = {
       email: form.getInputProps("email").value,

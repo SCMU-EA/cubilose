@@ -1,3 +1,0 @@
-externals: {
-  fs: require("fs");
-}

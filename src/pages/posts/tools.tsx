@@ -104,13 +104,13 @@ function Tools({ user, tools, toolClasses }: any) {
   const [toolClassOpened, setToolClassOpened] = useState<boolean>(false);
   const [toolOpened, setToolOpened] = useState<boolean>(false);
   const [toolClassSelectValue, setToolClassSelectValue] = useState<string>(
-    toolClasses[0].id,
+    toolClasses[0]?.id,
   );
-  let currentClass: string = toolClasses[0].id;
+  let currentClass: string = toolClasses[0]?.id;
   const [toolsShow, setToolsShow] = useState<Tool[]>(
-    tools.filter((item: Tool) => item.toolClassId === currentClass),
+    tools?.filter((item: Tool) => item.toolClassId === currentClass),
   );
-  const toolClassesSelect: SelectItem[] = toolClasses.map(
+  const toolClassesSelect: SelectItem[] = toolClasses?.map(
     (item: { id: string; name: string }) => {
       return { value: item.id, label: item.name };
     },
@@ -165,15 +165,15 @@ function Tools({ user, tools, toolClasses }: any) {
       <a
         onClick={(event) => {
           event.preventDefault();
-          currentClass = toolClass.id;
+          currentClass = toolClass?.id;
           setToolsShow(
-            tools.filter((item: Tool) => item.toolClassId === currentClass),
+            tools?.filter((item: Tool) => item.toolClassId === currentClass),
           );
         }}
-        key={toolClass.id}
+        key={toolClass?.id}
         className={classes.collectionLink}
       >
-        {toolClass.name}
+        {toolClass?.name}
       </a>
     ),
   );
@@ -205,7 +205,7 @@ function Tools({ user, tools, toolClasses }: any) {
                 </Tooltip>
               ) : undefined}
             </Group>
-            <div className={classes.collectionLink}>{collectionLinks}</div>
+            <div className={classes?.collectionLink}>{collectionLinks}</div>
           </Navbar.Section>
         </Navbar>
         <div style={{ width: 1200 }}>
@@ -395,7 +395,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       })
     : null;
   const user = await serialize(userModel).json;
-  const toolClassModel = await prisma?.toolClass.findMany();
+  const toolClassModel = await prisma?.toolClass?.findMany();
   const toolClasses = await serialize(toolClassModel).json;
   const toolModel = await prisma?.tool.findMany();
   const tools = await serialize(toolModel).json;

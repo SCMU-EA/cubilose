@@ -79,11 +79,12 @@ function Comment({
   addNewComment: (comment: Comment) => void;
 }) {
   const { blogId, dynamicId } = comment;
-  const hostId = blogId ? blogId : dynamicId;
+  const hostId = blogId ? (blogId as string) : (dynamicId as string);
   const type = blogId ? "blog" : "dynamic";
   const user: User = comment?.user
-    ? comment?.user
-    : (trpc.user.getUserMsg.useQuery({ id: comment.userId }).data as User);
+    ? (comment?.user as User)
+    : (trpc.user.getUserMsg.useQuery({ id: comment.userId ?? "" })
+        .data as User);
   return (
     <Paper withBorder radius="md" mb="md" p="md">
       <Box
@@ -139,15 +140,17 @@ function ListComments({
 }) {
   return (
     <Box>
-      {comments.map((comment) => {
-        return (
-          <Comment
-            key={comment.id}
-            addNewComment={addNewComment}
-            comment={comment}
-          />
-        );
-      })}
+      {comments
+        ? comments.map((comment) => {
+            return (
+              <Comment
+                key={comment.id}
+                addNewComment={addNewComment}
+                comment={comment}
+              />
+            );
+          })
+        : undefined}
     </Box>
   );
 }

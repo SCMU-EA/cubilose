@@ -1,4 +1,5 @@
-export interface Blog {
+import { User } from "../types/user";
+export type Blog = {
   id: string;
   title: string;
   content?: string;
@@ -14,16 +15,9 @@ export interface Blog {
   user: User;
   isDown?: boolean;
   isUp?: boolean;
-}
+};
 
-export interface User {
-  avatar: string;
-  id: string;
-  email: string;
-  description?: string;
-  username: string;
-}
-export interface BlogForm {
+export type BlogForm = {
   title: string;
   content: string;
   firstPicture?: string;
@@ -31,19 +25,19 @@ export interface BlogForm {
   typeId: string;
   description: string;
   published: boolean;
-}
+};
 
-export interface DraftBlog {
+export type DraftBlog = {
   title: string;
   content: string;
   published: boolean;
-}
-export interface Tag {
+};
+export type Tag = {
   id: string;
   name: string;
-}
+};
 
-interface Type {
+type Type = {
   id: string;
   name: string;
-}
+};

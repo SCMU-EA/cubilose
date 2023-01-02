@@ -48,9 +48,9 @@ model Session {
 }
 
 model User {
-  id            String    @id @default(cuid())
+  id            String         @id @default(cuid())
   username      String
-  email         String    @unique
+  email         String         @unique
   password      String
   emailVerified DateTime?
   avatar        String?
@@ -60,6 +60,7 @@ model User {
   blogs         Blog[]
   Comment       Comment[]
   Dynamic       Dynamic[]
+  UserRelation  UserRelation[]
 }
 
 model VerificationToken {
@@ -73,12 +74,11 @@ model VerificationToken {
 // blog 
 
 model Comment {
-  id      String @id @default(cuid())
-  content String
-
-  user      User      @relation(fields: [userId], references: [id])
+  id        String    @id @default(cuid())
+  content   String    @db.Text
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    String
-  blog      Blog?     @relation(fields: [blogId], references: [id])
+  blog      Blog?     @relation(fields: [blogId], references: [id], onDelete: Cascade)
   children  Comment[] @relation("CommentToComment")
   parent    Comment?  @relation("CommentToComment", fields: [parentId], references: [id])
   parentId  String?
@@ -86,14 +86,14 @@ model Comment {
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   blogId    String?
-  dynamic   Dynamic?  @relation(fields: [dynamicId], references: [id])
+  dynamic   Dynamic?  @relation(fields: [dynamicId], references: [id], onDelete: Cascade)
   dynamicId String?
 }
 
 model Blog {
   id           String    @id @default(cuid())
   title        String
-  content      String    @db.VarChar(10000)
+  content      String    @db.Text
   firstPicture String?
   ups          Int       @default(0)
   downs        Int       @default(0)
@@ -113,10 +113,10 @@ model Blog {
 
 model Dynamic {
   id         String    @id @default(cuid())
-  user       User      @relation(fields: [userId], references: [id])
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId     String
   comments   Comment[]
-  content    String    @db.VarChar(1000)
+  content    String    @db.Text
   ups        Int       @default(0)
   createTime DateTime  @default(now())
 }
@@ -146,4 +146,12 @@ model ToolClass {
   id   String @id @default(cuid())
   name String
   Tool Tool[]
+}
+
+model UserRelation {
+  id         String @id @default(cuid())
+  user       User   @relation(fields: [userId], references: [id])
+  userId     String @unique
+  followings String @db.Text
+  fans       String @db.MediumText
 }

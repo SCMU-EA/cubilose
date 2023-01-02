@@ -9,7 +9,6 @@ import { serialize } from "superjson";
 import Navigation from "../components/navigation";
 import DynamicList from "../components/dynamic/dynamicList";
 // import { Dynamic } from "../../types/dynamic";
-import Editor from "../components/editor";
 const Dynamic = ({ user }: any) => {
   const { mutate, isLoading } = trpc.dynamic.addDynamic.useMutation({
     onSuccess: () => {

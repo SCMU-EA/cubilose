@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { signIn, signOut } from "next-auth/react";
+import { signIn, signOut, useSession } from "next-auth/react";
 import { Menu, Button, Container, Group, Alert } from "@mantine/core";
 import { UserButton } from "./userButton";
 import { useRouter } from "next/router";
@@ -24,6 +24,7 @@ const navigation = [
 
 const Navigation = ({ user }: { user: User }) => {
   const [rout, setRout] = useState<boolean>();
+  const session = useSession().data;
   const router = useRouter();
   useEffect(() => {
     navigation.forEach((item) => {
@@ -70,8 +71,7 @@ const Navigation = ({ user }: { user: User }) => {
                       <Button
                         leftIcon={<IconCirclePlus />}
                         onClick={() => {
-                          alert("请登录");
-                          return;
+                          if (!session) alert("请登录");
                         }}
                       >
                         创作者空间

@@ -8,14 +8,14 @@ import { unstable_getServerSession } from "next-auth/next";
 import { Container, Space } from "@mantine/core";
 import { serialize } from "superjson";
 
-const Home: NextPage = ({ user, blog }: any) => {
+const Home: NextPage = ({ user }: any) => {
   return (
     <>
       <Navigation user={user} />
 
       <Container size="xl" bg="#dbdada4c" mih={750}>
         <Space h={10}></Space>
-        <BlogList blog={blog} />
+        <BlogList />
       </Container>
     </>
   );
@@ -31,7 +31,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const userModel = session
     ? await prisma?.user.findUnique({
         where: {
-          id: session?.user?.id,
+          id: session.user?.id,
         },
         select: {
           username: true,

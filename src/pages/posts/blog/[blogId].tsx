@@ -23,13 +23,13 @@ import MdEditor from "md-editor-rt";
 import "md-editor-rt/lib/style.css";
 import { useSession } from "next-auth/react";
 import BlogEditor from "../blogEditor";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { trpc } from "../../../utils/trpc";
 import { useRouter } from "next/router";
 import CommentSection from "../../components/comment/CommentSection";
 import Image from "next/image";
 import { User } from "../../../types/user";
-import { CommentWithChildren } from "../../../types/comment";
+import { Comment, CommentWithChildren } from "../../../types/comment";
 export const getStaticPaths: GetStaticPaths = async () => {
   const ids = await prisma.blog.findMany({
     select: {
@@ -69,6 +69,8 @@ const BlogDetail = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
   const isRuler = blog.user.id === session?.user?.id;
   const date = new Date(blog.createTime).toUTCString();
   const [editMode, setEditMode] = useState<boolean>(false);
+  const [refresh, setRefresh] = useState<boolean>(false);
+
   const router = useRouter();
   const { mutate: deleteBlog } = trpc.blog.deleteBlog.useMutation({
     onSuccess() {
@@ -101,6 +103,11 @@ const BlogDetail = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
     });
     await deleteBlog({ id: id });
   };
+  const addNewComment = (comment: CommentWithChildren) => {
+    comments.unshift(comment);
+    setRefresh(!refresh);
+  };
+
   return (
     <>
       {editMode ? (
@@ -181,6 +188,7 @@ const BlogDetail = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
               </Flex>
               <CommentSection
                 data={comments}
+                addNewComment={addNewComment}
                 hostId={blog.id}
                 type="blog"
               ></CommentSection>

@@ -150,7 +150,7 @@ export const blogRouter = router({
           data: {
             userId: user.id,
             title: input.title,
-            content: input.title,
+            content: input.content,
             description: input.description,
             published: input.published,
             firstPicture: input.firstPicture,

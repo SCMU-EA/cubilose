@@ -26,7 +26,7 @@ export const commentRouter = router({
             },
           });
           return comments;
-        } else if (type === "dynamic") {
+        } else {
           const comments = await ctx.prisma.comment.findMany({
             where: {
               dynamicId: hostId,
@@ -41,7 +41,6 @@ export const commentRouter = router({
           return comments;
         }
       } catch (error) {
-        console.log(error);
         throw new TRPCError({
           code: "BAD_REQUEST",
         });

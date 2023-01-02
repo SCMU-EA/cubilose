@@ -59,7 +59,7 @@ const Editor = ({
         ups: 0,
         createdAt: new Date(),
         parentId,
-      };
+      } as Comment;
       addNewComment(comment);
     }
     form.validate();

@@ -10,8 +10,8 @@ export const DynamicList = ({
   isLoading,
 }: {
   userId?: string;
-  mutate: any;
-  isLoading: any;
+  mutate?: any;
+  isLoading?: any;
 }) => {
   const [pageSize, setPageSize] = useState<number>(6);
   const dynamics: Dynamic[] = trpc.dynamic.getDynamics.useQuery({
@@ -20,7 +20,7 @@ export const DynamicList = ({
     size: pageSize,
     orderBy: "createTime",
   }).data as Dynamic[];
-
+  const [maskHeight, setMaskHeight] = useState<number>(1000);
   useEffect(() => {
     window.onscroll = function () {
       // scrollTop是滚动条滚动时，距离顶部的距离
@@ -32,10 +32,10 @@ export const DynamicList = ({
       const trueHeight =
         document.documentElement.scrollHeight || document.body.scrollHeight;
       const result = visionHeight + scrolledHeight;
-
       console.log("r:", result, "t:", trueHeight, result > trueHeight);
       if (result + 1 >= trueHeight) {
         setPageSize(pageSize + 6);
+        setMaskHeight(result);
       }
     };
   }, [dynamics]);
@@ -53,11 +53,11 @@ export const DynamicList = ({
         ></Editor>
       )}
       {dynamics ? (
-        dynamics.map((item, index) => {
-          return <DynamicCard key={index} dynamic={item} />;
+        dynamics.map((item) => {
+          return <DynamicCard key={item.id} dynamic={item} />;
         })
       ) : (
-        <LoadingOverlay visible overlayBlur={2}></LoadingOverlay>
+        <LoadingOverlay visible h={maskHeight} overlayBlur={2}></LoadingOverlay>
       )}
     </>
   );

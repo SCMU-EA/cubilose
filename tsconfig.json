@@ -23,7 +23,6 @@
     "**/*.cjs",
     "**/*.mjs",
     "src/utils/minio.ts",
-    "src/utils/minio.ts",
     "src/pages/posts/live.js"
   ],
   "exclude": ["node_modules"]

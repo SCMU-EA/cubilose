@@ -8,6 +8,7 @@ import {
   Button,
   Text,
   Space,
+  Card,
 } from "@mantine/core";
 import { Dynamic } from "../../../types/dynamic";
 import { IconThumbUp, IconMessageDots, IconMessageShare } from "@tabler/icons";
@@ -15,16 +16,18 @@ import { formatPassedTime } from "../../utils";
 import CommentSection from "../comment/CommentSection";
 import { useState } from "react";
 import { trpc } from "../../../utils/trpc";
-
+import { Comment } from "../../../types/comment";
 const DynamicCard = ({ dynamic }: { dynamic: Dynamic }) => {
   const [isShowComments, setIsShowComments] = useState<boolean>(false);
-  const { id, ups, comments } = dynamic;
-  const [commentsNum, setCommentsNum] = useState<number>(comments.length);
+
+  const [commentsNum, setCommentsNum] = useState<number>(
+    dynamic?.comments?.length || 0,
+  );
   const [isUp, setIsUp] = useState<boolean>(false);
   const { mutate: changeStatus } = trpc.dynamic.changeStatus.useMutation();
   const addNewComment = (comment: Comment) => {
-    comments.unshift(comment);
-    setCommentsNum(comments.length);
+    dynamic?.comments?.unshift(comment);
+    setCommentsNum(dynamic?.comments?.length || 0);
   };
 
   return (
@@ -35,19 +38,27 @@ const DynamicCard = ({ dynamic }: { dynamic: Dynamic }) => {
         <Stack>
           <Grid>
             <Grid.Col span={1}>
-              <Avatar radius={25} src={dynamic?.user?.avatar ?? ""}></Avatar>
+              <Card>
+                <Card.Section
+                  component="a"
+                  href={"/posts/personal/" + dynamic?.user?.id}
+                  target="_blank"
+                >
+                  <Avatar radius={25} src={dynamic?.user?.avatar}></Avatar>
+                </Card.Section>
+              </Card>
             </Grid.Col>
             <Grid.Col span={11}>
               <Stack spacing={0}>
-                <Text>{dynamic?.user?.username ?? ""}</Text>
+                <Text>{dynamic?.user?.username}</Text>
 
                 <Text c="dimmed" fz={9}>
-                  {formatPassedTime(dynamic.createTime)}
+                  {formatPassedTime(dynamic?.createTime)}
                 </Text>
               </Stack>
             </Grid.Col>
             <Grid.Col span={10} offset={1}>
-              <Text>{dynamic.content}</Text>
+              <Text>{dynamic?.content}</Text>
             </Grid.Col>
           </Grid>
           <Divider sx={{ margin: 0 }}></Divider>
@@ -78,25 +89,25 @@ const DynamicCard = ({ dynamic }: { dynamic: Dynamic }) => {
               variant="white"
               onClick={() => {
                 if (!isUp) {
-                  const num = ups + 1;
-                  changeStatus({ id, ups: num });
+                  const num = dynamic?.ups + 1;
+                  changeStatus({ id: dynamic?.id, ups: num });
                   setIsUp(true);
                 } else {
-                  const num = ups - 1;
-                  changeStatus({ id, ups: num });
+                  const num = dynamic?.ups - 1;
+                  changeStatus({ id: dynamic?.id, ups: num });
                   setIsUp(false);
                 }
               }}
             >
               <IconThumbUp size={18} />
-              <Text size="xs">{isUp ? ups + 1 : ups}</Text>
+              <Text size="xs">{isUp ? dynamic?.ups + 1 : dynamic?.ups}</Text>
             </Button>
             <Text></Text>
           </Group>
           {isShowComments ? (
             <CommentSection
-              data={comments}
-              hostId={dynamic.id}
+              data={dynamic?.comments}
+              hostId={dynamic?.id}
               type="dynamic"
               addNewComment={addNewComment}
             ></CommentSection>
