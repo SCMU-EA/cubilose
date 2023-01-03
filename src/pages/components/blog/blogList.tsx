@@ -1,5 +1,4 @@
 import {
-  Pagination,
   Stack,
   Space,
   Container,
@@ -10,7 +9,7 @@ import {
   Divider,
   LoadingOverlay,
 } from "@mantine/core";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Blog } from "../../../types/blog";
 import BlogCard from "./blogCard";
 import { trpc } from "../../../utils/trpc";
@@ -26,23 +25,39 @@ const useStyles = createStyles((theme) => ({
 }));
 export const BlogList = ({ userId }: { blog?: Blog[]; userId?: string }) => {
   const { classes } = useStyles();
-  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [pageSize, setPageSize] = useState<number>(8);
   const [orderBy, setOrderBy] = useState<string>("ups");
-  const pageSize = 4;
+  const [maskHeight, setMaskHeight] = useState<number>(1000);
 
   const blogs: Blog[] = trpc.blog.getBlogs.useQuery({
     userId,
     size: pageSize,
-    index: currentPage,
+    index: 1,
     orderBy,
   }).data as Blog[];
-  const count: number = trpc.blog.getAllBlogsNum.useQuery({ userId })
-    .data as number;
-  const pageNum = Math.ceil(count / pageSize);
 
   const sortBlog = (stragy: string) => {
     setOrderBy(stragy);
   };
+  useEffect(() => {
+    window.onscroll = function () {
+      // scrollTop是滚动条滚动时，距离顶部的距离
+      const visionHeight =
+        document.documentElement.clientHeight || document.body.clientHeight;
+      const scrolledHeight =
+        document.documentElement.scrollTop || document.body.scrollTop;
+
+      const trueHeight =
+        document.documentElement.scrollHeight || document.body.scrollHeight;
+      const result = visionHeight + scrolledHeight;
+      console.log("r:", result, "t:", trueHeight, result > trueHeight);
+      if (result + 1 >= trueHeight) {
+        setPageSize(pageSize + 8);
+        setMaskHeight(result);
+      }
+    };
+  }, [blogs, pageSize]);
+
   return (
     <>
       <Container size="md" px="lg" bg="white">
@@ -103,16 +118,13 @@ export const BlogList = ({ userId }: { blog?: Blog[]; userId?: string }) => {
               return <BlogCard key={item.id} blog={item} />;
             })
           ) : (
-            <LoadingOverlay visible={true} overlayBlur={2}></LoadingOverlay>
+            <LoadingOverlay
+              visible={true}
+              h={maskHeight}
+              overlayBlur={2}
+            ></LoadingOverlay>
           )}
         </Stack>
-        <Pagination
-          page={currentPage}
-          onChange={setCurrentPage}
-          total={pageNum}
-        ></Pagination>
-        <Space h="md"></Space>
-        <Space h="md"></Space>
       </Container>
     </>
   );

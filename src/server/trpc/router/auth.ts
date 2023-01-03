@@ -30,6 +30,7 @@ export const authRouter = router({
   registerUser: publicProcedure
     .input(
       z.object({
+        id: z.string(),
         email: z.string().email(),
         username: z.string(),
         password: z.string(),

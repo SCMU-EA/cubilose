@@ -1,5 +1,5 @@
 import { GetServerSideProps } from "next";
-import { Button, Group, Space, Textarea, Container } from "@mantine/core";
+import { Space, Container } from "@mantine/core";
 import { trpc } from "../../utils/trpc";
 import { showNotification } from "@mantine/notifications";
 import { CheckIcon } from "@mantine/core";
@@ -8,8 +8,8 @@ import { unstable_getServerSession } from "next-auth/next";
 import { serialize } from "superjson";
 import Navigation from "../components/navigation";
 import DynamicList from "../components/dynamic/dynamicList";
-// import { Dynamic } from "../../types/dynamic";
-const Dynamic = ({ user }: any) => {
+import { User } from "../../types/user";
+const Dynamic = ({ user }: { user: User }) => {
   const { mutate, isLoading } = trpc.dynamic.addDynamic.useMutation({
     onSuccess: () => {
       showNotification({

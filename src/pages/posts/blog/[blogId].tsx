@@ -8,6 +8,7 @@ import {
   Avatar,
   Button,
   Stack,
+  Card,
 } from "@mantine/core";
 import { Blog } from "../../../types/blog";
 import { baseApiUrl } from "../../utils";
@@ -23,13 +24,13 @@ import MdEditor from "md-editor-rt";
 import "md-editor-rt/lib/style.css";
 import { useSession } from "next-auth/react";
 import BlogEditor from "../blogEditor";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { trpc } from "../../../utils/trpc";
 import { useRouter } from "next/router";
 import CommentSection from "../../components/comment/CommentSection";
 import Image from "next/image";
 import { User } from "../../../types/user";
-import { Comment, CommentWithChildren } from "../../../types/comment";
+import { CommentWithChildren } from "../../../types/comment";
 export const getStaticPaths: GetStaticPaths = async () => {
   const ids = await prisma.blog.findMany({
     select: {
@@ -95,7 +96,7 @@ const BlogDetail = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
     },
   });
   const removeBlog = async (id: string, firstPicture: string) => {
-    const res = await fetch(`${baseApiUrl}removeImage`, {
+    await fetch(`${baseApiUrl}removeImage`, {
       method: "GET",
       headers: {
         firstPicture,
@@ -133,11 +134,20 @@ const BlogDetail = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
                   {blog?.title}
                 </Text>
                 <Group position="left">
-                  <Avatar
-                    color="cyan"
-                    radius="xl"
-                    src={author?.avatar ?? ""}
-                  ></Avatar>
+                  <Card>
+                    <Card.Section
+                      component="a"
+                      target="_blank"
+                      href={"/posts/personal/" + author?.id}
+                    >
+                      <Avatar
+                        color="cyan"
+                        radius="xl"
+                        src={author?.avatar ?? ""}
+                      ></Avatar>
+                    </Card.Section>
+                  </Card>
+
                   <Stack spacing={0}>
                     <Text fz="md">{author.username}</Text>
                     <Group>
@@ -174,6 +184,7 @@ const BlogDetail = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
                     </Group>
                   </Stack>
                 </Group>
+
                 <Image
                   src={blog.firstPicture as string}
                   alt="image"

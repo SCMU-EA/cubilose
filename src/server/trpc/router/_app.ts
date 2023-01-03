@@ -9,6 +9,7 @@ import { commentRouter } from "./comment";
 import { dynamicRouter } from "./dynamic";
 import { toolClassRouter } from "./toolClass";
 import { toolRouter } from "./tool";
+import { userRelationRouter } from "./userRelation";
 export const appRouter = router({
   user: userRouter,
   auth: authRouter,
@@ -19,6 +20,7 @@ export const appRouter = router({
   dynamic: dynamicRouter,
   toolClass: toolClassRouter,
   tool: toolRouter,
+  userRelation: userRelationRouter,
 });
 
 // export type definition of API

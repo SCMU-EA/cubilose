@@ -14,6 +14,7 @@ import { getCsrfToken } from "next-auth/react";
 import { NextPage } from "next";
 import Image from "next/image";
 import Logo from "../../../public/cubilose.png";
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const Login: NextPage = ({ csrfToken }: any) => {
   return (
     <>
@@ -85,6 +86,7 @@ const Login: NextPage = ({ csrfToken }: any) => {
   );
 };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function getServerSideProps(context: any) {
   return {
     props: {

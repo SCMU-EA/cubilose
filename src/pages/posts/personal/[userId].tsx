@@ -23,13 +23,14 @@ import { CheckIcon } from "@mantine/core";
 import { createProxySSGHelpers } from "@trpc/react-query/ssg";
 import Navigation from "../../components/navigation";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "@mantine/form";
 import { trpc } from "../../../utils/trpc";
 import BlogList from "../../components/blog/blogList";
 import DynamicList from "../../components/dynamic/dynamicList";
 import type { User } from "../../../types/user";
 import { useSession } from "next-auth/react";
+import RelationList from "../../components/relation/relationList";
 export const PersonalSide = (
   props: InferGetStaticPropsType<typeof getStaticProps>,
 ) => {
@@ -40,8 +41,22 @@ export const PersonalSide = (
   const userId: string = props.id;
   const userData: User = trpc.user.getUserMsg.useQuery({ id: userId })
     .data as User;
+  const host: User = trpc.user.getUserMsg.useQuery({
+    id: session?.user?.id ?? "",
+  }).data as User;
   const isRuler: boolean = session?.user?.id === userId;
   let avatar: string = userData?.avatar ?? "";
+  const relations: { followings: string } =
+    trpc.userRelation.getRelations.useQuery({
+      userId: session?.user?.id ?? "",
+      type: "follow",
+    }).data as { followings: string };
+  const followingsArr = JSON.parse(relations?.followings ?? "[]");
+  const [isFollow, setIsFollow] = useState<boolean>();
+  useEffect(() => {
+    setIsFollow(followingsArr.includes(userId));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [relations]);
   const form = useForm({
     initialValues: {
       username: userData?.username ?? "",
@@ -82,6 +97,8 @@ export const PersonalSide = (
       });
     },
   });
+  const { mutate: changeFollowing } =
+    trpc.userRelation.updateRelations.useMutation({});
   const onUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       if (e.target?.files[0]) {
@@ -115,18 +132,18 @@ export const PersonalSide = (
       });
       return;
     }
-    if (form.isValid()) console.log(avatar);
-    await mutate({
-      id: userId,
-      username: form.getInputProps("username").value,
-      password: form.getInputProps("password").value,
-      description: form.getInputProps("description").value,
-      avatar,
-    });
+    if (form.isValid())
+      await mutate({
+        id: userId,
+        username: form.getInputProps("username").value,
+        password: form.getInputProps("password").value,
+        description: form.getInputProps("description").value,
+        avatar,
+      });
   };
   return (
     <>
-      <Navigation user={userData}></Navigation>
+      <Navigation user={host}></Navigation>
       {userData ? (
         <Container size="xl" bg="#dbdada4c">
           <Flex
@@ -159,22 +176,56 @@ export const PersonalSide = (
                     </Text>
                   </Stack>
                 </Grid.Col>
-                {isRuler ? (
-                  <Grid.Col span={4}>
-                    <Stack justify="center">
-                      <Space h={100}></Space>
-
-                      <Button
-                        variant="outline"
-                        onClick={() => {
-                          setOpened(true);
-                        }}
-                      >
-                        编辑资料
-                      </Button>
-                    </Stack>
-                  </Grid.Col>
-                ) : undefined}
+                <Grid.Col span={4}>
+                  <Stack justify="center">
+                    <Space h={100}></Space>
+                    {session ? (
+                      isRuler ? (
+                        <Button
+                          variant="outline"
+                          onClick={() => {
+                            setOpened(true);
+                          }}
+                        >
+                          编辑资料
+                        </Button>
+                      ) : (
+                        <Button
+                          variant={isFollow ? "default" : "outline"}
+                          c={isFollow ? "gray" : "blue"}
+                          onClick={() => {
+                            if (isFollow) {
+                              changeFollowing({
+                                userId: session?.user?.id ?? "",
+                                following: userId,
+                                operate: "remove",
+                              });
+                              changeFollowing({
+                                userId: userId,
+                                fan: session?.user?.id ?? "",
+                                operate: "remove",
+                              });
+                            } else {
+                              changeFollowing({
+                                userId: session?.user?.id ?? "",
+                                following: userId,
+                                operate: "add",
+                              });
+                              changeFollowing({
+                                userId: userId,
+                                fan: session?.user?.id ?? "",
+                                operate: "add",
+                              });
+                            }
+                            setIsFollow(!isFollow);
+                          }}
+                        >
+                          {isFollow ? "已关注" : "关注"}
+                        </Button>
+                      )
+                    ) : undefined}
+                  </Stack>
+                </Grid.Col>
               </Grid>
             </Container>
             <Container w={750} bg="white">
@@ -182,7 +233,8 @@ export const PersonalSide = (
                 <Tabs.List>
                   <Tabs.Tab value="blog">文章</Tabs.Tab>
                   <Tabs.Tab value="dynamic">动态</Tabs.Tab>
-                  <Tabs.Tab value="follow">关注</Tabs.Tab>
+                  <Tabs.Tab value="followings">关注</Tabs.Tab>
+                  <Tabs.Tab value="fans">粉丝</Tabs.Tab>
                 </Tabs.List>
 
                 <Tabs.Panel value="blog" pt="xs">
@@ -193,8 +245,14 @@ export const PersonalSide = (
                   <DynamicList userId={userId}></DynamicList>
                 </Tabs.Panel>
 
-                <Tabs.Panel value="settings" pt="xs">
-                  Settings tab content
+                <Tabs.Panel value="followings" pt="xs">
+                  <RelationList
+                    type="followings"
+                    userId={userId}
+                  ></RelationList>
+                </Tabs.Panel>
+                <Tabs.Panel value="fans" pt="xs">
+                  <RelationList type="fans" userId={userId}></RelationList>
                 </Tabs.Panel>
               </Tabs>
             </Container>
@@ -313,7 +371,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 };
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
-  const ssg = await createProxySSGHelpers({
+  await createProxySSGHelpers({
     router: appRouter,
     ctx: await createContextInner({
       session: null,
@@ -321,7 +379,6 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
     transformer: superjson, // optional - adds superjson serialization
   });
   const id = params?.userId as string;
-
   return {
     props: { id },
   };

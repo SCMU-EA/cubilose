@@ -10,8 +10,8 @@ export const DynamicList = ({
   isLoading,
 }: {
   userId?: string;
-  mutate?: any;
-  isLoading?: any;
+  mutate?: unknown;
+  isLoading?: unknown;
 }) => {
   const [pageSize, setPageSize] = useState<number>(6);
   const dynamics: Dynamic[] = trpc.dynamic.getDynamics.useQuery({
@@ -38,7 +38,7 @@ export const DynamicList = ({
         setMaskHeight(result);
       }
     };
-  }, [dynamics]);
+  }, [dynamics, pageSize]);
 
   return (
     <>

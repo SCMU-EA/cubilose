@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { signIn, signOut, useSession } from "next-auth/react";
-import { Menu, Button, Container, Group, Alert } from "@mantine/core";
+import { Menu, Button, Container, Group } from "@mantine/core";
 import { UserButton } from "./userButton";
 import { useRouter } from "next/router";
 import { User } from "../../types/user";
-import { IconAlertCircle } from "@tabler/icons";
 import {
   IconLogout,
   IconUser,
@@ -23,6 +22,7 @@ const navigation = [
 ];
 
 const Navigation = ({ user }: { user: User }) => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [rout, setRout] = useState<boolean>();
   const session = useSession().data;
   const router = useRouter();
@@ -83,6 +83,7 @@ const Navigation = ({ user }: { user: User }) => {
                         icon={<IconBrandTelegram size={14} />}
                         component="a"
                         href="/posts/blogEditor"
+                        target="_blank"
                       >
                         发表博客
                       </Menu.Item>
@@ -128,7 +129,6 @@ const Navigation = ({ user }: { user: User }) => {
                         icon={<IconLogout size={14} />}
                         onClick={async () => {
                           await signOut();
-                          signIn("", { callbackUrl: "/" });
                         }}
                       >
                         账号登出

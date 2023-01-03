@@ -25,14 +25,15 @@ import { baseApiUrl } from "../utils";
 import MdEditor from "md-editor-rt";
 import "md-editor-rt/lib/style.css";
 import { useRouter } from "next/router";
-import { BlogForm, Tag, DraftBlog } from "../../types/blog";
+import { BlogForm, Tag, DraftBlog, Blog } from "../../types/blog";
+import { User } from "../../types/user";
 interface TypeForm {
   id: string;
   label: string;
   value: string;
 }
 
-const BlogEditor = ({ blog, user }: any) => {
+const BlogEditor = ({ blog, user }: { blog: Blog; user: User }) => {
   const router = useRouter();
   const [content, setContent] = useState<string>(
     blog?.content ?? "<p>请输入内容</p>",
@@ -46,7 +47,7 @@ const BlogEditor = ({ blog, user }: any) => {
   const [type, setType] = useState<string>(blog?.type.name ?? "");
   const [typeId, setTypeId] = useState<string>(blog?.type.id ?? "");
   const [tagsValue, setTagsValue] = useState<string[]>(
-    blog?.tags.map((item: any) => item.name) ?? [],
+    blog?.tags.map((item: { id: string; name: string }) => item.name) ?? [],
   );
   const [inputType, setInputType] = useState<string>("");
   const [description, setDescription] = useState<string>(
@@ -54,6 +55,7 @@ const BlogEditor = ({ blog, user }: any) => {
   );
 
   const [uploadFile, setUploadFile] = useState<File>();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const typeForm: TypeForm[] = [];
   const types = trpc.type.getAllTypes.useQuery().data;
   const queryTags = trpc.tag.getAllTags.useQuery().data || [];
@@ -70,7 +72,7 @@ const BlogEditor = ({ blog, user }: any) => {
   useEffect(() => {
     const temp = typeForm.filter((item) => item.value === type);
     if (temp[0]) setTypeId(temp[0]?.id);
-  }, [type]);
+  }, [type, typeForm]);
   const openModal = () => {
     setOpened(true);
   };
@@ -313,7 +315,7 @@ const BlogEditor = ({ blog, user }: any) => {
                 id="firstPicure"
                 height={100}
                 width={100}
-                src={firstPicture}
+                src={firstPicture ?? ""}
                 alt=""
               />
             </Grid.Col>

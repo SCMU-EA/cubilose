@@ -2,21 +2,26 @@ import { signIn } from "next-auth/react";
 import { trpc } from "../../utils/trpc";
 import { CheckIcon } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
-import { useRouter } from "next/router";
 import { TextInput, Button, Group, Box, Flex, Container } from "@mantine/core";
 import { useForm } from "@mantine/form";
 
 import { NextPage } from "next";
 import Image from "next/image";
 import Logo from "../../../public/cubilose.png";
+import cuid from "cuid";
 export const Register: NextPage = () => {
+  const userId = cuid();
+  console.log(userId);
   const form = useForm({
     initialValues: {
+      id: userId,
       email: "",
       username: "",
       password: "",
+      description: "这个人很懒什么都没有留下",
       rePassword: "",
-      termsOfService: false,
+      avatar:
+        "http://124.223.220.83:9000/image/4ec0dc93-2fed-4bba-a3b7-a023a8e139d5.jpg",
     },
 
     validate: {
@@ -24,9 +29,12 @@ export const Register: NextPage = () => {
       username: (value) =>
         value.length < 3 || value.length > 8 ? "用户名长度只能在3-8位" : null,
       password: (value) => (value.length < 3 ? "密码输入不规范" : null),
+      rePassword: (value, values) =>
+        value !== values.password ? "密码输入不一致" : null,
     },
   });
-
+  const { mutate: initRelation } =
+    trpc.userRelation.createRelations.useMutation();
   const { isLoading, mutate } = trpc.auth.registerUser.useMutation({
     onSuccess() {
       showNotification({
@@ -37,6 +45,7 @@ export const Register: NextPage = () => {
         icon: <CheckIcon />,
         autoClose: 2000,
       });
+      initRelation({ userId: form.values.id });
       signIn("", { callbackUrl: "/" });
     },
     onError() {
@@ -49,33 +58,13 @@ export const Register: NextPage = () => {
       });
     },
   });
+
   const submit = async (event: React.FormEvent) => {
     event.preventDefault();
     form.validate();
-    if (
-      form.getInputProps("password").value !==
-      form.getInputProps("rePassword").value
-    ) {
-      showNotification({
-        id: "password-error",
-        color: "red",
-        title: "密码输入不一致",
-        message: "",
-        autoClose: 2000,
-      });
-      return;
+    if (form.isValid()) {
+      mutate(form.values);
     }
-    const initAvatarUrl =
-      "http://124.223.220.83:9000/image/4ec0dc93-2fed-4bba-a3b7-a023a8e139d5.jpg";
-
-    const registerInfo = {
-      email: form.getInputProps("email").value,
-      username: form.getInputProps("username").value,
-      password: form.getInputProps("password").value,
-      description: "这个人很懒什么都没有留下",
-      avatar: initAvatarUrl,
-    };
-    if (form.isValid()) mutate(registerInfo);
   };
 
   return (
