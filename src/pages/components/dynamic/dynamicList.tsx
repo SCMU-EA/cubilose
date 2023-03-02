@@ -7,10 +7,12 @@ import Editor from "../editor";
 export const DynamicList = ({
   userId,
   mutate,
+  searchData,
   isLoading,
 }: {
   userId?: string;
   mutate?: unknown;
+  searchData?: string;
   isLoading?: unknown;
 }) => {
   const [pageSize, setPageSize] = useState<number>(6);
@@ -18,6 +20,7 @@ export const DynamicList = ({
     userId,
     index: 1,
     size: pageSize,
+    searchData,
     orderBy: "createTime",
   }).data as Dynamic[];
   const [maskHeight, setMaskHeight] = useState<number>(1000);

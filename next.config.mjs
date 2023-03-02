@@ -20,6 +20,6 @@ export default defineNextConfig({
     defaultLocale: "en",
   },
   images: {
-    domains: ["124.223.220.83"],
+    domains: ["124.223.220.83", "i2.hdslb.com"],
   },
 });

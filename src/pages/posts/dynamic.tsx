@@ -9,6 +9,7 @@ import { serialize } from "superjson";
 import Navigation from "../components/navigation";
 import DynamicList from "../components/dynamic/dynamicList";
 import { User } from "../../types/user";
+import { useState } from "react";
 const Dynamic = ({ user }: { user: User }) => {
   const { mutate, isLoading } = trpc.dynamic.addDynamic.useMutation({
     onSuccess: () => {
@@ -31,10 +32,16 @@ const Dynamic = ({ user }: { user: User }) => {
       });
     },
   });
+  const [searchData, setSearchData] = useState<string>();
 
   return (
     <>
-      <Navigation user={user} />
+      <Navigation
+        user={user}
+        getSearchData={(data: string) => {
+          setSearchData(data);
+        }}
+      />
 
       <Container size="xl" bg="#dbdada4c" mih={750}>
         <Space h={15}></Space>
@@ -42,7 +49,11 @@ const Dynamic = ({ user }: { user: User }) => {
         <Container sx={{ borderRadius: 5 }} size="md" bg="white">
           <Space h={1}></Space>
 
-          <DynamicList mutate={mutate} isLoading={isLoading} />
+          <DynamicList
+            mutate={mutate}
+            isLoading={isLoading}
+            searchData={searchData}
+          />
         </Container>
       </Container>
     </>

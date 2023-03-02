@@ -24,7 +24,7 @@ import MdEditor from "md-editor-rt";
 import "md-editor-rt/lib/style.css";
 import { useSession } from "next-auth/react";
 import BlogEditor from "../blogEditor";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { trpc } from "../../../utils/trpc";
 import { useRouter } from "next/router";
 import CommentSection from "../../components/comment/CommentSection";
@@ -71,7 +71,20 @@ const BlogDetail = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
   const date = new Date(blog.createTime).toUTCString();
   const [editMode, setEditMode] = useState<boolean>(false);
   const [refresh, setRefresh] = useState<boolean>(false);
+  const relations: { followings: string } =
+    trpc.userRelation.getRelations.useQuery({
+      userId: session?.user?.id ?? "",
+      type: "follow",
+    }).data as { followings: string };
+  const { mutate } = trpc.userRelation.updateRelations.useMutation({});
 
+  const followings = relations?.followings ?? "[]";
+  const followingsArr = JSON.parse(followings);
+  const [isFollow, setIsFollow] = useState<boolean>();
+  useEffect(() => {
+    setIsFollow(followingsArr.includes(blog.user.id));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [relations]);
   const router = useRouter();
   const { mutate: deleteBlog } = trpc.blog.deleteBlog.useMutation({
     onSuccess() {
@@ -133,56 +146,98 @@ const BlogDetail = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
                 <Text fz="xl" fw={700}>
                   {blog?.title}
                 </Text>
-                <Group position="left">
-                  <Card>
-                    <Card.Section
-                      component="a"
-                      target="_blank"
-                      href={"/posts/personal/" + author?.id}
-                    >
-                      <Avatar
-                        color="cyan"
-                        radius="xl"
-                        src={author?.avatar ?? ""}
-                      ></Avatar>
-                    </Card.Section>
-                  </Card>
+                <Group position="apart" spacing={400}>
+                  <Group position="left">
+                    <Card>
+                      <Card.Section
+                        component="a"
+                        target="_blank"
+                        href={"/posts/personal/" + author?.id}
+                      >
+                        <Avatar
+                          color="cyan"
+                          radius="xl"
+                          src={author?.avatar ?? ""}
+                        ></Avatar>
+                      </Card.Section>
+                    </Card>
 
-                  <Stack spacing={0}>
-                    <Text fz="md">{author.username}</Text>
-                    <Group>
-                      <Text fz="xs" color="dimmed">
-                        {date}
-                      </Text>
-                      <Text fz="xs" color="dimmed">
-                        {"浏览量:" + blog.views}
-                      </Text>
-                      {isRuler ? (
-                        <>
-                          <Text c="blue" fz="xs"></Text>
-                          <Button
-                            variant="white"
-                            style={{ fontWeight: "normal", fontSize: 13 }}
-                            compact
-                            onClick={() => setEditMode(true)}
-                          >
-                            编辑
-                          </Button>
-                          <Button
-                            variant="white"
-                            c="red"
-                            style={{ fontWeight: "normal", fontSize: 13 }}
-                            compact
-                            onClick={() => {
-                              removeBlog(blog.id, blog.firstPicture as string);
-                            }}
-                          >
-                            删除
-                          </Button>
-                        </>
-                      ) : undefined}
-                    </Group>
-                  </Stack>
+                    <Stack spacing={0}>
+                      <Text fz="md">{author.username}</Text>
+                      <Group>
+                        <Text fz="xs" color="dimmed">
+                          {date}
+                        </Text>
+                        <Text fz="xs" color="dimmed">
+                          {"浏览量:" + blog.views}
+                        </Text>
+                        {isRuler ? (
+                          <>
+                            <Text c="blue" fz="xs"></Text>
+                            <Button
+                              variant="white"
+                              style={{ fontWeight: "normal", fontSize: 13 }}
+                              compact
+                              onClick={() => setEditMode(true)}
+                            >
+                              编辑
+                            </Button>
+                            <Button
+                              variant="white"
+                              c="red"
+                              style={{ fontWeight: "normal", fontSize: 13 }}
+                              compact
+                              onClick={() => {
+                                removeBlog(
+                                  blog.id,
+                                  blog.firstPicture as string,
+                                );
+                              }}
+                            >
+                              删除
+                            </Button>
+                          </>
+                        ) : (
+                          <Text></Text>
+                        )}
+                      </Group>
+                    </Stack>
+                  </Group>
+                  {session ? (
+                    <Button
+                      variant={isFollow ? "default" : "outline"}
+                      c={isFollow ? "gray" : "blue"}
+                      onClick={() => {
+                        if (isFollow) {
+                          mutate({
+                            userId: session?.user?.id ?? "",
+                            following: blog.user.id,
+                            operate: "remove",
+                          });
+                          mutate({
+                            userId: blog.user.id,
+                            fan: session?.user?.id ?? "",
+                            operate: "remove",
+                          });
+                        } else {
+                          mutate({
+                            userId: session?.user?.id ?? "",
+                            following: blog.user.id,
+                            operate: "add",
+                          });
+                          mutate({
+                            userId: blog.user.id,
+                            fan: session?.user?.id ?? "",
+                            operate: "add",
+                          });
+                        }
+
+                        setIsFollow(!isFollow);
+                      }}
+                    >
+                      {isFollow ? "已关注" : "关注"}
+                    </Button>
+                  ) : undefined}
                 </Group>
 
                 <Image

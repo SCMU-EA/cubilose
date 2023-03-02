@@ -171,6 +171,7 @@ export const PersonalSide = (
                 <Grid.Col span={5}>
                   <Stack>
                     <Text fz="xl">{userData.username}</Text>
+                    <Text c="blue">{userData.email}</Text>
                     <Text fz="sm" c="dimmed" fs="italic">
                       {userData.description}
                     </Text>

@@ -13,7 +13,6 @@ import {
   Input,
   Button,
   NativeSelect,
-  Avatar,
   Flex,
 } from "@mantine/core";
 import Navigation from "../components/navigation";
@@ -21,15 +20,16 @@ import { GetServerSideProps } from "next";
 import { authOptions } from "../../pages/api/auth/[...nextauth]";
 import { unstable_getServerSession } from "next-auth/next";
 import { serialize } from "superjson";
-import { IconTool, IconPlus } from "@tabler/icons";
+import { IconPlus, IconBrandYoutube, IconFlame } from "@tabler/icons";
 import { useState } from "react";
 import { showNotification } from "@mantine/notifications";
 import { useForm } from "@mantine/form";
 import { trpc } from "../../utils/trpc";
 import type { SelectItem } from "@mantine/core";
-import type { Tool } from "../../types/tool";
+import type { Video } from "../../types/video";
 import cuid from "cuid";
 import { User } from "../../types/user";
+import Image from "next/image";
 const useStyles = createStyles((theme) => ({
   navbar: {
     paddingTop: 0,
@@ -65,7 +65,7 @@ const useStyles = createStyles((theme) => ({
       theme.colorScheme === "dark"
         ? theme.colors.dark[0]
         : theme.colors.gray[7],
-    backgroundColor: theme.colors.gray[1],
+    backgroundColor: theme.colors.white,
     lineHeight: 1,
     fontWeight: 500,
 
@@ -79,16 +79,16 @@ const useStyles = createStyles((theme) => ({
   },
 }));
 
-function Tools({
+const Video = ({
   user,
-  tools,
-  toolClasses,
+  videos,
+  videoClasses,
 }: {
   user: User;
-  tools: Tool[];
-  toolClasses: { id: string; name: string }[];
-}) {
-  const toolClassModalForm = useForm({
+  videos: Video[];
+  videoClasses: { id: string; name: string }[];
+}) => {
+  const videoClassModalForm = useForm({
     initialValues: {
       name: "",
     },
@@ -98,38 +98,40 @@ function Tools({
     },
   });
   const id = cuid();
-  const toolModalForm = useForm({
+  const videoModalForm = useForm({
     initialValues: {
       id,
       name: "",
-      logoUrl: "",
+      firstPicture: "",
       href: "",
+      ups: 0,
     },
 
     validate: {
       name: (value) => (value.length === 0 ? "用户名长度只能在3-8位" : null),
-      logoUrl: (value) => (value.length === 0 ? "用户名长度只能在3-8位" : null),
+      firstPicture: (value) =>
+        value.length === 0 ? "用户名长度只能在3-8位" : null,
       href: (value) => (value.length === 0 ? "用户名长度只能在3-8位" : null),
     },
   });
   const { classes } = useStyles();
-  const [toolClassOpened, setToolClassOpened] = useState<boolean>(false);
-  const [toolOpened, setToolOpened] = useState<boolean>(false);
-  const [toolClassSelectValue, setToolClassSelectValue] = useState<string>(
-    toolClasses[0]?.id ?? "",
+  const [videoClassOpened, setvideoClassOpened] = useState<boolean>(false);
+  const [videoOpened, setvideoOpened] = useState<boolean>(false);
+  const [videoClassSelectValue, setvideoClassSelectValue] = useState<string>(
+    videoClasses[0]?.id ?? "",
   );
-  const [title, setTitle] = useState<string>(toolClasses[0]?.name ?? "");
-  let currentClass: string = toolClasses[0]?.id ?? "";
-  const [toolsShow, setToolsShow] = useState<Tool[]>(
-    tools?.filter((item: Tool) => item.toolClassId === currentClass),
+  const [title, setTitle] = useState<string>(videoClasses[0]?.name ?? "");
+  let currentClass: string = videoClasses[0]?.id ?? "";
+  const [videosShow, setVideosShow] = useState<Video[]>(
+    videos?.filter((item: Video) => item.videoClassId === currentClass),
   );
-  const toolClassesSelect: SelectItem[] = toolClasses?.map(
+  const videoClassesSelect: SelectItem[] = videoClasses?.map(
     (item: { id: string; name: string }) => {
       return { value: item.id, label: item.name };
     },
   );
-  const { mutate: addToolClass, isLoading: classLoading } =
-    trpc.toolClass.addtoolClass.useMutation({
+  const { mutate: addvideoClass, isLoading: classLoading } =
+    trpc.videoClass.addVideoClass.useMutation({
       onSuccess() {
         showNotification({
           id: "register-success",
@@ -138,7 +140,7 @@ function Tools({
           message: "您已成功修改，正在跳转至个人中心",
           autoClose: 2000,
         });
-        setToolClassOpened(false);
+        setvideoClassOpened(false);
       },
       onError() {
         showNotification({
@@ -150,8 +152,8 @@ function Tools({
         });
       },
     });
-  const { mutate: addTool, isLoading: toolLoading } =
-    trpc.tool.addTool.useMutation({
+  const { mutate: addvideo, isLoading: videoLoading } =
+    trpc.video.addVideo.useMutation({
       onSuccess() {
         showNotification({
           id: "register-success",
@@ -160,7 +162,7 @@ function Tools({
           message: "您已成功修改，正在跳转至个人中心",
           autoClose: 2000,
         });
-        setToolOpened(false);
+        setvideoOpened(false);
       },
       onError() {
         showNotification({
@@ -172,26 +174,29 @@ function Tools({
         });
       },
     });
-  const collectionLinks = toolClasses.map(
-    (toolClass: { id: string; name: string }) => (
+  const { mutate: changeVideoStatus } = trpc.video.updateVideo.useMutation();
+  const collectionLinks = videoClasses.map(
+    (videoClass: { id: string; name: string }) => (
       // eslint-disable-next-line @next/next/no-html-link-for-pages
       <a
         onClick={(event) => {
           event.preventDefault();
-          currentClass = toolClass?.id;
-          setTitle(toolClass?.name);
-          setToolsShow(
-            tools?.filter((item: Tool) => item.toolClassId === currentClass),
+          currentClass = videoClass?.id;
+          setTitle(videoClass?.name);
+          setVideosShow(
+            videos?.filter((item: Video) => item.videoClassId === currentClass),
           );
         }}
-        key={toolClass?.id}
+        key={videoClass?.id}
         className={classes.collectionLink}
       >
-        {toolClass?.name}
+        {videoClass?.name}
       </a>
     ),
   );
-
+  const updateVideo = (id: string, ups: number) => {
+    changeVideoStatus({ id, ups: ups + 1 });
+  };
   return (
     <>
       <Navigation user={user} />
@@ -204,15 +209,15 @@ function Tools({
         >
           <Navbar.Section>
             <Group position="apart">
-              <Text size="xs" weight={500} color="dimmed">
-                Collections
+              <Text size="sm" weight="bold" c="dimmed">
+                技术方向
               </Text>
               {user ? (
-                <Tooltip label="Create collection" withArrow position="right">
+                <Tooltip label="添加类别" withArrow position="right">
                   <ActionIcon
                     variant="default"
                     size={18}
-                    onClick={() => setToolClassOpened(true)}
+                    onClick={() => setvideoClassOpened(true)}
                   >
                     <IconPlus size={12} stroke={1.5} />
                   </ActionIcon>
@@ -225,7 +230,7 @@ function Tools({
         <div style={{ width: 1200 }}>
           <Stack justify="flex-start">
             <Group spacing={5}>
-              <IconTool size={20} color="#45494b" />
+              <IconBrandYoutube size={20} color="#45494b" />
               <Text fw="bold" c="gray.7">
                 {title}
               </Text>
@@ -233,7 +238,7 @@ function Tools({
                 <ActionIcon
                   variant="default"
                   size={18}
-                  onClick={() => setToolOpened(true)}
+                  onClick={() => setvideoOpened(true)}
                 >
                   <IconPlus size={12} stroke={1.5} />
                 </ActionIcon>
@@ -242,7 +247,7 @@ function Tools({
 
             <Divider></Divider>
             <Grid>
-              {toolsShow.map((item: Tool, index: number) => (
+              {videosShow.map((item: Video, index: number) => (
                 <Grid.Col span="content" key={index}>
                   <Card>
                     <Card.Section
@@ -250,11 +255,24 @@ function Tools({
                       component="a"
                       href={item.href}
                       target="_blank"
+                      onClick={() => updateVideo(item.id, item.ups)}
                     >
-                      <Group>
-                        <Avatar src={item.logoUrl}></Avatar>
-                        <Text>{item.name}</Text>
-                      </Group>
+                      <Stack>
+                        <Image
+                          src={item.firstPicture}
+                          alt={item.name}
+                          style={{ borderRadius: 10 }}
+                          width={100}
+                          height={150}
+                        ></Image>
+                        <Group spacing={2}>
+                          <Text>{item.name}</Text>
+                          <IconFlame size={16} color="#ff3300cb"></IconFlame>
+                          <Text size={14} c="#ff3300cb">
+                            {item.ups}
+                          </Text>
+                        </Group>
+                      </Stack>
                     </Card.Section>
                   </Card>
                 </Grid.Col>
@@ -264,8 +282,8 @@ function Tools({
         </div>
       </Flex>
       <Modal
-        opened={toolClassOpened}
-        onClose={() => setToolClassOpened(false)}
+        opened={videoClassOpened}
+        onClose={() => setvideoClassOpened(false)}
         title="添加工具类别"
       >
         <Grid>
@@ -280,17 +298,17 @@ function Tools({
               name="name"
               type="text"
               withAsterisk
-              {...toolClassModalForm.getInputProps("name")}
+              {...videoClassModalForm.getInputProps("name")}
             />
           </Grid.Col>
           <Grid.Col offset={9} span={3}>
             <Button
               loading={classLoading}
               onClick={async () => {
-                toolClassModalForm.validate();
-                if (toolClassModalForm.isValid()) {
-                  const name = toolClassModalForm.getInputProps("name").value;
-                  await addToolClass({ name });
+                videoClassModalForm.validate();
+                if (videoClassModalForm.isValid()) {
+                  const name = videoClassModalForm.getInputProps("name").value;
+                  await addvideoClass({ name });
                 }
               }}
             >
@@ -300,8 +318,8 @@ function Tools({
         </Grid>
       </Modal>
       <Modal
-        opened={toolOpened}
-        onClose={() => setToolOpened(false)}
+        opened={videoOpened}
+        onClose={() => setvideoOpened(false)}
         title="添加工具类别"
       >
         <Grid>
@@ -316,7 +334,7 @@ function Tools({
               name="name"
               type="text"
               withAsterisk
-              {...toolModalForm.getInputProps("name")}
+              {...videoModalForm.getInputProps("name")}
             />
           </Grid.Col>
           <Grid.Col span={2}>
@@ -330,12 +348,12 @@ function Tools({
               name="href"
               type="text"
               withAsterisk
-              {...toolModalForm.getInputProps("href")}
+              {...videoModalForm.getInputProps("href")}
             />
           </Grid.Col>
           <Grid.Col span={3} offset={-1}>
             <Text align="right" c="dimmed">
-              LogoUrl:
+              视频封面:
             </Text>
           </Grid.Col>
 
@@ -344,7 +362,7 @@ function Tools({
               name="logoUrl"
               type="text"
               withAsterisk
-              {...toolModalForm.getInputProps("logoUrl")}
+              {...videoModalForm.getInputProps("firstPicture")}
             />
           </Grid.Col>
           <Grid.Col span={2}>
@@ -355,10 +373,10 @@ function Tools({
 
           <Grid.Col span={9}>
             <NativeSelect
-              data={toolClassesSelect}
-              value={toolClassSelectValue}
+              data={videoClassesSelect}
+              value={videoClassSelectValue}
               onChange={(event) => {
-                setToolClassSelectValue(event.currentTarget.value);
+                setvideoClassSelectValue(event.currentTarget.value);
               }}
               withAsterisk
             />
@@ -366,17 +384,17 @@ function Tools({
 
           <Grid.Col offset={4} span={3}>
             <Button
-              loading={toolLoading}
+              loading={videoLoading}
               onClick={async () => {
-                toolModalForm.validate();
-                if (toolModalForm.isValid()) {
-                  const toolForm: Tool = {
-                    ...toolModalForm.values,
-                    toolClassId: toolClassSelectValue,
+                videoModalForm.validate();
+                if (videoModalForm.isValid()) {
+                  const videoForm: Video = {
+                    ...videoModalForm.values,
+                    videoClassId: videoClassSelectValue,
                   };
-                  setToolsShow([...toolsShow, toolForm]);
+                  setVideosShow([...videosShow, videoForm]);
 
-                  await addTool(toolForm);
+                  await addvideo(videoForm);
                 }
               }}
             >
@@ -387,7 +405,7 @@ function Tools({
       </Modal>
     </>
   );
-}
+};
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await unstable_getServerSession(
     context.req,
@@ -409,12 +427,12 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       })
     : null;
   const user = await serialize(userModel).json;
-  const toolClassModel = await prisma?.toolClass?.findMany();
-  const toolClasses = await serialize(toolClassModel).json;
-  const toolModel = await prisma?.tool.findMany();
-  const tools = await serialize(toolModel).json;
+  const videoClassModel = await prisma?.videoClass?.findMany();
+  const videoClasses = await serialize(videoClassModel).json;
+  const videoModel = await prisma?.video.findMany();
+  const videos = await serialize(videoModel).json;
   return {
-    props: { user, toolClasses, tools },
+    props: { user, videoClasses, videos },
   };
 };
-export default Tools;
+export default Video;

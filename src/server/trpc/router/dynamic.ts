@@ -7,19 +7,34 @@ export const dynamicRouter = router({
     .input(
       z.object({
         userId: z.string().optional(),
-        index: number(),
-        size: number(),
-        orderBy: string(),
+        index: z.number(),
+        size: z.number(),
+        searchData: z.string().optional(),
+        orderBy: z.string(),
       }),
     )
     .query(async ({ ctx, input }) => {
-      const { userId, index, size, orderBy } = input;
+      const { userId, index, size, orderBy, searchData } = input;
       try {
         const dynamics = ctx.prisma.dynamic.findMany({
           skip: (index - 1) * size,
           take: size,
           where: {
             userId: userId,
+            OR: [
+              {
+                user: {
+                  username: {
+                    contains: searchData,
+                  },
+                },
+              },
+              {
+                content: {
+                  contains: searchData,
+                },
+              },
+            ],
           },
           include: {
             user: true,

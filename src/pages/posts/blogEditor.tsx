@@ -246,6 +246,27 @@ const BlogEditor = ({ blog, user }: { blog: Blog; user: User }) => {
         <MdEditor
           style={{ minHeight: 750 }}
           modelValue={content}
+          // onUploadImg={async (
+          //   files: File[],
+          //   callback: (urls: string[]) => void,
+          // ) => {
+
+          //   const res = await Promise.all(
+          //     files.map(async (file: File) => {
+          //       return new Promise((rev, rej) => {
+          //         const formData = new FormData();
+          //         formData.append("picture", file);
+          //         fetch(`${baseApiUrl}uploadImage`, {
+          //           method: "POST",
+          //           body: formData,
+          //         })
+          //           .then((r) => rev(r))
+          //           .catch((e) => rej(e));
+          //       });
+          //     }),
+          //   );
+          //   callback(res.map((value) => value?.data?.imageUrl));
+          // }}
           onChange={setContent}
         ></MdEditor>
       </Container>

@@ -23,22 +23,30 @@ const useStyles = createStyles((theme) => ({
     },
   },
 }));
-export const BlogList = ({ userId }: { blog?: Blog[]; userId?: string }) => {
+export const BlogList = ({
+  userId,
+  searchData,
+}: {
+  userId?: string;
+  searchData?: string;
+}) => {
   const { classes } = useStyles();
   const [pageSize, setPageSize] = useState<number>(8);
   const [orderBy, setOrderBy] = useState<string>("ups");
   const [maskHeight, setMaskHeight] = useState<number>(1000);
-
+  console.log(searchData);
   const blogs: Blog[] = trpc.blog.getBlogs.useQuery({
     userId,
     size: pageSize,
     index: 1,
+    searchData,
     orderBy,
   }).data as Blog[];
 
   const sortBlog = (stragy: string) => {
     setOrderBy(stragy);
   };
+
   useEffect(() => {
     window.onscroll = function () {
       // scrollTop是滚动条滚动时，距离顶部的距离

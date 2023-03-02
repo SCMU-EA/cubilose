@@ -155,3 +155,19 @@ model UserRelation {
   followings String @db.Text
   fans       String @db.MediumText
 }
+
+model Video {
+  id           String      @id @default(cuid())
+  name         String
+  href         String
+  ups          Int         @default(0)
+  firstPicture String
+  VideoClass   VideoClass? @relation(fields: [videoClassId], references: [id])
+  videoClassId String?
+}
+
+model VideoClass {
+  id    String  @id @default(cuid())
+  name  String
+  Video Video[]
+}

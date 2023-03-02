@@ -9,11 +9,13 @@ export const blogRouter = router({
         userId: z.string().optional(),
         index: z.number(),
         size: z.number(),
+        searchData: z.string().optional(),
         orderBy: z.string(),
       }),
     )
     .query(async ({ ctx, input }) => {
-      const { userId, index, size, orderBy } = input;
+      const { userId, index, size, orderBy, searchData } = input;
+
       try {
         const blogs = await ctx.prisma.blog.findMany({
           skip: (index - 1) * size,
@@ -21,6 +23,20 @@ export const blogRouter = router({
           where: {
             published: true,
             userId: userId,
+            OR: [
+              {
+                title: {
+                  contains: searchData,
+                },
+              },
+              {
+                user: {
+                  username: {
+                    contains: searchData,
+                  },
+                },
+              },
+            ],
           },
           select: {
             id: true,

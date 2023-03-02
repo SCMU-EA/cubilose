@@ -9,6 +9,8 @@ import { commentRouter } from "./comment";
 import { dynamicRouter } from "./dynamic";
 import { toolClassRouter } from "./toolClass";
 import { toolRouter } from "./tool";
+import { videoClassRouter } from "./videoClasses";
+import { videoRouter } from "./video";
 import { userRelationRouter } from "./userRelation";
 export const appRouter = router({
   user: userRouter,
@@ -20,6 +22,8 @@ export const appRouter = router({
   dynamic: dynamicRouter,
   toolClass: toolClassRouter,
   tool: toolRouter,
+  video: videoRouter,
+  videoClass: videoClassRouter,
   userRelation: userRelationRouter,
 });
 
