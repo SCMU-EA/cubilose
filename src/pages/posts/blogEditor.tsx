@@ -49,7 +49,8 @@ const BlogEditor = ({ blog, user }: { blog: Blog; user: User }) => {
   const [tagsValue, setTagsValue] = useState<string[]>(
     blog?.tags.map((item: { id: string; name: string }) => item.name) ?? [],
   );
-  const [inputType, setInputType] = useState<string>("");
+  let inputType: string;
+  let inputTag: string;
   const [description, setDescription] = useState<string>(
     blog?.description ?? "",
   );
@@ -110,6 +111,18 @@ const BlogEditor = ({ blog, user }: { blog: Blog; user: User }) => {
       });
     },
   });
+  const { mutate: tagMutate } = trpc.tag.addTag.useMutation({
+    onSuccess() {
+      showNotification({
+        id: "publish-success",
+        color: "teal",
+        title: "发布成功",
+        message: "正在跳转至主页面",
+        icon: <IconCheck />,
+        autoClose: 2000,
+      });
+    },
+  });
   const { mutate: editMutate } = trpc.blog.updateBlog.useMutation({
     onSuccess() {
       showNotification({
@@ -133,7 +146,12 @@ const BlogEditor = ({ blog, user }: { blog: Blog; user: User }) => {
     },
   });
   const typeSubmit = () => {
+    if (inputType === "") return;
     typeMutate({ name: inputType as string });
+  };
+  const tagSubmit = () => {
+    if (inputTag === "") return;
+    tagMutate({ name: inputTag as string });
   };
   const { isLoading: draftLoading, mutate: draftBlogMutate } =
     trpc.blog.createDraftBlog.useMutation({
@@ -291,27 +309,32 @@ const BlogEditor = ({ blog, user }: { blog: Blog; user: User }) => {
               <Text align="right">类型</Text>
             </Grid.Col>
 
-            <Grid.Col span={7}>
+            <Grid.Col span={user.role === "管理员" ? 7 : 11}>
               <SegmentedControl
                 value={type}
                 onChange={setType}
                 data={typeForm}
               />
             </Grid.Col>
-            <Grid.Col span={2}>
-              <Input
-                onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                  setInputType(event.target.value);
-                }}
-              ></Input>
-            </Grid.Col>
-            <Grid.Col span={2}>
-              <Button onClick={typeSubmit}>添加类型</Button>
-            </Grid.Col>
+
+            {user.role === "管理员" ? (
+              <>
+                <Grid.Col span={2}>
+                  <Input
+                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                      inputType = event.target.value;
+                    }}
+                  ></Input>
+                </Grid.Col>
+                <Grid.Col span={2}>
+                  <Button onClick={typeSubmit}>添加类型</Button>
+                </Grid.Col>
+              </>
+            ) : undefined}
             <Grid.Col span={1}>
               <Text align="right">标签</Text>
             </Grid.Col>
-            <Grid.Col span={11}>
+            <Grid.Col span={user.role === "管理员" ? 4 : 11}>
               <MultiSelect
                 value={tagsValue}
                 onChange={setTagsValue}
@@ -319,6 +342,22 @@ const BlogEditor = ({ blog, user }: { blog: Blog; user: User }) => {
                 withAsterisk
               ></MultiSelect>
             </Grid.Col>
+            {user.role === "管理员" ? (
+              <>
+                {" "}
+                <Grid.Col offset={3} span={2}>
+                  <Input
+                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                      inputTag = event.target.value;
+                    }}
+                  ></Input>
+                </Grid.Col>
+                <Grid.Col span={2}>
+                  <Button onClick={tagSubmit}>添加标签</Button>
+                </Grid.Col>
+              </>
+            ) : undefined}
+
             <Grid.Col span={2} offset={-1}>
               <Text align="right">上传封面</Text>
             </Grid.Col>
@@ -387,6 +426,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       email: true,
       id: true,
       avatar: true,
+      role: true,
     },
   });
   const user = await serialize(userModel).json;

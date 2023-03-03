@@ -61,6 +61,7 @@ model User {
   Comment       Comment[]
   Dynamic       Dynamic[]
   UserRelation  UserRelation[]
+  role          String         @default("会员")
 }
 
 model VerificationToken {

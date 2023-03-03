@@ -212,7 +212,7 @@ const Video = ({
               <Text size="sm" weight="bold" c="dimmed">
                 技术方向
               </Text>
-              {user ? (
+              {user.role === "管理员" ? (
                 <Tooltip label="添加类别" withArrow position="right">
                   <ActionIcon
                     variant="default"
@@ -234,7 +234,7 @@ const Video = ({
               <Text fw="bold" c="gray.7">
                 {title}
               </Text>
-              {user ? (
+              {user.role === "管理员" ? (
                 <ActionIcon
                   variant="default"
                   size={18}

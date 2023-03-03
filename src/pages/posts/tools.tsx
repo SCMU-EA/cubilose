@@ -207,7 +207,7 @@ function Tools({
               <Text size="xs" weight={500} color="dimmed">
                 Collections
               </Text>
-              {user ? (
+              {user.role === "管理员" ? (
                 <Tooltip label="Create collection" withArrow position="right">
                   <ActionIcon
                     variant="default"
@@ -229,7 +229,7 @@ function Tools({
               <Text fw="bold" c="gray.7">
                 {title}
               </Text>
-              {user ? (
+              {user.role === "管理员" ? (
                 <ActionIcon
                   variant="default"
                   size={18}

@@ -36,6 +36,22 @@ export const blogRouter = router({
                   },
                 },
               },
+              {
+                type: {
+                  name: {
+                    contains: searchData,
+                  },
+                },
+              },
+              {
+                tags: {
+                  some: {
+                    name: {
+                      contains: searchData,
+                    },
+                  },
+                },
+              },
             ],
           },
           select: {
