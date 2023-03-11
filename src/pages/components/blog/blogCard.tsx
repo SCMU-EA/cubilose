@@ -123,18 +123,20 @@ const BlogCard = ({ blog }: { blog: Blog }) => {
             </Group>
           </Stack>
         </Grid.Col>
-        <Grid.Col span={3}>
-          <Stack justify="space-around">
-            <Space></Space>
-            <Image
-              quality={6}
-              src={blog?.firstPicture as string}
-              height={100}
-              width={100}
-              alt="Norway"
-            />
-          </Stack>
-        </Grid.Col>
+        {blog?.firstPicture ? (
+          <Grid.Col span={3}>
+            <Stack justify="space-around">
+              <Space></Space>
+              <Image
+                quality={6}
+                src={blog?.firstPicture as string}
+                height={100}
+                width={100}
+                alt="Norway"
+              />
+            </Stack>
+          </Grid.Col>
+        ) : undefined}
       </Grid>
       <Divider my="sm"></Divider>
     </>

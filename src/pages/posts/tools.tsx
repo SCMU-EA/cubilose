@@ -112,6 +112,7 @@ function Tools({
       href: (value) => (value.length === 0 ? "用户名长度只能在3-8位" : null),
     },
   });
+  console.log(user);
   const { classes } = useStyles();
   const [toolClassOpened, setToolClassOpened] = useState<boolean>(false);
   const [toolOpened, setToolOpened] = useState<boolean>(false);
@@ -207,7 +208,7 @@ function Tools({
               <Text size="xs" weight={500} color="dimmed">
                 Collections
               </Text>
-              {user.role === "管理员" ? (
+              {user?.role === "管理员" ? (
                 <Tooltip label="Create collection" withArrow position="right">
                   <ActionIcon
                     variant="default"
@@ -229,7 +230,7 @@ function Tools({
               <Text fw="bold" c="gray.7">
                 {title}
               </Text>
-              {user.role === "管理员" ? (
+              {user?.role === "管理员" ? (
                 <ActionIcon
                   variant="default"
                   size={18}
@@ -405,6 +406,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
           email: true,
           id: true,
           avatar: true,
+          role: true,
         },
       })
     : null;

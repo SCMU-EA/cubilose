@@ -5,14 +5,17 @@ const fs = require("fs");
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { uuid } = require("uuidv4");
 
-export const endPoint = "124.223.220.83";
+// export const endPoint = "124.223.220.83"; //remote
+export const endPoint = "localhost"; //local
 
 const minioClient = new Minio.Client({
   endPoint,
   port: 9000,
   useSSL: false,
-  accessKey: "root",
-  secretKey: "wf20010417",
+  accessKey: "minioadmin",
+  secretKey: "minioadmin",
+  // accessKey: "root",
+  // secretKey: "wf20010417",
 });
 
 export async function uploadFile(
@@ -50,7 +53,7 @@ export async function uploadFile(
       },
     );
   });
-  const url = `http://124.223.220.83:9000/${bucketsName}/${objectName}`;
+  const url = `http://${endPoint}:9000/${bucketsName}/${objectName}`;
   return url;
 }
 

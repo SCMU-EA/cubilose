@@ -20,8 +20,7 @@ export const Register: NextPage = () => {
       password: "",
       description: "这个人很懒什么都没有留下",
       rePassword: "",
-      avatar:
-        "http://124.223.220.83:9000/image/4ec0dc93-2fed-4bba-a3b7-a023a8e139d5.jpg",
+      avatar: "http://127.0.0.1:9000/image/hacker.jpg",
     },
 
     validate: {

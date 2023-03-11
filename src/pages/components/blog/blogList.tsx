@@ -7,11 +7,12 @@ import {
   Text,
   createStyles,
   Divider,
-  LoadingOverlay,
+  Loader,
 } from "@mantine/core";
 import { useState, useEffect } from "react";
 import { Blog } from "../../../types/blog";
 import BlogCard from "./blogCard";
+
 import { trpc } from "../../../utils/trpc";
 const useStyles = createStyles((theme) => ({
   header: {
@@ -23,6 +24,7 @@ const useStyles = createStyles((theme) => ({
     },
   },
 }));
+let oldBlogs: Blog[] = [];
 export const BlogList = ({
   userId,
   searchData,
@@ -31,22 +33,28 @@ export const BlogList = ({
   searchData?: string;
 }) => {
   const { classes } = useStyles();
-  const [pageSize, setPageSize] = useState<number>(8);
+  const [index, setIndex] = useState<number>(1);
   const [orderBy, setOrderBy] = useState<string>("ups");
-  const [maskHeight, setMaskHeight] = useState<number>(1000);
-  console.log(searchData);
+  const [refresh, setRefresh] = useState<boolean>();
   const blogs: Blog[] = trpc.blog.getBlogs.useQuery({
     userId,
-    size: pageSize,
-    index: 1,
+    size: 8,
+    index: index,
     searchData,
     orderBy,
   }).data as Blog[];
 
   const sortBlog = (stragy: string) => {
+    oldBlogs = [];
     setOrderBy(stragy);
+    setIndex(1);
   };
-
+  useEffect(() => {
+    oldBlogs = [];
+    setIndex(1);
+    if (blogs) oldBlogs.push(...blogs);
+    setRefresh(!refresh);
+  }, [searchData]);
   useEffect(() => {
     window.onscroll = function () {
       // scrollTop是滚动条滚动时，距离顶部的距离
@@ -60,12 +68,13 @@ export const BlogList = ({
       const result = visionHeight + scrolledHeight;
       console.log("r:", result, "t:", trueHeight, result > trueHeight);
       if (result + 1 >= trueHeight) {
-        setPageSize(pageSize + 8);
-        setMaskHeight(result);
+        if (blogs) {
+          setIndex(index + 1);
+          oldBlogs.push(...blogs);
+        }
       }
     };
-  }, [blogs, pageSize]);
-
+  }, [blogs, index]);
   return (
     <>
       <Container size="md" px="lg" bg="white">
@@ -121,17 +130,16 @@ export const BlogList = ({
                 : theme.colors.white,
           })}
         >
-          {blogs ? (
-            blogs.map((item) => {
-              return <BlogCard key={item.id} blog={item} />;
-            })
-          ) : (
-            <LoadingOverlay
-              visible={true}
-              h={maskHeight}
-              overlayBlur={2}
-            ></LoadingOverlay>
-          )}
+          {oldBlogs.length !== 0
+            ? oldBlogs.map((item) => {
+                return <BlogCard key={item.id} blog={item} />;
+              })
+            : blogs
+            ? blogs.map((item) => {
+                return <BlogCard key={item.id} blog={item} />;
+              })
+            : undefined}
+          {!blogs ? <Loader size="sm" /> : undefined}
         </Stack>
       </Container>
     </>

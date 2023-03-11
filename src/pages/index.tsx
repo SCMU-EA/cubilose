@@ -7,6 +7,7 @@ import { unstable_getServerSession } from "next-auth/next";
 import { Container, Space } from "@mantine/core";
 import { serialize } from "superjson";
 import { useState } from "react";
+import { Guide } from "./posts/guide";
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const Home: NextPage = ({ user }: any) => {
   const [searchData, setSearchData] = useState<string>();
@@ -16,12 +17,18 @@ const Home: NextPage = ({ user }: any) => {
   };
   return (
     <>
-      <Navigation user={user} getSearchData={getSearchData} />
-
-      <Container size="xl" bg="#dbdada4c" mih={750}>
-        <Space h={10}></Space>
-        <BlogList searchData={searchData} />
-      </Container>
+      {!user ? (
+        <Guide />
+      ) : (
+        <>
+          {" "}
+          <Navigation user={user} getSearchData={getSearchData} />
+          <Container size="xl" bg="#dbdada4c" mih={750}>
+            <Space h={10}></Space>
+            <BlogList searchData={searchData} />
+          </Container>
+        </>
+      )}
     </>
   );
 };

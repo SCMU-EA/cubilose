@@ -2,8 +2,10 @@ import { useEffect, useState } from "react";
 import { Dynamic } from "../../../types/dynamic";
 import { trpc } from "../../../utils/trpc";
 import DynamicCard from "./dynamicCard";
-import { LoadingOverlay } from "@mantine/core";
+import { Loader } from "@mantine/core";
 import Editor from "../editor";
+import dynamic from "next/dynamic";
+const oldDynamics: Dynamic[] = [];
 export const DynamicList = ({
   userId,
   mutate,
@@ -15,15 +17,16 @@ export const DynamicList = ({
   searchData?: string;
   isLoading?: unknown;
 }) => {
-  const [pageSize, setPageSize] = useState<number>(6);
+  const [index, setIndex] = useState<number>(1);
+  const [refresh, setRefresh] = useState<boolean>();
+
   const dynamics: Dynamic[] = trpc.dynamic.getDynamics.useQuery({
     userId,
-    index: 1,
-    size: pageSize,
+    index: index,
+    size: 6,
     searchData,
     orderBy: "createTime",
   }).data as Dynamic[];
-  const [maskHeight, setMaskHeight] = useState<number>(1000);
   useEffect(() => {
     window.onscroll = function () {
       // scrollTop是滚动条滚动时，距离顶部的距离
@@ -36,13 +39,20 @@ export const DynamicList = ({
         document.documentElement.scrollHeight || document.body.scrollHeight;
       const result = visionHeight + scrolledHeight;
       console.log("r:", result, "t:", trueHeight, result > trueHeight);
-      if (result + 1 >= trueHeight) {
-        setPageSize(pageSize + 6);
-        setMaskHeight(result);
+      if (result + 400 >= trueHeight) {
+        if (dynamics) {
+          setIndex(index + 1);
+          oldDynamics.push(...dynamics);
+        }
       }
     };
-  }, [dynamics, pageSize]);
-
+  }, [dynamics, index]);
+  useEffect(() => {
+    oldDynamics;
+    setIndex(1);
+    if (dynamics) oldDynamics.push(...dynamics);
+    setRefresh(!refresh);
+  }, [searchData]);
   return (
     <>
       {userId ? undefined : (
@@ -55,13 +65,15 @@ export const DynamicList = ({
           }}
         ></Editor>
       )}
-      {dynamics ? (
-        dynamics.map((item) => {
-          return <DynamicCard key={item.id} dynamic={item} />;
-        })
-      ) : (
-        <LoadingOverlay visible h={maskHeight} overlayBlur={2}></LoadingOverlay>
-      )}
+      {oldDynamics.length !== 0
+        ? oldDynamics.map((item) => {
+            return <DynamicCard key={item.id} dynamic={item} />;
+          })
+        : dynamics
+        ? dynamics.map((item) => <DynamicCard key={item.id} dynamic={item} />)
+        : undefined}
+
+      {!dynamics ? <Loader size="sm" /> : undefined}
     </>
   );
 };

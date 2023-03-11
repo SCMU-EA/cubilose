@@ -1,7 +1,6 @@
 import { z } from "zod";
 import { router, protectedProcedure, publicProcedure } from "../trpc";
 import { TRPCError } from "@trpc/server";
-import type { userRelation } from "../../../types/userRelation";
 import { UserRelation } from "@prisma/client";
 export const userRelationRouter = router({
   getRelations: publicProcedure

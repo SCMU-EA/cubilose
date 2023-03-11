@@ -239,13 +239,15 @@ const BlogDetail = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
                     </Button>
                   ) : undefined}
                 </Group>
+                {blog.firstPicture ? (
+                  <Image
+                    src={blog.firstPicture as string}
+                    alt="image"
+                    width={950}
+                    height={300}
+                  ></Image>
+                ) : undefined}
 
-                <Image
-                  src={blog.firstPicture as string}
-                  alt="image"
-                  width={950}
-                  height={300}
-                ></Image>
                 <MdEditor
                   htmlPreview
                   previewOnly
