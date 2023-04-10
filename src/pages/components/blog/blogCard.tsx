@@ -42,9 +42,16 @@ const BlogCard = ({ blog }: { blog: Blog }) => {
               <Text size={6} c="gray.4">
                 |
               </Text>
-              <Text size={10} color="dimmed">
-                {blog?.type?.name}
-              </Text>
+              {!blog?.published ? (
+                <Text size={14} color="orange">
+                  草稿
+                </Text>
+              ) : (
+                <Text size={10} color="dimmed">
+                  {blog?.type?.name}
+                </Text>
+              )}
+
               <Text size={6} c="gray.4">
                 |
               </Text>

@@ -141,15 +141,25 @@ export const PersonalSide = (
         avatar,
       });
   };
+  const test = async () => {
+    await fetch("www.baidu.com");
+  };
+
+  useEffect(() => {
+    async () => {
+      await test();
+    };
+  }, []);
+
   return (
     <>
       <Navigation user={host}></Navigation>
       {userData ? (
         <Container size="xl" bg="#dbdada4c">
           <Flex
-            mih={750}
             gap="sm"
             justify="flex-start"
+            mih={750}
             align="center"
             direction="column"
             wrap="wrap"

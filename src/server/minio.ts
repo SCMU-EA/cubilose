@@ -4,7 +4,7 @@ const Minio = require("minio");
 const fs = require("fs");
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { uuid } = require("uuidv4");
-
+export const baseApi = "http://localhost:3000/api/";
 // export const endPoint = "124.223.220.83"; //remote
 export const endPoint = "localhost"; //local
 

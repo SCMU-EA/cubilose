@@ -11,7 +11,7 @@ import {
   Card,
 } from "@mantine/core";
 import { Blog } from "../../../types/blog";
-import { baseApiUrl } from "../../utils";
+
 import { createProxySSGHelpers } from "@trpc/react-query/ssg";
 import superjson from "superjson";
 import { prisma } from "../../../server/db/client";
@@ -31,6 +31,7 @@ import CommentSection from "../../components/comment/CommentSection";
 import Image from "next/image";
 import { User } from "../../../types/user";
 import { CommentWithChildren } from "../../../types/comment";
+import { baseApi } from "../blogEditor";
 export const getStaticPaths: GetStaticPaths = async () => {
   const ids = await prisma.blog.findMany({
     select: {
@@ -109,7 +110,7 @@ const BlogDetail = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
     },
   });
   const removeBlog = async (id: string, firstPicture: string) => {
-    await fetch(`${baseApiUrl}removeImage`, {
+    await fetch(`${baseApi}removeImage`, {
       method: "GET",
       headers: {
         firstPicture,

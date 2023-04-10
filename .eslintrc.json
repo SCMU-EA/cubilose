@@ -9,5 +9,5 @@
     "plugin:@typescript-eslint/recommended",
     "prettier"
   ],
-  "ignorePatterns": ["generateData.js", "mock.js"]
+  "ignorePatterns": ["generateData.js", "mock.js", "utils.js"]
 }

@@ -81,7 +81,7 @@ export const Register: NextPage = () => {
           <Button
             variant="subtle"
             onClick={() => {
-              signIn();
+              signIn("", { callbackUrl: "/" });
             }}
           >
             返回登录界面

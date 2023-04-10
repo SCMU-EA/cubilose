@@ -21,12 +21,12 @@ import { authOptions } from "../../pages/api/auth/[...nextauth]";
 import { unstable_getServerSession } from "next-auth/next";
 import { serialize } from "superjson";
 import { trpc } from "../../utils/trpc";
-import { baseApiUrl } from "../utils";
 import MdEditor from "md-editor-rt";
 import "md-editor-rt/lib/style.css";
 import { useRouter } from "next/router";
 import { BlogForm, Tag, DraftBlog, Blog } from "../../types/blog";
 import { User } from "../../types/user";
+export const baseApi = "http://localhost:3000/api/";
 interface TypeForm {
   id: string;
   label: string;
@@ -44,8 +44,8 @@ const BlogEditor = ({ blog, user }: { blog: Blog; user: User }) => {
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setTitle(event.target.value);
   };
-  const [type, setType] = useState<string>(blog?.type.name ?? "");
-  const [typeId, setTypeId] = useState<string>(blog?.type.id ?? "");
+  const [type, setType] = useState<string>(blog?.type?.name ?? "");
+  const [typeId, setTypeId] = useState<string>(blog?.type?.id ?? "");
   const [tagsValue, setTagsValue] = useState<string[]>(
     blog?.tags.map((item: { id: string; name: string }) => item.name) ?? [],
   );
@@ -187,7 +187,7 @@ const BlogEditor = ({ blog, user }: { blog: Blog; user: User }) => {
     if (uploadFile) {
       const formData = new FormData();
       formData.append("picture", uploadFile);
-      const res = await fetch(`${baseApiUrl}uploadImage`, {
+      const res = await fetch(`${baseApi}/uploadImage`, {
         method: "POST",
         body: formData,
       });

@@ -40,6 +40,7 @@ export const BlogList = ({
     userId,
     size: 8,
     index: index,
+    published: true,
     searchData,
     orderBy,
   }).data as Blog[];

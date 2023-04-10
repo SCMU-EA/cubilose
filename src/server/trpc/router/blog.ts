@@ -9,68 +9,93 @@ export const blogRouter = router({
         userId: z.string().optional(),
         index: z.number(),
         size: z.number(),
+        published: z.boolean(),
         searchData: z.string().optional(),
         orderBy: z.string(),
       }),
     )
     .query(async ({ ctx, input }) => {
-      const { userId, index, size, orderBy, searchData } = input;
+      const { userId, index, size, orderBy, searchData, published } = input;
 
       try {
-        const blogs = await ctx.prisma.blog.findMany({
-          skip: (index - 1) * size,
-          take: size,
-          where: {
-            published: true,
-            userId: userId,
-            OR: [
-              {
-                title: {
-                  contains: searchData,
-                },
+        const blogs = userId
+          ? await ctx.prisma.blog.findMany({
+              where: {
+                userId: userId,
               },
-              {
-                user: {
-                  username: {
-                    contains: searchData,
-                  },
-                },
+              select: {
+                id: true,
+                title: true,
+                user: true,
+                views: true,
+                ups: true,
+                downs: true,
+                description: true,
+                firstPicture: true,
+                createTime: true,
+                published: true,
+                tags: true,
+                type: true,
               },
-              {
-                type: {
-                  name: {
-                    contains: searchData,
-                  },
-                },
+              orderBy: {
+                [orderBy]: "desc",
               },
-              {
-                tags: {
-                  some: {
-                    name: {
+            })
+          : await ctx.prisma.blog.findMany({
+              skip: (index - 1) * size,
+              take: size,
+              where: {
+                published: published,
+                userId: userId,
+                OR: [
+                  {
+                    title: {
                       contains: searchData,
                     },
                   },
-                },
+                  {
+                    user: {
+                      username: {
+                        contains: searchData,
+                      },
+                    },
+                  },
+                  {
+                    type: {
+                      name: {
+                        contains: searchData,
+                      },
+                    },
+                  },
+                  {
+                    tags: {
+                      some: {
+                        name: {
+                          contains: searchData,
+                        },
+                      },
+                    },
+                  },
+                ],
               },
-            ],
-          },
-          select: {
-            id: true,
-            title: true,
-            user: true,
-            views: true,
-            ups: true,
-            downs: true,
-            description: true,
-            firstPicture: true,
-            createTime: true,
-            tags: true,
-            type: true,
-          },
-          orderBy: {
-            [orderBy]: "desc",
-          },
-        });
+              select: {
+                id: true,
+                title: true,
+                user: true,
+                views: true,
+                ups: true,
+                downs: true,
+                description: true,
+                firstPicture: true,
+                published: true,
+                createTime: true,
+                tags: true,
+                type: true,
+              },
+              orderBy: {
+                [orderBy]: "desc",
+              },
+            });
         return blogs;
       } catch (e) {
         throw new TRPCError({
@@ -136,33 +161,7 @@ export const blogRouter = router({
       });
     }
   }),
-  infinitePost: protectedProcedure
-    .input(
-      z.object({
-        pageSize: z.number().min(1).max(100).nullish(),
-        cursor: z.string().nullish(), // <-- "cursor" needs to exist, but can be any type
-      }),
-    )
-    .query(async ({ ctx, input }) => {
-      const limit = input.pageSize ?? 50;
-      const { cursor } = input;
-      const items = await ctx.prisma.blog.findMany({
-        take: limit + 1, // get an extra item at the end which we'll use as next cursor
-        cursor: cursor ? { id: cursor } : undefined,
-        orderBy: {
-          createTime: "desc",
-        },
-      });
-      let nextCursor: typeof cursor | undefined = undefined;
-      if (items.length > limit) {
-        const nextItem = items.pop();
-        nextCursor = nextItem!.id;
-      }
-      return {
-        items,
-        nextCursor,
-      };
-    }),
+
   createBlog: protectedProcedure
     .input(
       z.object({

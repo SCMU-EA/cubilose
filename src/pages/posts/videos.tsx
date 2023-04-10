@@ -262,15 +262,21 @@ const Video = ({
                           src={item.firstPicture}
                           alt={item.name}
                           style={{ borderRadius: 10 }}
-                          width={100}
-                          height={150}
+                          width={200}
+                          height={100}
                         ></Image>
-                        <Group spacing={2}>
-                          <Text>{item.name}</Text>
-                          <IconFlame size={16} color="#ff3300cb"></IconFlame>
-                          <Text size={14} c="#ff3300cb">
-                            {item.ups}
+                        <Group position="apart">
+                          <Text>
+                            {item.name.length > 16
+                              ? item.name.substring(0, 16) + "..."
+                              : item.name}
                           </Text>
+                          <Group spacing={1}>
+                            <IconFlame size={16} color="#ff3300cb"></IconFlame>
+                            <Text size={14} c="#ff3300cb">
+                              {item.ups}
+                            </Text>
+                          </Group>
                         </Group>
                       </Stack>
                     </Card.Section>
