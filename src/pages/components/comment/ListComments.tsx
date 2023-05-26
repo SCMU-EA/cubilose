@@ -104,7 +104,9 @@ function Comment({
           <Group>
             <Text>{user?.username}</Text>
             <Text size={8} c="dimmed">
-              {formatPassedTime(comment.createdAt)}
+              {comment.createdAt
+                ? formatPassedTime(comment.createdAt)
+                : undefined}
             </Text>
           </Group>
 

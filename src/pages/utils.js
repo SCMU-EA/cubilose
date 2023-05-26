@@ -52,80 +52,80 @@
 // }
 export default formatPassedTime;
 
-// export function formatPassedTime(dateTime: Date) {
-//   const date = new Date(dateTime);
-//   const now = new Date();
-//   const minutes = now.getMinutes() - date.getMinutes();
-//   const hours = now.getHours() - date.getHours();
-//   const day = now.getDay() - date.getDay();
-//   const month = now.getMonth() - date.getMonth();
-//   const year = now.getFullYear() - date.getFullYear();
-//   console.log(date, now);
+export function formatPassedTime(dateTime) {
+  const date = new Date(dateTime);
+  const now = new Date();
+  const minutes = now.getMinutes() - date.getMinutes();
+  const hours = now.getHours() - date.getHours();
+  const day = now.getDay() - date.getDay();
+  const month = now.getMonth() - date.getMonth();
+  const year = now.getFullYear() - date.getFullYear();
+  console.log(date, now);
 
-//   if (year > 0) return year + "年前";
-//   if (month > 0 && month < 12) return month + "个月前";
-//   else if (day > 0 && day < 30) return day + "天前";
-//   else if (hours > 0) return hours + "小时前";
-//   else return minutes + "分钟前";
+  if (year > 0) return year + "年前";
+  if (month > 0 && month < 12) return month + "个月前";
+  else if (day > 0 && day < 30) return day + "天前";
+  else if (hours > 0) return hours + "小时前";
+  else return minutes + "分钟前";
+}
+// const minute = 1000 * 60;
+// const hour = minute * 60;
+// const day = hour * 24;
+// const halfamonth = day * 15;
+// const month = day * 30;
+// export function formatPassedTime(date) {
+//   let y = date.getFullYear();
+//   let m = date.getMonth() + 1; //注意这个“+1”
+//   m = m < 10 ? "0" + m : m;
+//   let d = date.getDate();
+//   d = d < 10 ? "0" + d : d;
+//   let h = date.getHours();
+//   h = h < 10 ? "0" + h : h;
+//   let minute = date.getMinutes();
+//   minute = minute < 10 ? "0" + minute : minute;
+//   let second = date.getSeconds();
+//   second = second < 10 ? "0" + second : second;
+//   const dateTimeStamp =
+//     y + "-" + m + "-" + d + " " + h + ":" + minute + ":" + second;
+//   return formatDate(dateTimeStamp);
 // }
-const minute = 1000 * 60;
-const hour = minute * 60;
-const day = hour * 24;
-const halfamonth = day * 15;
-const month = day * 30;
-export function formatPassedTime(date) {
-  let y = date.getFullYear();
-  let m = date.getMonth() + 1; //注意这个“+1”
-  m = m < 10 ? "0" + m : m;
-  let d = date.getDate();
-  d = d < 10 ? "0" + d : d;
-  let h = date.getHours();
-  h = h < 10 ? "0" + h : h;
-  let minute = date.getMinutes();
-  minute = minute < 10 ? "0" + minute : minute;
-  let second = date.getSeconds();
-  second = second < 10 ? "0" + second : second;
-  const dateTimeStamp =
-    y + "-" + m + "-" + d + " " + h + ":" + minute + ":" + second;
-  return formatDate(dateTimeStamp);
-}
 
-//这是第一次打开页面时调用
+// //这是第一次打开页面时调用
 
-function formatDate(dateTimeStamp) {
-  if (dateTimeStamp == undefined) {
-    return false;
-  } else {
-    dateTimeStamp = dateTimeStamp.replace(/\-/g, "/");
+// export function formatDate(dateTimeStamp) {
+//   if (dateTimeStamp == undefined) {
+//     return false;
+//   } else {
+//     dateTimeStamp = dateTimeStamp.replace(/\-/g, "/");
 
-    const sTime = new Date(dateTimeStamp).getTime(); //把时间pretime的值转为时间戳
+//     const sTime = new Date(dateTimeStamp).getTime(); //把时间pretime的值转为时间戳
 
-    const now = new Date().getTime(); //获取当前时间的时间戳
+//     const now = new Date().getTime(); //获取当前时间的时间戳
 
-    const diffValue = now - sTime;
+//     const diffValue = now - sTime;
 
-    if (diffValue < 0) {
-      console.log("结束日期不能小于开始日期！");
-    }
+//     if (diffValue < 0) {
+//       console.log("结束日期不能小于开始日期！");
+//     }
 
-    const monthC = diffValue / month;
-    const weekC = diffValue / (7 * day);
-    const dayC = diffValue / day;
-    const hourC = diffValue / hour;
-    const minC = diffValue / minute;
+//     const monthC = diffValue / month;
+//     const weekC = diffValue / (7 * day);
+//     const dayC = diffValue / day;
+//     const hourC = diffValue / hour;
+//     const minC = diffValue / minute;
 
-    if (monthC >= 1) {
-      return parseInt(monthC) + "个月前";
-    } else if (weekC >= 1) {
-      return parseInt(weekC) + "周前";
-    } else if (dayC >= 1) {
-      return parseInt(dayC) + "天前";
-    } else if (hourC >= 1) {
-      return parseInt(hourC) + "个小时前";
-    } else if (minC >= 1) {
-      return parseInt(minC) + "分钟前";
-    } else {
-      return "刚刚";
-    }
-  }
-}
+//     if (monthC >= 1) {
+//       return parseInt(monthC) + "个月前";
+//     } else if (weekC >= 1) {
+//       return parseInt(weekC) + "周前";
+//     } else if (dayC >= 1) {
+//       return parseInt(dayC) + "天前";
+//     } else if (hourC >= 1) {
+//       return parseInt(hourC) + "个小时前";
+//     } else if (minC >= 1) {
+//       return parseInt(minC) + "分钟前";
+//     } else {
+//       return "刚刚";
+//     }
+//   }
+// }

@@ -4,8 +4,7 @@ import { trpc } from "../../../utils/trpc";
 import DynamicCard from "./dynamicCard";
 import { Loader } from "@mantine/core";
 import Editor from "../editor";
-import dynamic from "next/dynamic";
-const oldDynamics: Dynamic[] = [];
+let oldDynamics: Dynamic[] = [];
 export const DynamicList = ({
   userId,
   mutate,
@@ -28,6 +27,12 @@ export const DynamicList = ({
     orderBy: "createTime",
   }).data as Dynamic[];
   useEffect(() => {
+    oldDynamics = [];
+    setIndex(1);
+    if (dynamics) oldDynamics.push(...dynamics);
+    setRefresh(!refresh);
+  }, [searchData]);
+  useEffect(() => {
     window.onscroll = function () {
       // scrollTop是滚动条滚动时，距离顶部的距离
       const visionHeight =
@@ -39,7 +44,7 @@ export const DynamicList = ({
         document.documentElement.scrollHeight || document.body.scrollHeight;
       const result = visionHeight + scrolledHeight;
       console.log("r:", result, "t:", trueHeight, result > trueHeight);
-      if (result + 400 >= trueHeight) {
+      if (result + 1 >= trueHeight) {
         if (dynamics) {
           setIndex(index + 1);
           oldDynamics.push(...dynamics);
@@ -47,12 +52,7 @@ export const DynamicList = ({
       }
     };
   }, [dynamics, index]);
-  useEffect(() => {
-    oldDynamics;
-    setIndex(1);
-    if (dynamics) oldDynamics.push(...dynamics);
-    setRefresh(!refresh);
-  }, [searchData]);
+
   return (
     <>
       {userId ? undefined : (

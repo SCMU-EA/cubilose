@@ -26,6 +26,7 @@ export default defineNextConfig({
       "127.0.0.1",
       "i2.hdslb.com",
       "i1.hdslb.com",
+      "i0.hdslb.com",
     ],
   },
 });

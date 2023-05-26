@@ -304,6 +304,7 @@ export const blogRouter = router({
             typeId: input.typeId,
             firstPicture: input.firstPicture,
             updateTime: new Date(),
+            published: input.published,
             description: input.description,
             tags: {
               disconnect: input.oldTags.map((p) => ({ id: p.id })),

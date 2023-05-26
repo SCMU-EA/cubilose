@@ -122,7 +122,6 @@ const BlogDetail = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
     comments.unshift(comment);
     setRefresh(!refresh);
   };
-
   return (
     <>
       {editMode ? (
@@ -172,7 +171,7 @@ const BlogDetail = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
                         <Text fz="xs" color="dimmed">
                           {"浏览量:" + blog.views}
                         </Text>
-                        {isRuler ? (
+                        {isRuler || user?.role === "管理员" ? (
                           <>
                             <Text c="blue" fz="xs"></Text>
                             <Button
